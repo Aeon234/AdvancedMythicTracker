@@ -1,0 +1,47 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+
+<Button name="GreatVault_Button" virtual="true">
+	<NormalTexture atlas="GarrisonShipFollowerButtonTemplate"/>
+</Button>
+	
+
+
+
+<Button name="GreatVault_Button2" virtual="true">
+		<Size>
+		<AbsDimension x="70" y="30"/>
+		</Size>
+		<!-- <Anchors>
+			<Anchor point="TOPLEFT" x="12" y="-12"/>
+		</Anchors> -->
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="BG" atlas="GarrMission_FollowerListButton" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="BACKGROUND" textureSubLevel="1">
+				<Texture parentKey="Selected" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" text="Open Vault">
+					<Size x="70" y="0"/>
+				</FontString>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Selection" atlas="GarrMission_FollowerListButton-Select" useAtlasSize="true" hidden="true">
+					<Anchors>
+						<Anchor point="TOP" x="14" y="-1"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+	</Button>
+</Ui>
