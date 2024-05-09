@@ -1,5 +1,23 @@
 local addonName, AMT = ...
 --Mythic Plus rewards. Key Level : Dungeon Rewards : Vault Rewards
+BackdropInfo = {
+	bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+	edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+	tile = true,
+	tileSize = 40,
+	edgeSize = 8,
+	insets = { left = 2, right = 2, top = 2, bottom = 2 },
+}
+
+function GetAbbrFromChallengeModeID(id)
+	for _, dungeon in ipairs(SeasonalDungeons) do
+		if dungeon.challengeModeID == id then
+			return dungeon.abbr
+		end
+	end
+	return nil -- Return nil if no matching dungeon is found
+end
+
 local RewardsTable = {
 	{ "2", "441", "454" },
 	{ "3", "444", "457" },
@@ -437,3 +455,35 @@ DungeonAbbr = {
 	[403] = "ULD",
 	[406] = "HOI",
 }
+
+GetCurrentAffixesTable = {}
+CurrentWeek_AffixTable = {}
+NextWeek_AffixTable = {}
+-- local AFFIX_VOLCANIC = 3
+-- local AFFIX_RAGING = 6
+-- local AFFIX_BOLSTERING = 7
+-- local AFFIX_SANGUINE = 8
+-- local AFFIX_TYRANNICAL = 9
+-- local AFFIX_FORTIFIED = 10
+-- local AFFIX_BURSTING = 11
+-- local AFFIX_SPITEFUL = 123
+-- local AFFIX_STORMING = 124
+-- local AFFIX_ENTANGLING = 134
+-- local AFFIX_AFFLICTED = 135
+-- local AFFIX_INCORPOREAL = 136
+
+AffixRotation = {
+	{ rotation = { 9, 124, 6 }, rank = "(S)" },
+	{ rotation = { 10, 134, 7 }, rank = "(S)" },
+	{ rotation = { 9, 136, 123 }, rank = "(S)" },
+	{ rotation = { 10, 135, 6 }, rank = "(S)" },
+	{ rotation = { 9, 3, 8 }, rank = "(S)" },
+	{ rotation = { 10, 124, 11 }, rank = "(S)" },
+	{ rotation = { 9, 135, 7 }, rank = "(S)" },
+	{ rotation = { 10, 136, 8 }, rank = "(S)" },
+	{ rotation = { 9, 134, 11 }, rank = "(S)" },
+	{ rotation = { 10, 3, 123 }, rank = "(S)" },
+}
+
+Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
+Player_Mplus_ScoreColor = nil
