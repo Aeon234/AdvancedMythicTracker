@@ -4,6 +4,7 @@ Difficulty_Label_XPos = 42
 Difficulty_Label_YPos = 1
 Tab = "          "
 Whitetext = "|cffffffff"
+BG_Transperancy = { 1, 1, 1, 1.0 }
 
 function AMT:AMT_Window_Containers()
 	--[[
@@ -19,13 +20,13 @@ function AMT:AMT_Window_Containers()
 	if not WeeklyBest_Compartment then
 		WeeklyBest_Compartment = CreateFrame("Frame", "WeeklyBest_Compartment", AMT_Window, "BackdropTemplate")
 		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
-		WeeklyBest_Compartment:SetSize(180, 100)
+		WeeklyBest_Compartment:SetSize(180, 82)
 
 		WeeklyBest_Compartment:SetPoint("TOPLEFT", AMT_Window, "TOPLEFT", AMT_Window_X_Offset, -AMT_Window_Y_Offset)
 		WeeklyBest_Compartment:SetBackdrop(BackdropInfo)
 
 		WeeklyBest_Compartment:SetBackdropBorderColor(1, 0, 1, 0.0)
-		WeeklyBest_Compartment:SetBackdropColor(1, 1, 1, 0.0)
+		WeeklyBest_Compartment:SetBackdropColor(unpack(BG_Transperancy))
 	end
 
 	if not CurrentKeystone_Compartment then
@@ -38,7 +39,7 @@ function AMT:AMT_Window_Containers()
 		CurrentKeystone_Compartment:SetBackdrop(BackdropInfo)
 
 		CurrentKeystone_Compartment:SetBackdropBorderColor(1, 0, 1, 0.0)
-		CurrentKeystone_Compartment:SetBackdropColor(1, 1, 1, 0.0)
+		CurrentKeystone_Compartment:SetBackdropColor(unpack(BG_Transperancy))
 	end
 
 	if not Lockouts_Comparment then
@@ -56,7 +57,7 @@ function AMT:AMT_Window_Containers()
 		Lockouts_Comparment:SetBackdrop(BackdropInfo)
 
 		Lockouts_Comparment:SetBackdropBorderColor(1, 0, 1, 0.0)
-		Lockouts_Comparment:SetBackdropColor(1, 1, 1, 0.0)
+		Lockouts_Comparment:SetBackdropColor(unpack(BG_Transperancy))
 	end
 
 	--[[
@@ -71,7 +72,7 @@ function AMT:AMT_Window_Containers()
 		MythicScore_Container:SetBackdrop(BackdropInfo)
 
 		MythicScore_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
-		MythicScore_Container:SetBackdropColor(1, 1, 1, 0.0)
+		MythicScore_Container:SetBackdropColor(unpack(BG_Transperancy))
 	end
 	--[[
 	Third column of AMT_Window
@@ -85,7 +86,7 @@ function AMT:AMT_Window_Containers()
 		Affixes_Compartment:SetBackdrop(BackdropInfo)
 
 		Affixes_Compartment:SetBackdropBorderColor(1, 0, 1, 0.0)
-		Affixes_Compartment:SetBackdropColor(1, 1, 1, 0.0)
+		Affixes_Compartment:SetBackdropColor(unpack(BG_Transperancy))
 	end
 
 	--[[
@@ -123,6 +124,7 @@ function AMT:AMT_Window_Containers()
 	AMT:AMT_Affixes_Display()
 	AMT:AMT_MythicScore_Display()
 	AMT:KeystoneItem_Display()
+	AMT:AMT_Raid()
 end
 
 function AMT:WeeklyBest_Display()
@@ -386,7 +388,7 @@ function AMT:AMT_Affixes_Display()
 
 	if not CurrentAffixes_Label then
 		CurrentAffixes_Label = Affixes_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-		CurrentAffixes_Label:SetPoint("TOP", 0, -2) -- Set the position of the text
+		CurrentAffixes_Label:SetPoint("TOPLEFT", 15, -2) -- Set the position of the text
 		CurrentAffixes_Label:SetText("This Week") -- Set the text content
 		CurrentAffixes_Label:SetFont(CurrentAffixes_Label:GetFont(), 20)
 		CurrentAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -397,7 +399,7 @@ function AMT:AMT_Affixes_Display()
 		-- CurrentKeystone_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
 		CurrentAffixes_Container:SetSize(Affixes_Compartment:GetWidth(), 50)
 
-		CurrentAffixes_Container:SetPoint("TOP", CurrentAffixes_Label, "BOTTOM", 0, 2)
+		CurrentAffixes_Container:SetPoint("TOP", Affixes_Compartment, "TOP", 0, -CurrentAffixes_Label:GetHeight())
 		CurrentAffixes_Container:SetBackdrop(BackdropInfo)
 
 		CurrentAffixes_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
@@ -406,7 +408,7 @@ function AMT:AMT_Affixes_Display()
 
 	if not NextWeekAffixes_Label then
 		NextWeekAffixes_Label = Affixes_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-		NextWeekAffixes_Label:SetPoint("TOP", CurrentAffixes_Container, "BOTTOM", 0, -4) -- Set the position of the text
+		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 15, -4) -- Set the position of the text
 		NextWeekAffixes_Label:SetText("Next Week") -- Set the text content
 		NextWeekAffixes_Label:SetFont(NextWeekAffixes_Label:GetFont(), 20)
 		NextWeekAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -416,8 +418,14 @@ function AMT:AMT_Affixes_Display()
 		NextWeekAffixes_Container = CreateFrame("Frame", "CurrentAffixes", Affixes_Compartment, "BackdropTemplate")
 		-- CurrentKeystone_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
 		NextWeekAffixes_Container:SetSize(Affixes_Compartment:GetWidth(), CurrentAffixes:GetHeight())
-
-		NextWeekAffixes_Container:SetPoint("TOP", NextWeekAffixes_Label, "BOTTOM", 0, 2)
+		local _, _, _, _, NextWeekAffixes_Label_y = NextWeekAffixes_Label:GetPoint()
+		NextWeekAffixes_Container:SetPoint(
+			"TOP",
+			CurrentAffixes_Container,
+			"BOTTOM",
+			0,
+			-NextWeekAffixes_Label_y - NextWeekAffixes_Label:GetHeight() - 6
+		)
 		NextWeekAffixes_Container:SetBackdrop(BackdropInfo)
 
 		NextWeekAffixes_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
@@ -811,4 +819,14 @@ Mythic Keystone Section
 			WeeklyRewardsFrame:Hide()
 		end
 	end)
+end
+
+function AMT:AMT_Raid()
+	--Create the Raid Section Header
+	if not WeeklyRaid_Label then
+		WeeklyRaid_Label = Lockouts_Comparment:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+		WeeklyRaid_Label:SetPoint("TOPLEFT", Lockouts_Comparment, "TOPLEFT", 6, 0)
+		WeeklyRaid_Label:SetText("Raid:")
+		WeeklyRaid_Label:SetFont(WeeklyRaid_Label:GetFont(), 14)
+	end
 end

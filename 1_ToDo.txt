@@ -5,3 +5,7 @@
     4a. Add : after each?
 5. Clicking window with anything but leftmouse makes the window jump
 6. Display separate highest dungeons or scores per dungeon over the icons or no?
+
+
+
+For displaying of dungeon scores, do it so it only shows that week's scores? both weeks?
