@@ -24,7 +24,11 @@ else
 	-- AMT_Window:SetPortraitToAsset("Interface\\Icons\\Ability_BossMagistrix_TimeWarp2")
 end
 AMT_Window:SetSize(1000, PVEFrame:GetHeight())
+AMT_Window:SetFrameStrata("HIGH")
+AMT_Window:SetFrameLevel(500)
 AMT_Window:SetPoint("CENTER", UIParent)
+AMT_Window:SetToplevel(true)
+AMT_Window:SetFlattensRenderLayers(true)
 -- AMT_Window.title = AMT_Window:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 -- AMT_Window.title:SetPoint("TOP", AMT_Window.TitleContainer, "TOP", 0, -5)
 -- AMT_Window.title:SetText("Advanced Mythic Keystone")
@@ -59,27 +63,6 @@ else
 end
 --Force the state of the tab to be deselected. Otherwise when you first open up the PVEFrame it will be stuck in both a selected and deselected phase.
 PanelTemplates_DeselectTab(AMT_TabButton)
---Everytime PVEFrame is toggled we will assign the position of our tab appropriately. If a character dings to max level after loading into game this'll adjust once Mplus tab is shown.
--- hooksecurefunc("PVEFrame_ToggleFrame", function()
--- 	AMT.Check_PVEFrame_TabNums()
--- 	if ElvUI then
--- 		AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
--- 	else
--- 		--Now that we've checked # of active tabs we'll anchor the AMT button to the last active tab
--- 		AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", 3, 0)
--- 	end
--- 	--Starting at tab 1, whenever each PVEFrame tab is click deselect the AMT Tab Button
--- 	for i = 1, PVEFrame.numTabs do
--- 		local PVEFrame_Tab = _G["PVEFrameTab" .. i]
--- 		PVEFrame_Tab:HookScript("OnClick", function(self, button)
--- 			PanelTemplates_DeselectTab(AMT_TabButton)
--- 		end)
--- 	end
--- 	local selected = PanelTemplates_GetSelectedTab(PVEFrame)
--- 	if selected ~= (PVEFrame.numTabs + 1) then
--- 		PanelTemplates_DeselectTab(AMT_TabButton)
--- 	end
--- end)
 
 --When we exit the PVEFrame, deselect the AMT Tab.
 PVEFrame:HookScript("OnShow", function()
@@ -117,6 +100,7 @@ AMT_TabButton:SetScript("OnClick", function()
 end)
 
 AMT_Window:SetScript("OnShow", function()
+	LoadTrackingData()
 	AMT.Check_PVEFrame_TabNums()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
 		for i = 1, #PVEFrame_Panels do
@@ -145,6 +129,7 @@ AMT_Window:SetScript("OnShow", function()
 				AMT_Window_TabButton =
 					CreateFrame("Button", "AMT_Window_Tab" .. i, AMT_Window, "PanelTabButtonTemplate")
 				AMT_Window_TabButton:SetText(VisiblePanels[i].text)
+				AMT_Window_TabButton:SetFrameStrata("HIGH")
 				local tabButton = _G["AMT_Window_Tab" .. i]
 				local PVEFrameTab_ToClick = "PVEFrameTab" .. i
 				tabButton:SetScript("OnClick", function()

@@ -84,3 +84,60 @@ function AMT:AMT_Update_PlayerMplus_Score()
 	Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
 	Player_Mplus_ScoreColor = C_ChallengeMode.GetDungeonScoreRarityColor(Player_Mplus_Summary.currentSeasonScore)
 end
+
+function AMT:Find_Table(tbl, callback)
+	for i, v in ipairs(tbl) do
+		if callback(v, i) then
+			return v, i
+		end
+	end
+	return nil, nil
+end
+
+function AMT:Filter_Table(tbl, callback)
+	local t = {}
+	for i, v in ipairs(tbl) do
+		if callback(v, i) then
+			table.insert(t, v)
+		end
+	end
+	return t
+end
+
+function AMT:Get_Table(tbl, key, val)
+	return AMT:Find_Table(tbl, function(elm)
+		return elm[key] and elm[key] == val
+	end)
+end
+
+function AMT:Table_Recall(tbl, callback)
+	for ik, iv in pairs(tbl) do
+		callback(iv, ik)
+	end
+	return tbl
+end
+
+function LoadTrackingData()
+	for _, raid in pairs(SeasonalRaids) do
+		-- EncounterJournal Quirk: This has to be called first before we can get encounter journal info.
+		EJ_SelectInstance(raid.journalInstanceID)
+		wipe(raid.encounters or {})
+		for encounterIndex = 1, raid.numEncounters do
+			local name, description, journalEncounterID, journalEncounterSectionID, journalLink, journalInstanceID, instanceEncounterID, instanceID =
+				EJ_GetEncounterInfoByIndex(encounterIndex, raid.journalInstanceID)
+			local encounter = {
+				index = encounterIndex,
+				name = name,
+				description = description,
+				journalEncounterID = journalEncounterID,
+				journalEncounterSectionID = journalEncounterSectionID,
+				journalLink = journalLink,
+				journalInstanceID = journalInstanceID,
+				instanceEncounterID = instanceEncounterID,
+				instanceID = instanceID,
+			}
+			raid.encounters[encounterIndex] = encounter
+		end
+		raid.modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(raid.instanceID)
+	end
+end

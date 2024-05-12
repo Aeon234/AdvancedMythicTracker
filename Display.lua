@@ -2,9 +2,12 @@ local addonName, AMT = ...
 
 Difficulty_Label_XPos = 42
 Difficulty_Label_YPos = 1
+AMT_box_size = 14
+AMT_VaultRaid_Num = 6
+AMT_VaultDungeons_Num = 8
 Tab = "          "
 Whitetext = "|cffffffff"
-BG_Transperancy = { 1, 1, 1, 1.0 }
+BG_Transperancy = { 1, 1, 1, 0.0 }
 
 function AMT:AMT_Window_Containers()
 	--[[
@@ -113,7 +116,7 @@ function AMT:AMT_Window_Containers()
 		RuneArt = CreateFrame("Frame", "RuneTexture", CurrentKeystone_Compartment)
 		RuneArt:SetPoint("BOTTOM", CurrentKeystone_Compartment, "BOTTOM", 0, 4)
 		RuneArt:SetSize(160, 160)
-		RuneArt:SetFrameStrata("MEDIUM")
+		-- RuneArt:SetFrameStrata("HIGH")
 
 		RuneArt.tex = RuneArt:CreateTexture()
 		RuneArt.tex:SetAllPoints(RuneArt)
@@ -125,6 +128,7 @@ function AMT:AMT_Window_Containers()
 	AMT:AMT_MythicScore_Display()
 	AMT:KeystoneItem_Display()
 	AMT:AMT_Raid()
+	AMT:AMT_MythicPlus()
 end
 
 function AMT:WeeklyBest_Display()
@@ -822,11 +826,350 @@ Mythic Keystone Section
 end
 
 function AMT:AMT_Raid()
+	--Creates the Raid Header
+	if not Raid_Goals_Header then
+		Raid_Goals_Header = CreateFrame("Frame", "Raid_Goals_Header", Lockouts_Comparment, "BackdropTemplate")
+		Raid_Goals_Header:SetSize(180, 18)
+
+		Raid_Goals_Header:SetPoint("TOP", Lockouts_Comparment, "TOP", 0, 0)
+		Raid_Goals_Header:SetBackdrop(BackdropInfo)
+
+		Raid_Goals_Header:SetBackdropBorderColor(1, 0, 1, 0.0)
+		Raid_Goals_Header:SetBackdropColor(1, 1, 1, 0.0)
+	end
 	--Create the Raid Section Header
 	if not WeeklyRaid_Label then
-		WeeklyRaid_Label = Lockouts_Comparment:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+		WeeklyRaid_Label = Raid_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
 		WeeklyRaid_Label:SetPoint("TOPLEFT", Lockouts_Comparment, "TOPLEFT", 6, 0)
 		WeeklyRaid_Label:SetText("Raid:")
 		WeeklyRaid_Label:SetFont(WeeklyRaid_Label:GetFont(), 14)
+	end
+	--[[
+Raid Lockout / Raid Kills per Difficulty
+]]
+	--
+	--Get what the current season is and establish the name of the raid
+	local seasonID = C_MythicPlus.GetCurrentSeason()
+	raids = AMT:Filter_Table(SeasonalRaids, function(SeasonalRaids)
+		return SeasonalRaids.seasonID == seasonID
+	end)
+
+	table.sort(raids, function(a, b)
+		return a.order < b.order
+	end)
+	--Check Instance Lockouts. For each lockout save lockout information
+	local numSavedInstances = GetNumSavedInstances()
+	raids.savedInstances = {}
+	if numSavedInstances > 0 then
+		for savedInstanceIndex = 1, numSavedInstances do
+			local name, lockoutId, reset, difficultyID, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress, extendDisabled, instanceID =
+				GetSavedInstanceInfo(savedInstanceIndex)
+			local raid = AMT:Get_Table(raids, "instanceID", instanceID)
+			local savedInstance = {
+				index = savedInstanceIndex,
+				id = lockoutId,
+				name = name,
+				lockoutId = lockoutId,
+				reset = reset,
+				difficultyID = difficultyID,
+				locked = locked,
+				extended = extended,
+				instanceIDMostSig = instanceIDMostSig,
+				isRaid = isRaid,
+				maxPlayers = maxPlayers,
+				difficultyName = difficultyName,
+				numEncounters = numEncounters,
+				encounterProgress = encounterProgress,
+				extendDisabled = extendDisabled,
+				instanceID = instanceID,
+				link = GetSavedInstanceChatLink(savedInstanceIndex),
+				expires = 0,
+				encounters = {},
+			}
+			if reset and reset > 0 then
+				savedInstance.expires = reset + time()
+			end
+			--For each instance, go through each boss/encounter of the raid and see whether they've been killed.
+			for encounterIndex = 1, numEncounters do
+				local bossName, fileDataID, killed = GetSavedInstanceEncounterInfo(savedInstanceIndex, encounterIndex)
+				local instanceEncounterID = 0
+				if raid then
+					AMT:Table_Recall(raid.encounters, function(encounter)
+						if string.lower(encounter.name) == string.lower(bossName) then
+							instanceEncounterID = encounter.instanceEncounterID
+						end
+					end)
+				end
+				local encounter = {
+					index = encounterIndex,
+					instanceEncounterID = instanceEncounterID,
+					bossName = bossName,
+					fileDataID = fileDataID or 0,
+					killed = killed,
+				}
+				savedInstance.encounters[encounterIndex] = encounter
+			end
+			raids.savedInstances[savedInstanceIndex] = savedInstance
+		end
+	end
+	--Create the frames that will store the boxes for each difficulty, running through each difficulty level for the current season's Raid
+	if not Raid_MainFrame then
+		for i, difficulty in ipairs(RaidDifficulty_Levels) do
+			Raid_MainFrame = CreateFrame("Frame", "RaidDifficulty" .. i, Lockouts_Comparment, "BackdropTemplate")
+			Raid_MainFrame:SetSize(180, 20)
+
+			Raid_MainFrame:SetBackdrop(BackdropInfo)
+			Raid_MainFrame:SetBackdropBorderColor(1, 0, 1, 0.00)
+			Raid_MainFrame:SetBackdropColor(1, 1, 1, 0.00)
+
+			Raid_MainFrame_LabelFrame =
+				CreateFrame("Frame", "Raid_MainFrame_Label" .. i, _G["RaidDifficulty" .. i], "BackdropTemplate")
+			Raid_MainFrame_LabelFrame:SetSize(42, 22)
+			Raid_MainFrame_LabelFrame:SetBackdrop(BackdropInfo)
+			Raid_MainFrame_LabelFrame:SetPoint("LEFT", _G["RaidDifficulty" .. i], "LEFT", 0, 0)
+			Raid_MainFrame_LabelFrame:SetBackdropBorderColor(1, 0, 1, 0.00)
+			Raid_MainFrame_LabelFrame:SetBackdropColor(0, 1, 1, 0.00)
+
+			local RaidDifficulty_Label =
+				Raid_MainFrame_LabelFrame:CreateFontString("RaidDifficuly_Label" .. i, "OVERLAY", "MovieSubtitleFont")
+			RaidDifficulty_Label:SetPoint("RIGHT", Raid_MainFrame_LabelFrame, "RIGHT", 0, 0)
+			RaidDifficulty_Label:SetText("|cffffffff" .. difficulty.label)
+			RaidDifficulty_Label:SetFont(RaidDifficulty_Label:GetFont(), 14)
+			RaidDifficulty_Label:SetJustifyH("RIGHT")
+			RaidDifficulty_Label:SetJustifyV("MIDDLE")
+
+			Raid_MainFrame_BoxFrame =
+				CreateFrame("Frame", "Raid_MainFrame_BoxFrame" .. i, Raid_MainFrame, "BackdropTemplate")
+			Raid_MainFrame_BoxFrame:SetSize(148, 22)
+			Raid_MainFrame_BoxFrame:SetBackdrop(BackdropInfo)
+			Raid_MainFrame_BoxFrame:SetPoint("LEFT", RaidDifficulty_Label, "RIGHT", 0, 0)
+			Raid_MainFrame_BoxFrame:SetBackdropBorderColor(1, 0, 1, 0.00)
+			Raid_MainFrame_BoxFrame:SetBackdropColor(1, 1, 0, 0.00)
+
+			if i == 1 then
+				Raid_MainFrame:SetPoint("TOPLEFT", Raid_Goals_Header, "BOTTOMLEFT", 0, 4)
+			else
+				local previousFrame = _G["RaidDifficulty" .. (i - 1)]
+				Raid_MainFrame:SetPoint("TOP", previousFrame, "BOTTOM", 0, 0)
+			end
+			for raidIndex, raid in ipairs(SeasonalRaids) do
+				Raid_MainFrame:SetScript("OnEnter", function()
+					GameTooltip:ClearAllPoints()
+					GameTooltip:ClearLines()
+					GameTooltip:SetOwner(_G["RaidDifficulty" .. i], "ANCHOR_RIGHT")
+					GameTooltip:SetText("Raid Progress", 1, 1, 1, 1, true)
+					GameTooltip:AddLine(
+						format("Difficulty: |cffffffff%s|r", difficulty.short and difficulty.short or difficulty.name)
+					)
+					if raids.savedInstances ~= nil then
+						local savedInstance = AMT:Find_Table(raids.savedInstances, function(savedInstance)
+							return savedInstance.difficultyID == difficulty.id
+								and savedInstance.instanceID == raid.instanceID
+								and savedInstance.expires > time()
+						end)
+						if savedInstance ~= nil then
+							GameTooltip:AddLine(format("Expires: |cffffffff%s|r", date("%c", savedInstance.expires)))
+						end
+					end
+					GameTooltip:AddLine(" ")
+					for _, encounter in ipairs(raid.encounters) do
+						local color = LIGHTGRAY_FONT_COLOR
+						if raids.savedInstances then
+							local savedInstance = AMT:Find_Table(raids.savedInstances, function(savedInstance)
+								return savedInstance.difficultyID == difficulty.id
+									and savedInstance.instanceID == raid.instanceID
+									and savedInstance.expires > time()
+							end)
+							if savedInstance ~= nil then
+								local savedEncounter = AMT:Find_Table(savedInstance.encounters, function(enc)
+									if strcmputf8i(enc.bossName, encounter.name) == 0 then
+										return strcmputf8i(enc.bossName, encounter.name) == 0
+											and enc.instanceEncounterID == encounter.instanceEncounterID
+											and enc.killed == true
+									end
+								end)
+								if savedEncounter ~= nil then
+									color = GREEN_FONT_COLOR
+								end
+							end
+						end
+						GameTooltip:AddLine(encounter.name, color.r, color.g, color.b)
+					end
+					GameTooltip:Show()
+					_G["RaidDifficulty" .. i]:SetBackdropColor(1, 1, 1, 0.25)
+				end)
+				Raid_MainFrame:SetScript("OnLeave", function()
+					GameTooltip:Hide()
+					_G["RaidDifficulty" .. i]:SetBackdropColor(1, 1, 1, 0)
+				end)
+			end
+		end
+	end
+	--Create the boxes within the frames for each difficulty
+	for i, difficulty in ipairs(RaidDifficulty_Levels) do
+		local DifficultyName = difficulty.abbr
+		for n = 1, AMT_VaultRaid_Num do
+			RaidBox = CreateFrame("Frame", DifficultyName .. n, _G["RaidDifficulty" .. i])
+			RaidBox:SetSize(AMT_box_size, AMT_box_size)
+
+			RaidBox.tex = RaidBox:CreateTexture()
+			RaidBox.tex:SetAllPoints(RaidBox)
+			RaidBox.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+
+			if n == 1 then
+				RaidBox:SetPoint("LEFT", _G["Raid_MainFrame_BoxFrame" .. i], "LEFT", 0, 0)
+			else
+				local previousBox = _G[DifficultyName .. (n - 1)]
+
+				RaidBox:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+			end
+		end
+	end
+	-- for num, diff in ipairs(Weekly_KillCount) do
+	-- 	diff.kills = 0
+	-- 	for raidIndex, raid in ipairs(SeasonalRaids) do
+	-- 		for i, difficulty in ipairs(RaidDifficulty_Levels) do
+	-- 			for _, encounter in ipairs(raid.encounters) do
+	-- 				if raids.savedInstances then
+	-- 					local savedInstance = AMT:Find_Table(raids.savedInstances, function(savedInstance)
+	-- 						return savedInstance.difficultyID == difficulty.id
+	-- 							and savedInstance.instanceID == raid.instanceID
+	-- 							and savedInstance.expires > time()
+	-- 					end)
+	-- 					if savedInstance ~= nil then
+	-- 						local savedEncounter = AMT:Find_Table(savedInstance.encounters, function(enc)
+	-- 							if strcmputf8i(enc.bossName, encounter.name) == 0 then
+	-- 								return strcmputf8i(enc.bossName, encounter.name) == 0
+	-- 									and enc.instanceEncounterID == encounter.instanceEncounterID
+	-- 									and enc.killed == true
+	-- 							end
+	-- 						end)
+	-- 						if savedEncounter ~= nil then
+	-- 							diff.kills = diff.kills + 1
+	-- 						end
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 		end
+	-- 	end
+	-- end
+end
+
+function AMT:AMT_MythicPlus()
+	--Creates the Mythic Plus Header
+	if not Mplus_Goals_Header then
+		Mplus_Goals_Header = CreateFrame("Frame", "Mplus_Goals_Header", Lockouts_Comparment, "BackdropTemplate")
+		Mplus_Goals_Header:SetSize(180, 18)
+
+		Mplus_Goals_Header:SetPoint("TOP", RaidDifficulty4, "BOTTOM", 0, 0)
+		Mplus_Goals_Header:SetBackdrop(BackdropInfo)
+
+		Mplus_Goals_Header:SetBackdropBorderColor(1, 0, 1, 0.0)
+		Mplus_Goals_Header:SetBackdropColor(1, 1, 1, 0.0)
+	end
+	--Create the Mplus Section Header
+	if not WeeklyMplus_Label then
+		WeeklyMplus_Label = Mplus_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+		WeeklyMplus_Label:SetPoint("TOPLEFT", Mplus_Goals_Header, "TOPLEFT", 6, 0)
+		WeeklyMplus_Label:SetText("Mythic+:")
+		WeeklyMplus_Label:SetFont(WeeklyMplus_Label:GetFont(), 14)
+	end
+	--Create the Mythic Plus Main Frame that will house the label and the boxes
+	if not Mplus_Mainframe then
+		Mplus_Mainframe = CreateFrame("Frame", "Mplus_Mainframe", Lockouts_Comparment, "BackdropTemplate")
+		Mplus_Mainframe:SetSize(180, 22)
+
+		Mplus_Mainframe:SetBackdrop(BackdropInfo)
+		Mplus_Mainframe:SetPoint("TOPLEFT", Mplus_Goals_Header, "BOTTOMLEFT", 0, 4)
+		Mplus_Mainframe:SetBackdropBorderColor(1, 0, 1, 0.00)
+		Mplus_Mainframe:SetBackdropColor(1, 0, 1, 0.00)
+
+		Mplus_MainFrame_LabelFrame = CreateFrame("Frame", "Mplus_MainFrame_Label", Mplus_Mainframe, "BackdropTemplate")
+		Mplus_MainFrame_LabelFrame:SetSize(42, 22)
+		Mplus_MainFrame_LabelFrame:SetBackdrop(BackdropInfo)
+		Mplus_MainFrame_LabelFrame:SetPoint("LEFT", Mplus_Mainframe, "LEFT", 0, 0)
+		Mplus_MainFrame_LabelFrame:SetBackdropBorderColor(1, 0, 1, 0.00)
+		Mplus_MainFrame_LabelFrame:SetBackdropColor(0, 1, 1, 0.00)
+
+		local MplusDifficulty_Label =
+			Mplus_MainFrame_LabelFrame:CreateFontString("MplusDifficulty_Label", "OVERLAY", "MovieSubtitleFont")
+		MplusDifficulty_Label:SetPoint("RIGHT", Mplus_MainFrame_LabelFrame, "RIGHT", 0, 0)
+		MplusDifficulty_Label:SetText("|cffffffffM - ")
+		MplusDifficulty_Label:SetFont(MplusDifficulty_Label:GetFont(), 14)
+		MplusDifficulty_Label:SetJustifyH("RIGHT")
+		MplusDifficulty_Label:SetJustifyV("MIDDLE")
+
+		Mplus_MainFrame_BoxFrame = CreateFrame("Frame", "Mplus_MainFrame_BoxFrame", Mplus_Mainframe, "BackdropTemplate")
+		Mplus_MainFrame_BoxFrame:SetSize(148, 22)
+		Mplus_MainFrame_BoxFrame:SetBackdrop(BackdropInfo)
+		Mplus_MainFrame_BoxFrame:SetPoint("LEFT", Mplus_MainFrame_LabelFrame, "RIGHT", 0, 0)
+		Mplus_MainFrame_BoxFrame:SetBackdropBorderColor(1, 0, 1, 0.00)
+		Mplus_MainFrame_BoxFrame:SetBackdropColor(1, 1, 0, 0.00)
+	end
+	Mplus_Mainframe:SetScript("OnEnter", function()
+		GameTooltip:ClearAllPoints()
+		GameTooltip:ClearLines()
+		GameTooltip:SetOwner(Mplus_Mainframe, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Mythic Plus Progress", 1, 1, 1, 1, true)
+		if KeysDone[1] ~= 0 then
+			GameTooltip:AddLine(format("Number of keys done this week: |cffffffff%s|r", #KeysDone))
+		else
+			GameTooltip:AddLine(format("Number of keys done this week: |cffffffff%s|r", 0))
+		end
+		if KeysDone[1] ~= 0 then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Top 8 Runs This Week")
+			for i = 1, 8 do
+				if KeysDone[i] then
+					GameTooltip:AddLine(Whitetext .. KeysDone[i].level .. " - " .. KeysDone[i].keyname)
+				end
+			end
+		end
+		Mplus_Mainframe:SetBackdropColor(1, 1, 1, 0.25)
+		GameTooltip:Show()
+	end)
+	Mplus_Mainframe:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+		Mplus_Mainframe:SetBackdropColor(1, 1, 1, 0)
+	end)
+
+	if not _G["Mplus_Box" .. AMT_VaultDungeons_Num] then
+		for i = 1, AMT_VaultDungeons_Num do
+			local AMT_box_size = 14
+
+			Mplus_Box = CreateFrame("Frame", "Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
+			Mplus_Box:SetSize(AMT_box_size, AMT_box_size)
+
+			Mplus_Box.tex = Mplus_Box:CreateTexture()
+			Mplus_Box.tex:SetAllPoints(Mplus_Box)
+			Mplus_Box.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+
+			if i == 1 then
+				Mplus_Box:SetPoint("LEFT", Mplus_MainFrame_BoxFrame, "LEFT", 0, 0)
+			else
+				local previousBox = _G["Mplus_Box" .. (i - 1)]
+				Mplus_Box:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+			end
+		end
+	end
+
+	WeeklyKeysHistory = {}
+
+	for i = 1, AMT_VaultDungeons_Num do
+		if i <= #KeysDone and #WeeklyInfo > 0 then
+			tinsert(WeeklyKeysHistory, KeysDone[i].level)
+		else
+			break -- Exit the loop if KeysDone[i] or KeysDone[i].level doesn't exist
+		end
+	end
+
+	for i = 1, AMT_VaultDungeons_Num do
+		if WeeklyKeysHistory[i] ~= nil and WeeklyKeysHistory[i] > 0 then
+			if i == 1 or i == 4 or i == 8 then
+				_G["Mplus_Box" .. i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
+			else
+				_G["Mplus_Box" .. i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+			end
+		end
 	end
 end
