@@ -580,7 +580,7 @@ Mythic Keystone Section
 	--If the Label text hasn't been created, create it otherwise just update the label
 	if not Keystone_DungName then
 		local Keystone_DungName_Bg = CreateFrame("Frame", "CurrentKey_TopLabel", AMT_Window, "BackdropTemplate")
-		Keystone_DungName_Bg:SetFrameLevel(4)
+		-- Keystone_DungName_Bg:SetFrameLevel(4)
 		Keystone_DungName_Bg:SetSize(78, 22)
 		Keystone_DungName_Bg:SetPoint("BOTTOM", KeystoneItem_Icon, "TOP", 0, 12)
 		Keystone_DungName_Bg:SetBackdrop(BackdropInfo)
@@ -781,7 +781,7 @@ Mythic Keystone Section
 	if not GreatVault_Button then
 		GreatVault_Button = CreateFrame("Button", "GreatVault_Button", AMT_Window, "BackdropTemplate")
 		GreatVault_Button:SetPoint("TOP", KeystoneItem_Icon, "BOTTOM", 0, -16)
-		GreatVault_Button:SetFrameLevel(4)
+		-- GreatVault_Button:SetFrameLevel(4)
 		GreatVault_Button:SetSize(76, 22)
 		GreatVault_Button:SetText("Open Vault")
 		GreatVault_Button.tex = GreatVault_Button:CreateTexture()
@@ -797,7 +797,7 @@ Mythic Keystone Section
 		GreatVault_ButtonBorder.tex:SetAtlas("SquareMask")
 		GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
 		GreatVault_ButtonBorder.tex:SetAllPoints()
-		GreatVault_ButtonBorder:SetFrameLevel(3)
+		-- GreatVault_ButtonBorder:SetFrameLevel(3)
 
 		GreatVault_Buttonlabel = KeystoneItem_Icon:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 1)
@@ -865,6 +865,32 @@ Raid Lockout / Raid Kills per Difficulty
 			local name, lockoutId, reset, difficultyID, locked, extended, instanceIDMostSig, isRaid, maxPlayers, difficultyName, numEncounters, encounterProgress, extendDisabled, instanceID =
 				GetSavedInstanceInfo(savedInstanceIndex)
 			local raid = AMT:Get_Table(raids, "instanceID", instanceID)
+			local BossKill_Num = 0
+			local temp_encounters = {}
+			--For each instance, go through each boss/encounter of the raid and see whether they've been killed.
+			for encounterIndex = 1, numEncounters do
+				local bossName, fileDataID, killed = GetSavedInstanceEncounterInfo(savedInstanceIndex, encounterIndex)
+				local instanceEncounterID = 0
+				if raid then
+					AMT:Table_Recall(raid.encounters, function(encounter)
+						if string.lower(encounter.name) == string.lower(bossName) then
+							instanceEncounterID = encounter.instanceEncounterID
+						end
+					end)
+				end
+				if killed == true then
+					BossKill_Num = BossKill_Num + 1
+				end
+				local encounter = {
+					index = encounterIndex,
+					instanceEncounterID = instanceEncounterID,
+					bossName = bossName,
+					fileDataID = fileDataID or 0,
+					killed = killed,
+					bosseskilled = BossKill_Num,
+				}
+				temp_encounters[encounterIndex] = encounter
+			end
 			local savedInstance = {
 				index = savedInstanceIndex,
 				id = lockoutId,
@@ -884,32 +910,18 @@ Raid Lockout / Raid Kills per Difficulty
 				instanceID = instanceID,
 				link = GetSavedInstanceChatLink(savedInstanceIndex),
 				expires = 0,
-				encounters = {},
+				encounters = temp_encounters,
+				bosseskilled = BossKill_Num,
 			}
 			if reset and reset > 0 then
 				savedInstance.expires = reset + time()
 			end
-			--For each instance, go through each boss/encounter of the raid and see whether they've been killed.
-			for encounterIndex = 1, numEncounters do
-				local bossName, fileDataID, killed = GetSavedInstanceEncounterInfo(savedInstanceIndex, encounterIndex)
-				local instanceEncounterID = 0
-				if raid then
-					AMT:Table_Recall(raid.encounters, function(encounter)
-						if string.lower(encounter.name) == string.lower(bossName) then
-							instanceEncounterID = encounter.instanceEncounterID
-						end
-					end)
+			for i = 1, #SeasonalRaids do
+				if savedInstance.instanceID == SeasonalRaids[i].instanceID then
+					raids.savedInstances[savedInstanceIndex] = savedInstance
 				end
-				local encounter = {
-					index = encounterIndex,
-					instanceEncounterID = instanceEncounterID,
-					bossName = bossName,
-					fileDataID = fileDataID or 0,
-					killed = killed,
-				}
-				savedInstance.encounters[encounterIndex] = encounter
 			end
-			raids.savedInstances[savedInstanceIndex] = savedInstance
+			-- raids.savedInstances[savedInstanceIndex] = savedInstance
 		end
 	end
 	--Create the frames that will store the boxes for each difficulty, running through each difficulty level for the current season's Raid
@@ -1006,53 +1018,61 @@ Raid Lockout / Raid Kills per Difficulty
 		end
 	end
 	--Create the boxes within the frames for each difficulty
-	for i, difficulty in ipairs(RaidDifficulty_Levels) do
-		local DifficultyName = difficulty.abbr
-		for n = 1, AMT_VaultRaid_Num do
-			RaidBox = CreateFrame("Frame", DifficultyName .. n, _G["RaidDifficulty" .. i])
-			RaidBox:SetSize(AMT_box_size, AMT_box_size)
+	if not RaidBox then
+		for i, difficulty in ipairs(RaidDifficulty_Levels) do
+			local DifficultyName = difficulty.abbr
+			for n = 1, AMT_VaultRaid_Num do
+				RaidBox = CreateFrame("Frame", DifficultyName .. n, _G["RaidDifficulty" .. i])
+				RaidBox:SetSize(AMT_box_size, AMT_box_size)
 
-			RaidBox.tex = RaidBox:CreateTexture()
-			RaidBox.tex:SetAllPoints(RaidBox)
-			RaidBox.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+				RaidBox.tex = RaidBox:CreateTexture()
+				RaidBox.tex:SetAllPoints(RaidBox)
+				RaidBox.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
 
-			if n == 1 then
-				RaidBox:SetPoint("LEFT", _G["Raid_MainFrame_BoxFrame" .. i], "LEFT", 0, 0)
-			else
-				local previousBox = _G[DifficultyName .. (n - 1)]
+				if n == 1 then
+					RaidBox:SetPoint("LEFT", _G["Raid_MainFrame_BoxFrame" .. i], "LEFT", 0, 0)
+				else
+					local previousBox = _G[DifficultyName .. (n - 1)]
 
-				RaidBox:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+					RaidBox:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+				end
 			end
 		end
 	end
-	-- for num, diff in ipairs(Weekly_KillCount) do
-	-- 	diff.kills = 0
-	-- 	for raidIndex, raid in ipairs(SeasonalRaids) do
-	-- 		for i, difficulty in ipairs(RaidDifficulty_Levels) do
-	-- 			for _, encounter in ipairs(raid.encounters) do
-	-- 				if raids.savedInstances then
-	-- 					local savedInstance = AMT:Find_Table(raids.savedInstances, function(savedInstance)
-	-- 						return savedInstance.difficultyID == difficulty.id
-	-- 							and savedInstance.instanceID == raid.instanceID
-	-- 							and savedInstance.expires > time()
-	-- 					end)
-	-- 					if savedInstance ~= nil then
-	-- 						local savedEncounter = AMT:Find_Table(savedInstance.encounters, function(enc)
-	-- 							if strcmputf8i(enc.bossName, encounter.name) == 0 then
-	-- 								return strcmputf8i(enc.bossName, encounter.name) == 0
-	-- 									and enc.instanceEncounterID == encounter.instanceEncounterID
-	-- 									and enc.killed == true
-	-- 							end
-	-- 						end)
-	-- 						if savedEncounter ~= nil then
-	-- 							diff.kills = diff.kills + 1
-	-- 						end
-	-- 					end
-	-- 				end
-	-- 			end
-	-- 		end
-	-- 	end
-	-- end
+
+	local RaidKills_Count = { 0, 0, 0, 0 }
+
+	-- Check for Raid ID kills
+	Raidinfo = C_WeeklyRewards.GetActivityEncounterInfo(3, 1)
+
+	for i = 1, #Raidinfo do
+		BestRaid = Raidinfo[i].bestDifficulty
+		if BestRaid == 16 then
+			RaidKills_Count[1] = RaidKills_Count[1] + 1
+		end
+		if BestRaid == 15 then
+			RaidKills_Count[2] = RaidKills_Count[2] + 1
+		end
+		if BestRaid == 14 then
+			RaidKills_Count[3] = RaidKills_Count[3] + 1
+		end
+		if BestRaid == 17 then
+			RaidKills_Count[4] = RaidKills_Count[4] + 1
+		end
+	end
+	for i = 1, #RaidDifficulty_Levels do
+		local DifficultyName = RaidDifficulty_Levels[i].abbr
+		local Difficulty_KillCount = RaidKills_Count[i]
+		if Difficulty_KillCount ~= 0 then
+			for n = 1, Difficulty_KillCount do
+				if n == 2 or n == 4 or n == 6 then
+					_G[DifficultyName .. n].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
+				else
+					_G[DifficultyName .. n].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+				end
+			end
+		end
+	end
 end
 
 function AMT:AMT_MythicPlus()

@@ -24,7 +24,8 @@ else
 	-- AMT_Window:SetPortraitToAsset("Interface\\Icons\\Ability_BossMagistrix_TimeWarp2")
 end
 AMT_Window:SetSize(1000, PVEFrame:GetHeight())
-AMT_Window:SetFrameStrata("HIGH")
+-- AMT_Window:SetFrameStrata("HIGH")
+AMT_Window:Raise()
 AMT_Window:SetFrameLevel(500)
 AMT_Window:SetPoint("CENTER", UIParent)
 AMT_Window:SetToplevel(true)
