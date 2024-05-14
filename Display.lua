@@ -114,6 +114,7 @@ function AMT:AMT_Window_Containers()
 	--Create the rune art used that'll house the current key
 	if not RuneArt then
 		RuneArt = CreateFrame("Frame", "RuneTexture", CurrentKeystone_Compartment)
+		-- RuneArt:SetFrameLevel(2)
 		RuneArt:SetPoint("BOTTOM", CurrentKeystone_Compartment, "BOTTOM", 0, 4)
 		RuneArt:SetSize(160, 160)
 		-- RuneArt:SetFrameStrata("HIGH")
@@ -779,15 +780,14 @@ Mythic Keystone Section
 
 	--Create the Great Vault Button
 	if not GreatVault_Button then
-		GreatVault_Button = CreateFrame("Button", "GreatVault_Button", AMT_Window, "BackdropTemplate")
-		GreatVault_Button:SetPoint("TOP", KeystoneItem_Icon, "BOTTOM", 0, -16)
+		GreatVault_Button = CreateFrame("Button", "GreatVault_Button", RuneArt)
+		GreatVault_Button:SetPoint("BOTTOM", KeystoneItem_Icon, "BOTTOM", 0, -32)
 		-- GreatVault_Button:SetFrameLevel(4)
 		GreatVault_Button:SetSize(76, 22)
 		GreatVault_Button:SetText("Open Vault")
 		GreatVault_Button.tex = GreatVault_Button:CreateTexture()
 		GreatVault_Button.tex:SetAllPoints(GreatVault_Button)
-		GreatVault_Button.tex:SetAtlas("SquareMask")
-		GreatVault_Button.tex:SetVertexColor(0, 0, 0, 1.0)
+		GreatVault_Button.tex:SetColorTexture(0, 0, 0, 1.0)
 
 		GreatVault_ButtonBorder = CreateFrame("Frame", "GreatVault_ButtonBorder", GreatVault_Button)
 		GreatVault_ButtonBorder:SetSize(GreatVault_Button:GetWidth() + 2, GreatVault_Button:GetHeight() + 3)
@@ -797,7 +797,7 @@ Mythic Keystone Section
 		GreatVault_ButtonBorder.tex:SetAtlas("SquareMask")
 		GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
 		GreatVault_ButtonBorder.tex:SetAllPoints()
-		-- GreatVault_ButtonBorder:SetFrameLevel(3)
+		GreatVault_ButtonBorder:SetFrameLevel(3)
 
 		GreatVault_Buttonlabel = KeystoneItem_Icon:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 1)
@@ -887,7 +887,6 @@ Raid Lockout / Raid Kills per Difficulty
 					bossName = bossName,
 					fileDataID = fileDataID or 0,
 					killed = killed,
-					bosseskilled = BossKill_Num,
 				}
 				temp_encounters[encounterIndex] = encounter
 			end
@@ -1045,21 +1044,74 @@ Raid Lockout / Raid Kills per Difficulty
 	-- Check for Raid ID kills
 	Raidinfo = C_WeeklyRewards.GetActivityEncounterInfo(3, 1)
 
-	for i = 1, #Raidinfo do
-		BestRaid = Raidinfo[i].bestDifficulty
-		if BestRaid == 16 then
-			RaidKills_Count[1] = RaidKills_Count[1] + 1
-		end
-		if BestRaid == 15 then
-			RaidKills_Count[2] = RaidKills_Count[2] + 1
-		end
-		if BestRaid == 14 then
-			RaidKills_Count[3] = RaidKills_Count[3] + 1
-		end
-		if BestRaid == 17 then
-			RaidKills_Count[4] = RaidKills_Count[4] + 1
+	-- for i = 1, #Raidinfo do
+	-- 	BestRaid = Raidinfo[i].bestDifficulty
+	-- 	if BestRaid == 16 then
+	-- 		RaidKills_Count[1] = RaidKills_Count[1] + 1
+	-- 	end
+	-- 	if BestRaid == 15 then
+	-- 		RaidKills_Count[2] = RaidKills_Count[2] + 1
+	-- 	end
+	-- 	if BestRaid == 14 then
+	-- 		RaidKills_Count[3] = RaidKills_Count[3] + 1
+	-- 	end
+	-- 	if BestRaid == 17 then
+	-- 		RaidKills_Count[4] = RaidKills_Count[4] + 1
+	-- 	end
+	-- end
+
+	-- for i = 1, #raids.savedInstances do
+	-- 	if raids.savedInstances[i].difficultyID == 16 then
+	-- 		RaidKills_Count[1] = RaidKills_Count[1] + raids.savedInstances[i].bosseskilled
+	-- 		print(RaidKills_Count[1])
+	-- 	elseif raids.savedInstances[i].difficultyID == 15 then
+	-- 		RaidKills_Count[2] = RaidKills_Count[2] + raids.savedInstances[i].bosseskilled
+	-- 		print(RaidKills_Count[2])
+	-- 	elseif raids.savedInstances[i].difficultyID == 14 then
+	-- 		RaidKills_Count[3] = RaidKills_Count[3] + raids.savedInstances[i].bosseskilled
+	-- 		print(RaidKills_Count[3])
+	-- 	elseif raids.savedInstances[i].difficultyID == 17 then
+	-- 		RaidKills_Count[4] = RaidKills_Count[4] + raids.savedInstances[i].bosseskilled
+	-- 		print(RaidKills_Count[4])
+	-- 	end
+	-- end
+
+	-- for i = 1, #raids.savedInstances do
+	-- 	local BestRaid = raids.savedInstances[i].difficultyID
+	-- 	print("#raids.savedinstances: " .. #raids.savedInstances)
+	-- 	print("BestRaid: " .. BestRaid)
+	-- 	print("i = " .. i)
+	-- 	if BestRaid == 16 then
+	-- 		RaidKills_Count[1] = RaidKills_Count[1] + raids.savedInstances[i].bosseskilled
+	-- 		print("Mythic: " .. RaidKills_Count[1])
+	-- 	elseif BestRaid == 15 then
+	-- 		RaidKills_Count[2] = RaidKills_Count[2] + raids.savedInstances[i].bosseskilled
+	-- 		print("Heroic: " .. RaidKills_Count[2])
+	-- 	elseif BestRaid == 14 then
+	-- 		RaidKills_Count[3] = RaidKills_Count[3] + raids.savedInstances[i].bosseskilled
+	-- 		print("Normal: " .. RaidKills_Count[3])
+	-- 	elseif BestRaid == 17 then
+	-- 		RaidKills_Count[4] = RaidKills_Count[4] + raids.savedInstances[i].bosseskilled
+	-- 		print("LFR: " .. RaidKills_Count[4])
+	-- 	end
+	-- end
+
+	for _, instance in pairs(raids.savedInstances) do
+		if instance.difficultyID == 16 and instance.instanceID == 2549 then
+			RaidKills_Count[1] = RaidKills_Count[1] + instance.bosseskilled
+			print("Mythic: " .. RaidKills_Count[1])
+		elseif instance.difficultyID == 15 and instance.instanceID == 2549 then
+			RaidKills_Count[2] = RaidKills_Count[2] + instance.bosseskilled
+			print("Heroic: " .. RaidKills_Count[2])
+		elseif instance.difficultyID == 14 and instance.instanceID == 2549 then
+			RaidKills_Count[3] = RaidKills_Count[3] + instance.bosseskilled
+			print("Normal: " .. RaidKills_Count[3])
+		elseif instance.difficultyID == 17 and instance.instanceID == 2549 then
+			RaidKills_Count[4] = RaidKills_Count[4] + instance.bosseskilled
+			print("LFR: " .. RaidKills_Count[4])
 		end
 	end
+
 	for i = 1, #RaidDifficulty_Levels do
 		local DifficultyName = RaidDifficulty_Levels[i].abbr
 		local Difficulty_KillCount = RaidKills_Count[i]
@@ -1067,7 +1119,7 @@ Raid Lockout / Raid Kills per Difficulty
 			for n = 1, Difficulty_KillCount do
 				if n == 2 or n == 4 or n == 6 then
 					_G[DifficultyName .. n].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
-				else
+				elseif n <= AMT_VaultRaid_Num then
 					_G[DifficultyName .. n].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
 				end
 			end
@@ -1140,7 +1192,9 @@ function AMT:AMT_MythicPlus()
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine("Top 8 Runs This Week")
 			for i = 1, 8 do
-				if KeysDone[i] then
+				if KeysDone[i] and (i == 1 or i == 4 or i == 8) then
+					GameTooltip:AddLine("|cff00ff12" .. KeysDone[i].level .. " - " .. KeysDone[i].keyname)
+				elseif KeysDone[i] then
 					GameTooltip:AddLine(Whitetext .. KeysDone[i].level .. " - " .. KeysDone[i].keyname)
 				end
 			end
