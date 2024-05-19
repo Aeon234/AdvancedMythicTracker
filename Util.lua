@@ -246,7 +246,7 @@ function AMT_Update_PlayerDungeonInfo()
 		local highestKey = 0
 		for _, key in ipairs(KeysDone) do
 			if key.keyid == bestKey.mapID and key.level > highestKey then
-				highestKey = (key.level + 32)
+				highestKey = key.level + 1
 			end
 		end
 		bestKey.HighestKey = highestKey

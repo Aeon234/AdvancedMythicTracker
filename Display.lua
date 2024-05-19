@@ -16,7 +16,7 @@ AMT_VaultRaid_Num = 6
 AMT_VaultDungeons_Num = 8
 Tab = "          "
 Whitetext = "|cffffffff"
-BG_Transperancy = { 1, 1, 1, 1.0 }
+BG_Transperancy = { 1, 1, 1, 0.0 }
 
 function AMT:AMT_Window_Containers()
 	--[[
@@ -1639,18 +1639,41 @@ function AMT:AMT_MythicRunsGraph()
 	for i = 1, 5 do
 		local graphline = MythicRunsGraph_Container:CreateLine("GraphLine" .. i)
 		graphline:SetThickness(2)
+		graphline:SetColorTexture(0.4, 0.4, 0.4, 1.000)
 		if i == 1 then
-			local xOffset = 45
+			local xOffset = 44
 			graphline:SetColorTexture(1, 1, 1, 0)
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
-		else
-			local xOffset = 60 + 130 * (i - 1)
-			graphline:SetColorTexture(0, 0, 0)
+		elseif i == 2 then
+			local xOffset = 38 + 130 * (i - 1)
+			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
+			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+		elseif i == 3 then
+			local xOffset = 40 + 129 * (i - 1)
+			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
+			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+		elseif i == 4 then
+			local xOffset = 38 + 130 * (i - 1)
+			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
+			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+		elseif i == 5 then
+			local xOffset = 38 + 130 * (i - 1)
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		end
 	end
+
+	for i = 1, 4 do
+		if not _G["Graphline_Label" .. i] then
+			Graphline_Label =
+				MythicRunsGraph_Container:CreateFontString("Graphline_Label" .. i, "BACKGROUND", "GameFontNormal")
+		end
+		Graphline_Label:SetText(tostring(i * 10))
+		Graphline_Label:SetJustifyH("CENTER")
+		Graphline_Label:SetPoint("BOTTOM", _G["GraphLine" .. i + 1], "TOP", 0, 4)
+	end
+
 	for i = 1, #Current_SeasonalDung_Info do
 		local graphline = _G["GraphLine1"]
 		local dungID = Current_SeasonalDung_Info[i].mapID
@@ -1683,14 +1706,12 @@ function AMT:AMT_MythicRunsGraph()
 		end
 		Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
 		if BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
-			print("setting color gold")
 			Dung_AntTrail:SetTextColor(1.000, 0.824, 0.000, 1.000)
 		else
-			print("setting color white")
 			Dung_AntTrail:SetTextColor(1, 1, 1, 1.0)
 		end
 		if BestKeys_per_Dungeon[i].HighestKey > 0 then
-			Dung_AntTrail:SetPoint("LEFT", graphlabel, "RIGHT", 2, -1)
+			Dung_AntTrail:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
 			Dung_AntTrail:SetText(BestKeys_per_Dungeon[i].DungBullets .. BestKeys_per_Dungeon[i].HighestKey)
 		end
 	end
