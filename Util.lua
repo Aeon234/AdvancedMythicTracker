@@ -168,3 +168,91 @@ function AMT_getKeystoneLevelColor(level)
 		return "ffff8000"
 	end
 end
+
+function AMT_Update_PlayerDungeonInfo()
+	--Reset the state of the tables
+	KeysDone = {}
+	Current_SeasonalDung_Info = {}
+	BestKeys_per_Dungeon = {}
+	--Grab Weekly Run history for this season and only timed keys
+	WeeklyInfo = C_MythicPlus.GetRunHistory(false, true)
+	--Grab Vault Rewards Info
+	VaultInfo = C_WeeklyRewards.GetActivities()
+	--For each key done insert them into KeysDone table
+	for i = 1, #WeeklyInfo do
+		local KeyLevel = WeeklyInfo[i].level
+		local KeyID = WeeklyInfo[i].mapChallengeModeID
+		tinsert(KeysDone, { level = KeyLevel, keyid = KeyID, keyname = "" })
+	end
+	--Sort KeysDone so that the highest keys are at the top. This is how we'll grab top key of the week info
+	if KeysDone[1] == nil then
+		KeysDone = { 0 }
+	else
+		table.sort(KeysDone, function(a, b)
+			return b.level < a.level
+		end)
+		for _, entry in ipairs(KeysDone) do
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if entry.keyid == dungeon.challengeModeID then
+					entry.keyname = dungeon.name
+					break -- Once found, no need to continue searching
+				end
+			end
+		end
+	end
+
+	--Pull the dungeon info from the API and store the dungeon id, name and icon of each dungeon in the table above.
+	local currentSeasonMap = C_ChallengeMode.GetMapTable()
+	for i = 1, #currentSeasonMap do
+		local dungeonID = currentSeasonMap[i]
+		local name, _, _, icon = C_ChallengeMode.GetMapUIInfo(dungeonID)
+		local affixScores, bestOverAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(dungeonID)
+		local intimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(dungeonID)
+		local dungOverallScore = bestOverAllScore ~= nil and bestOverAllScore or 0
+		local TyrDungScore = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].score or 0
+		local FortDungScore = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].score or 0
+		local TyrDungLevel = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].level or 0
+		local FortDungLevel = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].level or 0
+		tinsert(Current_SeasonalDung_Info, {
+			mapID = dungeonID,
+			dungName = name,
+			dungIcon = icon,
+			dungOverallScore = dungOverallScore,
+			dungTyrScore = TyrDungScore,
+			dungFortScore = FortDungScore,
+			dungTyrLevel = TyrDungLevel,
+			dungFortLevel = FortDungLevel,
+			intimeInfo = intimeInfo,
+			overtimeInfo = overtimeInfo,
+		})
+		local dungAbbr = ""
+		for _, dungeon in ipairs(DungeonAbbr) do
+			if dungeonID == dungeon.mapID then
+				dungAbbr = dungeon.Abbr
+				tinsert(BestKeys_per_Dungeon, {
+					mapID = dungeon.mapID,
+					dungAbbr = dungAbbr,
+					HighestKey = 0,
+					DungBullets = "",
+				})
+			end
+		end
+	end
+
+	--Update BestKeys_per_Dungeon with the Highest Keys done per dungeon
+	local KeyBullets = ""
+	local BulletTemplate = "• "
+	for _, bestKey in ipairs(BestKeys_per_Dungeon) do
+		local highestKey = 0
+		for _, key in ipairs(KeysDone) do
+			if key.keyid == bestKey.mapID and key.level > highestKey then
+				highestKey = (key.level + 32)
+			end
+		end
+		bestKey.HighestKey = highestKey
+		for i = 1, bestKey.HighestKey do
+			KeyBullets = KeyBullets .. BulletTemplate
+		end
+		bestKey.DungBullets = KeyBullets
+	end
+end

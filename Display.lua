@@ -16,7 +16,7 @@ AMT_VaultRaid_Num = 6
 AMT_VaultDungeons_Num = 8
 Tab = "          "
 Whitetext = "|cffffffff"
-BG_Transperancy = { 1, 1, 1, 0.0 }
+BG_Transperancy = { 1, 1, 1, 1.0 }
 
 function AMT:AMT_Window_Containers()
 	--[[
@@ -178,39 +178,14 @@ function AMT:AMT_Window_Containers()
 	AMT:AMT_Raid()
 	AMT:AMT_MythicPlus()
 	AMT:AMT_PartyKeystyone()
+	AMT:AMT_MythicRunsGraph()
 end
 
 function AMT:AMT_WeeklyBest_Display()
-	--Initiate a table that'll store all of our weekly keys
-	KeysDone = {}
-	--Grab Weekly Run history for this season and only timed keys
-	WeeklyInfo = C_MythicPlus.GetRunHistory(false, true)
-	--Grab Vault Rewards Info
-	VaultInfo = C_WeeklyRewards.GetActivities()
-	--For each key done insert them into KeysDone table
-	for i = 1, #WeeklyInfo do
-		local KeyLevel = WeeklyInfo[i].level
-		local KeyID = WeeklyInfo[i].mapChallengeModeID
-		tinsert(KeysDone, { level = KeyLevel, keyid = KeyID, keyname = "" })
-	end
-	--Sort KeysDone so that the highest keys are at the top. This is how we'll grab top key of the week info
-	if KeysDone[1] == nil then
-		KeysDone = { 0 }
-	else
-		table.sort(KeysDone, function(a, b)
-			return b.level < a.level
-		end)
-		for _, entry in ipairs(KeysDone) do
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if entry.keyid == dungeon.challengeModeID then
-					entry.keyname = dungeon.name
-					break -- Once found, no need to continue searching
-				end
-			end
-		end
-	end
+	--Update the Keys info for tables Current_SeasonalDung_Info and BestKeys_per_Dungeon
+	AMT_Update_PlayerDungeonInfo()
 	--Establish the highest key done for the weekly currently
-	local WeeklyBest_Key
+	WeeklyBest_Key = 0
 	local WeeklyBest_Color
 	if KeysDone[1] ~= 0 then
 		WeeklyBest_Key = KeysDone[1].level
@@ -253,7 +228,7 @@ function AMT:AMT_WeeklyBest_Display()
 		WeeklyBest_Keylevel:SetText("-")
 	else
 		WeeklyBest_Keylevel:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 0)
-		WeeklyBest_Keylevel:SetText(WeeklyBest_Color:WrapTextInColorCode("+" .. WeeklyBest_Key))
+		WeeklyBest_Keylevel:SetText(WeeklyBest_Color:WrapTextInColorCode(WeeklyBest_Key))
 		WeeklyBest_Keylevel:SetFont(WeeklyBest_Keylevel:GetFont(), 42)
 		WeeklyBest_Keylevel:SetTextColor(1, 1, 1, 1.0)
 		-- WeeklyBest_Keylevel:SetTextColor(0, 0.624, 0.863, 1.0)
@@ -261,34 +236,6 @@ function AMT:AMT_WeeklyBest_Display()
 end
 
 function AMT:AMT_DungeonList_Display()
-	--Set up the table that will hold the Season's dungeon info
-	Current_SeasonalDung_Info = {}
-	--Pull the dungeon info from the API and store the dungeon id, name and icon of each dungeon in the table above.
-	local currentSeasonMap = C_ChallengeMode.GetMapTable()
-	for i = 1, #currentSeasonMap do
-		local dungeonID = currentSeasonMap[i]
-		local name, _, _, icon = C_ChallengeMode.GetMapUIInfo(dungeonID)
-		local affixScores, bestOverAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(dungeonID)
-		local intimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(dungeonID)
-		local dungOverallScore = bestOverAllScore ~= nil and bestOverAllScore or 0
-		local TyrDungScore = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].score or 0
-		local FortDungScore = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].score or 0
-		local TyrDungLevel = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].level or 0
-		local FortDungLevel = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].level or 0
-		tinsert(Current_SeasonalDung_Info, {
-			mapID = dungeonID,
-			dungName = name,
-			dungIcon = icon,
-			dungOverallScore = dungOverallScore,
-			dungTyrScore = TyrDungScore,
-			dungFortScore = FortDungScore,
-			dungTyrLevel = TyrDungLevel,
-			dungFortLevel = FortDungLevel,
-			intimeInfo = intimeInfo,
-			overtimeInfo = overtimeInfo,
-		})
-	end
-
 	--Create the icon for each dungeon
 	if not _G["DungeonIcon_" .. #Current_SeasonalDung_Info] then
 		for i = 1, #Current_SeasonalDung_Info do
@@ -525,6 +472,7 @@ function AMT:AMT_DungeonList_Display()
 			end
 
 			GameTooltip:Show()
+
 			-- C_Timer.After(1, function()
 			-- 	self:UpdateGameTooltip(DungIcon, dungSpellID)
 			-- end)
@@ -535,11 +483,7 @@ function AMT:AMT_DungeonList_Display()
 
 		DungIcon:RegisterForClicks("AnyUp", "AnyDown")
 		DungIcon:SetAttribute("type1", "spell")
-		DungIcon:SetScript("OnClick", function()
-			if IsSpellKnown(dungSpellID, false) and not InCombatLockdown() then
-				DungIcon:SetAttribute("spell", dungSpellName)
-			end
-		end)
+		DungIcon:SetAttribute("spell", dungSpellName)
 	end
 end
 
@@ -1508,9 +1452,9 @@ function AMT:AMT_PartyKeystyone()
 			local unitID = i == 1 and "player" or "party" .. i - 1
 			local data = openRaidLib.GetKeystoneInfo(unitID)
 			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if dungeon.challengeModeID == mapID then
-					Keyname_abbr = dungeon.abbr
+			for _, dungeon in ipairs(DungeonAbbr) do
+				if dungeon.mapID == mapID then
+					Keyname_abbr = dungeon.Abbr
 					if mapID and Keyname_abbr then
 						local level = data.level
 						local playerClass = UnitClassBase(unitID)
@@ -1527,98 +1471,98 @@ function AMT:AMT_PartyKeystyone()
 				end
 			end
 		end
-		for i = 1, 5 do
-			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = openRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if dungeon.challengeModeID == mapID then
-					Keyname_abbr = dungeon.abbr
-					if mapID and Keyname_abbr then
-						local level = data.level
-						local playerClass = UnitClassBase(unitID)
-						local playerName = UnitName(unitID)
-						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+		-- for i = 1, 5 do
+		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
+		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local mapID = data and data.mythicPlusMapID
+		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 		if dungeon.challengeModeID == mapID then
+		-- 			Keyname_abbr = dungeon.abbr
+		-- 			if mapID and Keyname_abbr then
+		-- 				local level = data.level
+		-- 				local playerClass = UnitClassBase(unitID)
+		-- 				local playerName = UnitName(unitID)
+		-- 				local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
 
-						tinsert(GroupKeystone_Info, {
-							level = level,
-							name = Keyname_abbr,
-							player = AMT_ClassColorString(playerName, "DEMONHUNTER"),
-							icon = texture,
-						})
-					end
-				end
-			end
-		end
-		for i = 1, 5 do
-			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = openRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if dungeon.challengeModeID == mapID then
-					Keyname_abbr = dungeon.abbr
-					if mapID and Keyname_abbr then
-						local level = data.level
-						local playerClass = UnitClassBase(unitID)
-						local playerName = UnitName(unitID)
-						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+		-- 				tinsert(GroupKeystone_Info, {
+		-- 					level = level,
+		-- 					name = Keyname_abbr,
+		-- 					player = AMT_ClassColorString(playerName, "DEMONHUNTER"),
+		-- 					icon = texture,
+		-- 				})
+		-- 			end
+		-- 		end
+		-- 	end
+		-- end
+		-- for i = 1, 5 do
+		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
+		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local mapID = data and data.mythicPlusMapID
+		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 		if dungeon.challengeModeID == mapID then
+		-- 			Keyname_abbr = dungeon.abbr
+		-- 			if mapID and Keyname_abbr then
+		-- 				local level = data.level
+		-- 				local playerClass = UnitClassBase(unitID)
+		-- 				local playerName = UnitName(unitID)
+		-- 				local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
 
-						tinsert(GroupKeystone_Info, {
-							level = 32,
-							name = "UNDR",
-							player = AMT_ClassColorString("Bigdumlock", "WARLOCK"),
-							icon = texture,
-						})
-					end
-				end
-			end
-		end
-		for i = 1, 5 do
-			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = openRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if dungeon.challengeModeID == mapID then
-					Keyname_abbr = dungeon.abbr
-					if mapID and Keyname_abbr then
-						local level = data.level
-						local playerClass = UnitClassBase(unitID)
-						local playerName = UnitName(unitID)
-						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+		-- 				tinsert(GroupKeystone_Info, {
+		-- 					level = 32,
+		-- 					name = "UNDR",
+		-- 					player = AMT_ClassColorString("Bigdumlock", "WARLOCK"),
+		-- 					icon = texture,
+		-- 				})
+		-- 			end
+		-- 		end
+		-- 	end
+		-- end
+		-- for i = 1, 5 do
+		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
+		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local mapID = data and data.mythicPlusMapID
+		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 		if dungeon.challengeModeID == mapID then
+		-- 			Keyname_abbr = dungeon.abbr
+		-- 			if mapID and Keyname_abbr then
+		-- 				local level = data.level
+		-- 				local playerClass = UnitClassBase(unitID)
+		-- 				local playerName = UnitName(unitID)
+		-- 				local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
 
-						tinsert(GroupKeystone_Info, {
-							level = 37,
-							name = "UNDR",
-							player = AMT_ClassColorString("Darkdrpepper", "DEATHKNIGHT"),
-							icon = texture,
-						})
-					end
-				end
-			end
-		end
-		for i = 1, 5 do
-			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = openRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(SeasonalDungeons) do
-				if dungeon.challengeModeID == mapID then
-					Keyname_abbr = dungeon.abbr
-					if mapID and Keyname_abbr then
-						local level = data.level
-						local playerClass = UnitClassBase(unitID)
-						local playerName = UnitName(unitID)
-						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+		-- 				tinsert(GroupKeystone_Info, {
+		-- 					level = 37,
+		-- 					name = "UNDR",
+		-- 					player = AMT_ClassColorString("Darkdrpepper", "DEATHKNIGHT"),
+		-- 					icon = texture,
+		-- 				})
+		-- 			end
+		-- 		end
+		-- 	end
+		-- end
+		-- for i = 1, 5 do
+		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
+		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local mapID = data and data.mythicPlusMapID
+		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 		if dungeon.challengeModeID == mapID then
+		-- 			Keyname_abbr = dungeon.abbr
+		-- 			if mapID and Keyname_abbr then
+		-- 				local level = data.level
+		-- 				local playerClass = UnitClassBase(unitID)
+		-- 				local playerName = UnitName(unitID)
+		-- 				local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
 
-						tinsert(GroupKeystone_Info, {
-							level = level,
-							name = Keyname_abbr,
-							player = AMT_ClassColorString("Mysophobia", "DRUID"),
-							icon = texture,
-						})
-					end
-				end
-			end
-		end
+		-- 				tinsert(GroupKeystone_Info, {
+		-- 					level = level,
+		-- 					name = Keyname_abbr,
+		-- 					player = AMT_ClassColorString("Mysophobia", "DRUID"),
+		-- 					icon = texture,
+		-- 				})
+		-- 			end
+		-- 		end
+		-- 	end
+		-- end
 
 		PartyKeystone_Container.lines = {}
 
@@ -1685,6 +1629,69 @@ function AMT:AMT_PartyKeystyone()
 				PartyKeystone_Container.lines[i].right:SetText("")
 				PartyKeystone_Container.lines[i].left:SetText("")
 			end
+		end
+	end
+end
+
+function AMT:AMT_MythicRunsGraph()
+	--MythicRunsGraph_Container
+
+	for i = 1, 5 do
+		local graphline = MythicRunsGraph_Container:CreateLine("GraphLine" .. i)
+		graphline:SetThickness(2)
+		if i == 1 then
+			local xOffset = 45
+			graphline:SetColorTexture(1, 1, 1, 0)
+			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
+			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+		else
+			local xOffset = 60 + 130 * (i - 1)
+			graphline:SetColorTexture(0, 0, 0)
+			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
+			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+		end
+	end
+	for i = 1, #Current_SeasonalDung_Info do
+		local graphline = _G["GraphLine1"]
+		local dungID = Current_SeasonalDung_Info[i].mapID
+		local dungAbbr = ""
+		for _, dungeon in ipairs(DungeonAbbr) do
+			if dungID == dungeon.mapID then
+				dungAbbr = dungeon.Abbr
+			end
+		end
+		local yMargin = 12 -- Margin we set at top and bottom
+		local yOffset = 24 -- Margin between each dungeon name
+		if not _G["GraphDung_Label" .. i] then
+			GraphDung_Label =
+				MythicRunsGraph_Container:CreateFontString("GraphDung_Label" .. i, "BACKGROUND", "MovieSubtitleFont")
+		end
+		GraphDung_Label:SetFont(GraphDung_Label:GetFont(), 14)
+		GraphDung_Label:SetText(dungAbbr)
+		GraphDung_Label:SetJustifyH("RIGHT")
+		if i == 1 then
+			GraphDung_Label:SetPoint("RIGHT", graphline, "TOPLEFT", -4, -yMargin)
+		else
+			GraphDung_Label:SetPoint("RIGHT", graphline, "TOPLEFT", -4, -yMargin - (yOffset * (i - 1)))
+		end
+	end
+	for i = 1, #BestKeys_per_Dungeon do
+		local graphlabel = _G["GraphDung_Label" .. i]
+		if not _G["Dung_AntTrail" .. i] then
+			Dung_AntTrail =
+				MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+		end
+		Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
+		if BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
+			print("setting color gold")
+			Dung_AntTrail:SetTextColor(1.000, 0.824, 0.000, 1.000)
+		else
+			print("setting color white")
+			Dung_AntTrail:SetTextColor(1, 1, 1, 1.0)
+		end
+		if BestKeys_per_Dungeon[i].HighestKey > 0 then
+			Dung_AntTrail:SetPoint("LEFT", graphlabel, "RIGHT", 2, -1)
+			Dung_AntTrail:SetText(BestKeys_per_Dungeon[i].DungBullets .. BestKeys_per_Dungeon[i].HighestKey)
 		end
 	end
 end

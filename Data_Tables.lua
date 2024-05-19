@@ -470,67 +470,55 @@ Weekly_KillCount = {
 
 DungeonAbbr = {
 	-- Cata
-	[438] = "VP",
+	{ mapID = 438, Abbr = "VP" },
 
 	-- MOP
-	[2] = "TJS",
+	{ mapID = 2, Abbr = "TJS" },
 
 	-- WoD
-	[165] = "SBG",
-	[166] = "GD",
-	[169] = "ID",
+	{ mapID = 165, Abbr = "SBG" },
+	{ mapID = 166, Abbr = "GD" },
+	{ mapID = 169, Abbr = "ID" },
 
 	-- Legion
-	[200] = "HoV",
-	[206] = "NL",
-	[210] = "CoS",
-	[227] = "LOWR",
-	[234] = "UPPR",
+	{ mapID = 200, Abbr = "HoV" },
+	{ mapID = 206, Abbr = "NL" },
+	{ mapID = 210, Abbr = "CoS" },
+	{ mapID = 227, Abbr = "LOWR" },
+	{ mapID = 234, Abbr = "UPPR" },
 
 	-- BFA
-	[245] = "FH",
-	[251] = "UR",
-	[369] = "Yard",
-	[370] = "Work",
+	{ mapID = 245, Abbr = "FH" },
+	{ mapID = 251, Abbr = "UR" },
+	{ mapID = 369, Abbr = "Yard" },
+	{ mapID = 370, Abbr = "Work" },
 
 	-- SL
-	[375] = "MotS",
-	[376] = "NW",
-	[377] = "DoS",
-	[378] = "HoA",
-	[379] = "PF",
-	[380] = "SD",
-	[381] = "SoA",
-	[382] = "ToP",
-	[391] = "Strt",
-	[392] = "Gmbt",
+	{ mapID = 375, Abbr = "MotS" },
+	{ mapID = 376, Abbr = "NW" },
+	{ mapID = 377, Abbr = "DoS" },
+	{ mapID = 378, Abbr = "HoA" },
+	{ mapID = 379, Abbr = "PF" },
+	{ mapID = 380, Abbr = "SD" },
+	{ mapID = 381, Abbr = "SoA" },
+	{ mapID = 382, Abbr = "ToP" },
+	{ mapID = 391, Abbr = "Strt" },
+	{ mapID = 392, Abbr = "Gmbt" },
 
 	-- DF
-	[399] = "RLP",
-	[400] = "NO",
-	[401] = "AV",
-	[402] = "AA",
-	[405] = "BH",
-	[404] = "NELT",
-	[403] = "ULD",
-	[406] = "HOI",
+	{ mapID = 399, Abbr = "RLP" },
+	{ mapID = 400, Abbr = "NO" },
+	{ mapID = 401, Abbr = "AV" },
+	{ mapID = 402, Abbr = "AA" },
+	{ mapID = 405, Abbr = "BH" },
+	{ mapID = 404, Abbr = "NELT" },
+	{ mapID = 403, Abbr = "ULD" },
+	{ mapID = 406, Abbr = "HOI" },
 }
 
 GetCurrentAffixesTable = {}
 CurrentWeek_AffixTable = {}
 NextWeek_AffixTable = {}
--- local AFFIX_VOLCANIC = 3
--- local AFFIX_RAGING = 6
--- local AFFIX_BOLSTERING = 7
--- local AFFIX_SANGUINE = 8
--- local AFFIX_TYRANNICAL = 9
--- local AFFIX_FORTIFIED = 10
--- local AFFIX_BURSTING = 11
--- local AFFIX_SPITEFUL = 123
--- local AFFIX_STORMING = 124
--- local AFFIX_ENTANGLING = 134
--- local AFFIX_AFFLICTED = 135
--- local AFFIX_INCORPOREAL = 136
 
 AffixRotation = {
 	{ rotation = { 9, 124, 6 }, rank = "(S)" },
@@ -547,3 +535,9 @@ AffixRotation = {
 
 Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
 Player_Mplus_ScoreColor = nil
+--Set up a table that'll store all of our weekly keys
+KeysDone = {}
+--Set up the table that will hold the Season's dungeon info
+Current_SeasonalDung_Info = {}
+--Set up the table that'll store highest keys done per dungeon
+BestKeys_per_Dungeon = {}
