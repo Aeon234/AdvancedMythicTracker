@@ -70,11 +70,13 @@ PanelTemplates_DeselectTab(AMT_TabButton)
 --When we exit the PVEFrame, deselect the AMT Tab.
 PVEFrame:HookScript("OnShow", function()
 	AMT.Check_PVEFrame_TabNums()
-	if ElvUI then
-		AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
-	else
-		--Now that we've checked # of active tabs we'll anchor the AMT button to the last active tab
-		AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", 3, 0)
+	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
+		if ElvUI then
+			AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
+		else
+			--Now that we've checked # of active tabs we'll anchor the AMT button to the last active tab
+			AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", 3, 0)
+		end
 	end
 	--Starting at tab 1, whenever each PVEFrame tab is click deselect the AMT Tab Button
 	for i = 1, PVEFrame.numTabs do

@@ -1,5 +1,7 @@
 local addonName, AMT = ...
-local openRaidLib = LibStub("LibOpenRaid-1.0", true)
+if Details then
+	local openRaidLib = LibStub("LibOpenRaid-1.0", true)
+end
 
 local E, S
 local AMT_ElvUIEnabled = false
