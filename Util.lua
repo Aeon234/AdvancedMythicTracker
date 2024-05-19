@@ -244,12 +244,14 @@ function AMT_Update_PlayerDungeonInfo()
 	local BulletTemplate = "• "
 	for _, bestKey in ipairs(BestKeys_per_Dungeon) do
 		local highestKey = 0
-		for _, key in ipairs(KeysDone) do
-			if key.keyid == bestKey.mapID and key.level > highestKey then
-				highestKey = key.level
+		if #KeysDone > 0 and KeysDone[1] ~= 0 then
+			for _, key in ipairs(KeysDone) do
+				if key.keyid == bestKey.mapID and key.level > highestKey then
+					highestKey = key.level
+				end
 			end
 		end
-		bestKey.HighestKey = highestKey
+		bestKey.HighestKey = highestKey or 0
 		for i = 1, bestKey.HighestKey do
 			KeyBullets = KeyBullets .. BulletTemplate
 		end

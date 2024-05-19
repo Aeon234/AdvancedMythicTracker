@@ -1,6 +1,6 @@
 local addonName, AMT = ...
 if Details then
-	local openRaidLib = LibStub("LibOpenRaid-1.0", true)
+	AMT_OpenRaidLib = LibStub("LibOpenRaid-1.0", true)
 end
 
 local E, S
@@ -163,10 +163,8 @@ function AMT:AMT_Window_Containers()
 	--Create the rune art used that'll house the current key
 	if not RuneArt then
 		RuneArt = CreateFrame("Frame", "RuneTexture", CurrentKeystone_Compartment)
-		-- RuneArt:SetFrameLevel(2)
 		RuneArt:SetPoint("BOTTOM", CurrentKeystone_Compartment, "BOTTOM", 0, 4)
 		RuneArt:SetSize(160, 160)
-		-- RuneArt:SetFrameStrata("HIGH")
 
 		RuneArt.tex = RuneArt:CreateTexture()
 		RuneArt.tex:SetAllPoints(RuneArt)
@@ -1452,7 +1450,7 @@ function AMT:AMT_PartyKeystyone()
 	if Details then
 		for i = 1, 5 do
 			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 			local mapID = data and data.mythicPlusMapID
 			for _, dungeon in ipairs(DungeonAbbr) do
 				if dungeon.mapID == mapID then
@@ -1475,7 +1473,7 @@ function AMT:AMT_PartyKeystyone()
 		end
 		-- for i = 1, 5 do
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
-		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
 		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
@@ -1498,7 +1496,7 @@ function AMT:AMT_PartyKeystyone()
 		-- end
 		-- for i = 1, 5 do
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
-		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
 		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
@@ -1521,7 +1519,7 @@ function AMT:AMT_PartyKeystyone()
 		-- end
 		-- for i = 1, 5 do
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
-		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
 		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
@@ -1544,7 +1542,7 @@ function AMT:AMT_PartyKeystyone()
 		-- end
 		-- for i = 1, 5 do
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
-		-- 	local data = openRaidLib.GetKeystoneInfo(unitID)
+		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
 		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
