@@ -117,7 +117,7 @@ function AMT:Table_Recall(tbl, callback)
 	return tbl
 end
 
-function LoadTrackingData()
+function AMT_LoadTrackingData()
 	for _, raid in pairs(SeasonalRaids) do
 		-- EncounterJournal Quirk: This has to be called first before we can get encounter journal info.
 		EJ_SelectInstance(raid.journalInstanceID)
@@ -139,5 +139,32 @@ function LoadTrackingData()
 			raid.encounters[encounterIndex] = encounter
 		end
 		raid.modifiedInstanceInfo = C_ModifiedInstance.GetModifiedInstanceInfoFromMapID(raid.instanceID)
+	end
+end
+
+function AMT_RGBtoHexConversion(r, g, b, header, ending)
+	r = r <= 1 and r >= 0 and r or 1
+	g = g <= 1 and g >= 0 and g or 1
+	b = b <= 1 and b >= 0 and b or 1
+	return format("%s%02x%02x%02x%s", header or "|cff", r * 255, g * 255, b * 255, ending or "")
+end
+
+function AMT_ClassColorString(text, ClassName)
+	local r, g, b = GetClassColor(ClassName)
+	local hexcolor = r and g and b and AMT_RGBtoHexConversion(r, g, b) or "|cffffffff"
+	return hexcolor .. text .. "|r"
+end
+
+function AMT_getKeystoneLevelColor(level)
+	if level < 5 then
+		return "ffffffff"
+	elseif level < 10 then
+		return "ff1eff00"
+	elseif level < 15 then
+		return "ff0070dd"
+	elseif level < 20 then
+		return "ffa335ee"
+	else
+		return "ffff8000"
 	end
 end

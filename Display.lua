@@ -1,4 +1,13 @@
 local addonName, AMT = ...
+local openRaidLib = LibStub("LibOpenRaid-1.0", true)
+
+local E, S
+local AMT_ElvUIEnabled = false
+if ElvUI then
+	E = unpack(ElvUI)
+	S = ElvUI[1]:GetModule("Skins")
+	AMT_ElvUIEnabled = true
+end
 
 Difficulty_Label_XPos = 42
 Difficulty_Label_YPos = 1
@@ -17,7 +26,7 @@ function AMT:AMT_Window_Containers()
 	Likewise all GetHeight calculations of AMT_Window needs to have 22 subtracted from it before finding total lenght
 	Left of the frame has bleed of 3 pixels.
 	]]
-	local AMT_Window_X_Offset = 3
+	local AMT_Window_X_Offset = 4
 	local AMT_Window_Y_Offset = 22
 
 	if not WeeklyBest_Compartment then
@@ -47,7 +56,6 @@ function AMT:AMT_Window_Containers()
 
 	if not Lockouts_Comparment then
 		Lockouts_Comparment = CreateFrame("Frame", "Lockouts_Comparment", AMT_Window, "BackdropTemplate")
-		-- CurrentKeystone_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
 		Lockouts_Comparment:SetSize(
 			180,
 			AMT_Window:GetHeight()
@@ -61,35 +69,6 @@ function AMT:AMT_Window_Containers()
 
 		Lockouts_Comparment:SetBackdropBorderColor(1, 0, 1, 0.0)
 		Lockouts_Comparment:SetBackdropColor(unpack(BG_Transperancy))
-	end
-
-	--[[
-	Second column of AMT_Window
-	]]
-	if not MythicScore_Container then
-		MythicScore_Container = CreateFrame("Frame", "WeeklyBest_Compartment", AMT_Window, "BackdropTemplate")
-		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
-		MythicScore_Container:SetSize(180, 60)
-
-		MythicScore_Container:SetPoint("TOP", AMT_Window, "TOP", 0, -AMT_Window_Y_Offset)
-		MythicScore_Container:SetBackdrop(BackdropInfo)
-
-		MythicScore_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
-		MythicScore_Container:SetBackdropColor(unpack(BG_Transperancy))
-	end
-	--[[
-	Third column of AMT_Window
-	]]
-	if not Affixes_Compartment then
-		Affixes_Compartment = CreateFrame("Frame", "WeeklyBest_Compartment", AMT_Window, "BackdropTemplate")
-		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
-		Affixes_Compartment:SetSize(160, 150)
-
-		Affixes_Compartment:SetPoint("TOPRIGHT", AMT_Window, "TOPRIGHT", 0, -AMT_Window_Y_Offset)
-		Affixes_Compartment:SetBackdrop(BackdropInfo)
-
-		Affixes_Compartment:SetBackdropBorderColor(1, 0, 1, 0.0)
-		Affixes_Compartment:SetBackdropColor(unpack(BG_Transperancy))
 	end
 
 	--[[
@@ -111,6 +90,74 @@ function AMT:AMT_Window_Containers()
 		DungeonIcons_Container:SetBackdropColor(0, 1, 1, 0.0)
 	end
 
+	--[[
+		Third column of AMT_Window
+		]]
+	if not Affixes_Compartment then
+		Affixes_Compartment = CreateFrame("Frame", "WeeklyBest_Compartment", AMT_Window, "BackdropTemplate")
+		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
+		Affixes_Compartment:SetSize(200, 150)
+
+		Affixes_Compartment:SetPoint("TOPRIGHT", AMT_Window, "TOPRIGHT", -AMT_Window_X_Offset, -AMT_Window_Y_Offset)
+		Affixes_Compartment:SetBackdrop(BackdropInfo)
+
+		Affixes_Compartment:SetBackdropBorderColor(1, 0, 1, 0.0)
+		Affixes_Compartment:SetBackdropColor(unpack(BG_Transperancy))
+	end
+
+	if not PartyKeystone_Container then
+		PartyKeystone_Container = CreateFrame("Frame", "PartyKeystone_Container", AMT_Window)
+		if AMT_ElvUIEnabled then
+			PartyKeystone_Container:SetTemplate("Transparent")
+		end
+		PartyKeystone_Container:SetSize(
+			200,
+			AMT_Window:GetHeight()
+				- AMT_Window_Y_Offset
+				- Affixes_Compartment:GetHeight()
+				- DungeonIcons_Container:GetHeight()
+				- 12
+		)
+
+		PartyKeystone_Container:SetPoint("TOPRIGHT", Affixes_Compartment, "BOTTOMRIGHT", 0, 0)
+	end
+
+	--[[
+		Second column of AMT_Window
+		]]
+	if not MythicScore_Container then
+		MythicScore_Container = CreateFrame("Button", "MythicScore_Container", AMT_Window, "BackdropTemplate")
+		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
+		MythicScore_Container:SetSize(180, 60)
+
+		MythicScore_Container:SetPoint("TOP", AMT_Window, "TOP", 0, -AMT_Window_Y_Offset)
+		MythicScore_Container:SetBackdrop(BackdropInfo)
+
+		MythicScore_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
+		MythicScore_Container:SetBackdropColor(unpack(BG_Transperancy))
+	end
+
+	if not MythicRunsGraph_Container then
+		MythicRunsGraph_Container = CreateFrame("Frame", "MythicRunsGraph_Container", AMT_Window, "BackdropTemplate")
+		MythicRunsGraph_Container:SetSize(
+			AMT_Window:GetWidth()
+				- AMT_Window_X_Offset * 2
+				- Lockouts_Comparment:GetWidth()
+				- PartyKeystone_Container:GetWidth(),
+			AMT_Window:GetHeight()
+				- AMT_Window_Y_Offset
+				- MythicScore_Container:GetHeight()
+				- DungeonIcons_Container:GetHeight()
+				- 12
+		)
+
+		MythicRunsGraph_Container:SetPoint("TOP", MythicScore_Container, "BOTTOM", -AMT_Window_X_Offset * 2 - 2, 0)
+		MythicRunsGraph_Container:SetBackdrop(BackdropInfo)
+
+		MythicRunsGraph_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
+		MythicRunsGraph_Container:SetBackdropColor(unpack(BG_Transperancy))
+	end
+
 	--Create the rune art used that'll house the current key
 	if not RuneArt then
 		RuneArt = CreateFrame("Frame", "RuneTexture", CurrentKeystone_Compartment)
@@ -123,16 +170,17 @@ function AMT:AMT_Window_Containers()
 		RuneArt.tex:SetAllPoints(RuneArt)
 		RuneArt.tex:SetAtlas("Artifacts-CrestRune-Gold", false)
 	end
-	AMT:WeeklyBest_Display()
+	AMT:AMT_WeeklyBest_Display()
 	AMT:AMT_DungeonList_Display()
 	AMT:AMT_Affixes_Display()
 	AMT:AMT_MythicScore_Display()
-	AMT:KeystoneItem_Display()
+	AMT:AMT_KeystoneItem_Display()
 	AMT:AMT_Raid()
 	AMT:AMT_MythicPlus()
+	AMT:AMT_PartyKeystyone()
 end
 
-function AMT:WeeklyBest_Display()
+function AMT:AMT_WeeklyBest_Display()
 	--Initiate a table that'll store all of our weekly keys
 	KeysDone = {}
 	--Grab Weekly Run history for this season and only timed keys
@@ -202,7 +250,7 @@ function AMT:WeeklyBest_Display()
 		WeeklyBest_Keylevel:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 3, 0)
 		WeeklyBest_Keylevel:SetTextColor(0.804, 0.804, 0.804, 1.0)
 		WeeklyBest_Keylevel:SetFont(WeeklyBest_Keylevel:GetFont(), 38)
-		WeeklyBest_Keylevel:SetText("N/A")
+		WeeklyBest_Keylevel:SetText("-")
 	else
 		WeeklyBest_Keylevel:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 0)
 		WeeklyBest_Keylevel:SetText(WeeklyBest_Color:WrapTextInColorCode("+" .. WeeklyBest_Key))
@@ -214,7 +262,7 @@ end
 
 function AMT:AMT_DungeonList_Display()
 	--Set up the table that will hold the Season's dungeon info
-	local Current_SeasonalDung_Info = {}
+	Current_SeasonalDung_Info = {}
 	--Pull the dungeon info from the API and store the dungeon id, name and icon of each dungeon in the table above.
 	local currentSeasonMap = C_ChallengeMode.GetMapTable()
 	for i = 1, #currentSeasonMap do
@@ -228,7 +276,7 @@ function AMT:AMT_DungeonList_Display()
 		local TyrDungLevel = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].level or 0
 		local FortDungLevel = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].level or 0
 		tinsert(Current_SeasonalDung_Info, {
-			dungID = dungeonID,
+			mapID = dungeonID,
 			dungName = name,
 			dungIcon = icon,
 			dungOverallScore = dungOverallScore,
@@ -236,14 +284,18 @@ function AMT:AMT_DungeonList_Display()
 			dungFortScore = FortDungScore,
 			dungTyrLevel = TyrDungLevel,
 			dungFortLevel = FortDungLevel,
+			intimeInfo = intimeInfo,
+			overtimeInfo = overtimeInfo,
 		})
 	end
+
 	--Create the icon for each dungeon
 	if not _G["DungeonIcon_" .. #Current_SeasonalDung_Info] then
 		for i = 1, #Current_SeasonalDung_Info do
 			local dungIconHeight = DungeonIcons_Container:GetHeight()
 			local dungIconWidth = DungeonIcons_Container:GetWidth() / 8
-			DungIcon = CreateFrame("Frame", "DungeonIcon_" .. i, DungeonIcons_Container)
+			DungIcon =
+				CreateFrame("Button", "DungeonIcon_" .. i, DungeonIcons_Container, "InsecureActionButtonTemplate")
 			DungIcon:SetSize(dungIconWidth, dungIconHeight)
 			DungIcon.tex = DungIcon:CreateTexture()
 			DungIcon.tex:SetAllPoints(DungIcon)
@@ -259,17 +311,17 @@ function AMT:AMT_DungeonList_Display()
 	end
 	if not DungIconName_Label then
 		for i = 1, #Current_SeasonalDung_Info do
-			CurrentDungID = Current_SeasonalDung_Info[i].dungID
+			CurrentmapID = Current_SeasonalDung_Info[i].mapID
 			DungIcon_Abbr = nil
 
 			for j = 1, #SeasonalDungeons do
-				if SeasonalDungeons[j].challengeModeID == CurrentDungID then
+				if SeasonalDungeons[j].challengeModeID == CurrentmapID then
 					DungIcon_Abbr = SeasonalDungeons[j].abbr
 					break -- Exit loop once a match is found
 				end
 			end
 
-			-- DungIcon_Abbr = DungeonAbbr[Current_SeasonalDung_Info[i].dungID]
+			-- DungIcon_Abbr = DungeonAbbr[Current_SeasonalDung_Info[i].mapID]
 			DungIconName_Label = DungIcon:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
 			DungIconName_Label:SetPoint("TOP", _G["DungeonIcon_" .. i], "TOP", 0, 10)
 			DungIconName_Label:SetFont(DungIconName_Label:GetFont(), 20, "OUTLINE")
@@ -373,6 +425,122 @@ function AMT:AMT_DungeonList_Display()
 				.. FortScore_Color:WrapTextInColorCode(Current_SeasonalDung_Info[i].dungFortScore)
 		)
 	end
+
+	for i = 1, #Current_SeasonalDung_Info do
+		local DungIcon = _G["DungeonIcon_" .. i]
+		local DungName = Current_SeasonalDung_Info[i].dungName
+		local DungOverallScore = Current_SeasonalDung_Info[i].dungOverallScore
+		local inTimeInfo = Current_SeasonalDung_Info[i].intimeInfo
+		local overtimeInfo = Current_SeasonalDung_Info[i].overtimeInfo
+		local affixScores, _ = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(Current_SeasonalDung_Info[i].mapID)
+		local dungSpellID
+		local dungSpellName
+
+		for _, dungeons in ipairs(Challenges_Teleports) do
+			if dungeons.mapID == Current_SeasonalDung_Info[i].mapID then
+				dungSpellID = dungeons.spellID
+				dungSpellName = GetSpellInfo(dungSpellID)
+			end
+		end
+
+		local isOverTimeRun = false
+
+		local seasonBestDurationSec, seasonBestLevel, members
+
+		DungIcon:SetScript("OnEnter", function()
+			GameTooltip:ClearAllPoints()
+			GameTooltip:ClearLines()
+			GameTooltip:SetOwner(DungIcon, "ANCHOR_RIGHT")
+			GameTooltip:SetText(DungName, 1, 1, 1, 1, true)
+
+			if DungOverallScore and (inTimeInfo or overtimeInfo) then
+				local color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(DungOverallScore)
+				if not color then
+					color = HIGHLIGHT_FONT_COLOR
+				end
+				GameTooltip_AddNormalLine(
+					GameTooltip,
+					DUNGEON_SCORE_TOTAL_SCORE:format(color:WrapTextInColorCode(DungOverallScore)),
+					GREEN_FONT_COLOR
+				)
+			end
+
+			if affixScores and #affixScores > 0 then
+				for _, affixInfo in ipairs(affixScores) do
+					GameTooltip_AddBlankLineToTooltip(GameTooltip)
+					GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_BEST_AFFIX:format(affixInfo.name))
+					GameTooltip_AddColoredLine(
+						GameTooltip,
+						MYTHIC_PLUS_POWER_LEVEL:format(affixInfo.level),
+						HIGHLIGHT_FONT_COLOR
+					)
+					if affixInfo.overTime then
+						if affixInfo.durationSec >= SECONDS_PER_HOUR then
+							GameTooltip_AddColoredLine(
+								GameTooltip,
+								DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, true)),
+								LIGHTGRAY_FONT_COLOR
+							)
+						else
+							GameTooltip_AddColoredLine(
+								GameTooltip,
+								DUNGEON_SCORE_OVERTIME_TIME:format(SecondsToClock(affixInfo.durationSec, false)),
+								LIGHTGRAY_FONT_COLOR
+							)
+						end
+					else
+						if affixInfo.durationSec >= SECONDS_PER_HOUR then
+							GameTooltip_AddColoredLine(
+								GameTooltip,
+								SecondsToClock(affixInfo.durationSec, true),
+								HIGHLIGHT_FONT_COLOR
+							)
+						else
+							GameTooltip_AddColoredLine(
+								GameTooltip,
+								SecondsToClock(affixInfo.durationSec, false),
+								HIGHLIGHT_FONT_COLOR
+							)
+						end
+					end
+				end
+			end
+			if IsSpellKnown(dungSpellID, false) then
+				local start, duration = GetSpellCooldown(dungSpellID)
+
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(dungSpellName or TELEPORT_TO_DUNGEON)
+
+				if not start or not duration then
+					GameTooltip:AddLine(SPELL_FAILED_NOT_KNOWN, 1, 0, 0)
+				elseif duration == 0 then
+					GameTooltip:AddLine(READY, 0, 1, 0)
+				else
+					GameTooltip:AddLine(SecondsToTime(ceil(start + duration - GetTime())), 1, 0, 0)
+				end
+			else
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine(dungSpellName or TELEPORT_TO_DUNGEON)
+				GameTooltip:AddLine(SPELL_FAILED_NOT_KNOWN, 1, 0, 0)
+			end
+
+			GameTooltip:Show()
+			-- C_Timer.After(1, function()
+			-- 	self:UpdateGameTooltip(DungIcon, dungSpellID)
+			-- end)
+		end)
+		DungIcon:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+
+		DungIcon:RegisterForClicks("AnyUp", "AnyDown")
+		DungIcon:SetAttribute("type1", "spell")
+		DungIcon:SetScript("OnClick", function()
+			if IsSpellKnown(dungSpellID, false) and not InCombatLockdown() then
+				DungIcon:SetAttribute("spell", dungSpellName)
+			end
+		end)
+	end
 end
 
 function AMT:AMT_Affixes_Display()
@@ -393,7 +561,7 @@ function AMT:AMT_Affixes_Display()
 
 	if not CurrentAffixes_Label then
 		CurrentAffixes_Label = Affixes_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-		CurrentAffixes_Label:SetPoint("TOPLEFT", 15, -2) -- Set the position of the text
+		CurrentAffixes_Label:SetPoint("TOPLEFT", 35, -2) -- Set the position of the text
 		CurrentAffixes_Label:SetText("This Week") -- Set the text content
 		CurrentAffixes_Label:SetFont(CurrentAffixes_Label:GetFont(), 20)
 		CurrentAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -413,7 +581,7 @@ function AMT:AMT_Affixes_Display()
 
 	if not NextWeekAffixes_Label then
 		NextWeekAffixes_Label = Affixes_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 15, -4) -- Set the position of the text
+		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 35, -4) -- Set the position of the text
 		NextWeekAffixes_Label:SetText("Next Week") -- Set the text content
 		NextWeekAffixes_Label:SetFont(NextWeekAffixes_Label:GetFont(), 20)
 		NextWeekAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -555,9 +723,34 @@ function AMT:AMT_MythicScore_Display()
 			1.0
 		)
 	end
+	-- Creates the tooltip on hover of the score.
+	-- Uses Blizzard_ChallengesUI.lua > DungeonScoreInfoMixin:OnEnter()
+	MythicScore_Container:SetScript("OnEnter", function()
+		GameTooltip:ClearAllPoints()
+		GameTooltip:ClearLines()
+		GameTooltip:SetOwner(MythicScore_Container, "ANCHOR_RIGHT", 0, 0)
+		GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE)
+		GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DESC)
+		GameTooltip:Show()
+	end)
+	MythicScore_Container:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
+	-- On Click paste into chat the rating link.
+	-- Copied from Blizzard_ChallengesUI.lua > DungeonScoreInfoMixin:OnClick()
+	-- Uses ItemRef.lua > GetDungeonScoreLink(dungeonScore, playerName)
+	MythicScore_Container:SetScript("OnClick", function()
+		if IsModifiedClick("CHATLINK") then
+			local dungeonScore = C_ChallengeMode.GetOverallDungeonScore()
+			local link = GetDungeonScoreLink(dungeonScore, UnitName("player"))
+			if not ChatEdit_InsertLink(link) then
+				ChatFrame_OpenChat(link)
+			end
+		end
+	end)
 end
 
-function AMT:KeystoneItem_Display()
+function AMT:AMT_KeystoneItem_Display()
 	--[[
 Mythic Keystone Section
     --]]
@@ -580,20 +773,21 @@ Mythic Keystone Section
 	end
 	--If the Label text hasn't been created, create it otherwise just update the label
 	if not Keystone_DungName then
-		local Keystone_DungName_Bg = CreateFrame("Frame", "CurrentKey_TopLabel", AMT_Window, "BackdropTemplate")
-		-- Keystone_DungName_Bg:SetFrameLevel(4)
+		local Keystone_DungName_Bg = CreateFrame("Frame", "Keystone_DungName_Bg", RuneArt)
+		Keystone_DungName_Bg:SetPoint("TOP", KeystoneItem_Icon, "TOP", 0, 36)
 		Keystone_DungName_Bg:SetSize(78, 22)
-		Keystone_DungName_Bg:SetPoint("BOTTOM", KeystoneItem_Icon, "TOP", 0, 12)
-		Keystone_DungName_Bg:SetBackdrop(BackdropInfo)
 
-		Keystone_DungName_Bg:SetBackdropBorderColor(0, 0, 0, 0.0)
-		Keystone_DungName_Bg:SetBackdropColor(0, 0, 0, 0.50)
+		-- Add black background texture
+		Keystone_DungName_Bg.tex = Keystone_DungName_Bg:CreateTexture(nil, "ARTWORK")
+		Keystone_DungName_Bg.tex:SetAllPoints(Keystone_DungName_Bg)
+		Keystone_DungName_Bg.tex:SetColorTexture(0, 0, 0, 0.75)
 
-		Keystone_DungName = KeystoneItem_Icon:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
-		Keystone_DungName:SetPoint("CENTER", Keystone_DungName_Bg, "CENTER", 0, 1)
+		Keystone_DungName = Keystone_DungName_Bg:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+		Keystone_DungName:SetPoint("CENTER", Keystone_DungName_Bg, "CENTER", 0, 0)
 		Keystone_DungName:SetFont(Keystone_DungName:GetFont(), 14)
 		--Create the frame that will hold the label above the Keystone Icon that shows the current key level and abbreviated name
 	end
+
 	--If a Keystone level is detected create the Icon Texture that belongs to the dungeon.
 	if C_MythicPlus.GetOwnedKeystoneLevel() then
 		--Grab the ID of the Keystone player is holding
@@ -782,37 +976,97 @@ Mythic Keystone Section
 	if not GreatVault_Button then
 		GreatVault_Button = CreateFrame("Button", "GreatVault_Button", RuneArt)
 		GreatVault_Button:SetPoint("BOTTOM", KeystoneItem_Icon, "BOTTOM", 0, -32)
-		-- GreatVault_Button:SetFrameLevel(4)
 		GreatVault_Button:SetSize(76, 22)
 		GreatVault_Button:SetText("Open Vault")
-		GreatVault_Button.tex = GreatVault_Button:CreateTexture()
-		GreatVault_Button.tex:SetAllPoints(GreatVault_Button)
-		GreatVault_Button.tex:SetColorTexture(0, 0, 0, 1.0)
 
-		GreatVault_ButtonBorder = CreateFrame("Frame", "GreatVault_ButtonBorder", GreatVault_Button)
-		GreatVault_ButtonBorder:SetSize(GreatVault_Button:GetWidth() + 2, GreatVault_Button:GetHeight() + 3)
-		GreatVault_ButtonBorder:SetPoint("CENTER", GreatVault_Button, "CENTER")
+		-- Add black background texture
+		GreatVault_Button_bg = GreatVault_Button:CreateTexture(nil, "ARTWORK")
+		GreatVault_Button_bg:SetAllPoints(GreatVault_Button)
+		GreatVault_Button_bg:SetColorTexture(0, 0, 0, 1)
 
-		GreatVault_ButtonBorder.tex = GreatVault_ButtonBorder:CreateTexture("GreatVault_ButtonBorderTexture")
-		GreatVault_ButtonBorder.tex:SetAtlas("SquareMask")
-		GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
-		GreatVault_ButtonBorder.tex:SetAllPoints()
-		GreatVault_ButtonBorder:SetFrameLevel(3)
-
-		GreatVault_Buttonlabel = KeystoneItem_Icon:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 1)
-		GreatVault_Buttonlabel:SetText(" Open Vault ")
+		-- Create the font string and attach it to the button
+		local GreatVault_Buttonlabel =
+			GreatVault_Button:CreateFontString("GreatVault_Buttonlabel", "OVERLAY", "MovieSubtitleFont")
+		GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 0) -- Center the text on the button
 		GreatVault_Buttonlabel:SetFont(GreatVault_Buttonlabel:GetFont(), 12, "OUTLINE")
-		GreatVault_Buttonlabel:SetTextColor(1, 0.784, 0.047)
+		GreatVault_Buttonlabel:SetText(" Open Vault")
+
+		-- Create border textures
+		GreatVault_Button_borderTop = GreatVault_Button:CreateTexture(nil, "OVERLAY")
+		GreatVault_Button_borderTop:SetHeight(1)
+		GreatVault_Button_borderTop:SetColorTexture(0, 0.624, 0.863, 1) -- White color
+		GreatVault_Button_borderTop:SetPoint("TOPLEFT", GreatVault_Button, "TOPLEFT", -1, 1)
+		GreatVault_Button_borderTop:SetPoint("TOPRIGHT", GreatVault_Button, "TOPRIGHT", 1, 1)
+
+		GreatVault_Button_borderBottom = GreatVault_Button:CreateTexture(nil, "OVERLAY")
+		GreatVault_Button_borderBottom:SetHeight(1)
+		GreatVault_Button_borderBottom:SetColorTexture(0, 0.624, 0.863, 1) -- White color
+		GreatVault_Button_borderBottom:SetPoint("BOTTOMLEFT", GreatVault_Button, "BOTTOMLEFT", -1, -1)
+		GreatVault_Button_borderBottom:SetPoint("BOTTOMRIGHT", GreatVault_Button, "BOTTOMRIGHT", 1, -1)
+
+		GreatVault_Button_borderLeft = GreatVault_Button:CreateTexture(nil, "OVERLAY")
+		GreatVault_Button_borderLeft:SetWidth(1)
+		GreatVault_Button_borderLeft:SetColorTexture(0, 0.624, 0.863, 1) -- White color
+		GreatVault_Button_borderLeft:SetPoint("TOPLEFT", GreatVault_Button, "TOPLEFT", -1, 1)
+		GreatVault_Button_borderLeft:SetPoint("BOTTOMLEFT", GreatVault_Button, "BOTTOMLEFT", -1, -1)
+
+		GreatVault_Button_borderRight = GreatVault_Button:CreateTexture(nil, "OVERLAY")
+		GreatVault_Button_borderRight:SetWidth(1)
+		GreatVault_Button_borderRight:SetColorTexture(0, 0.624, 0.863, 1) -- White color
+		GreatVault_Button_borderRight:SetPoint("TOPRIGHT", GreatVault_Button, "TOPRIGHT", 1, 1)
+		GreatVault_Button_borderRight:SetPoint("BOTTOMRIGHT", GreatVault_Button, "BOTTOMRIGHT", 1, -1)
+
+		-- Hide the border by default
+		GreatVault_Button_borderTop:Hide()
+		GreatVault_Button_borderBottom:Hide()
+		GreatVault_Button_borderLeft:Hide()
+		GreatVault_Button_borderRight:Hide()
+
+		-- GreatVault_Button.tex = GreatVault_Button:CreateTexture()
+		-- GreatVault_Button.tex:SetAllPoints(GreatVault_Button)
+		-- GreatVault_Button.tex:SetColorTexture(0, 0, 0, 0.75)
+
+		-- PartyKeystone_DetailsButton = CreateFrame("Button", nil, PartyKeystone_Container, "UIPanelButtonTemplate")
+		-- if AMT_ElvUIEnabled then
+		-- 	S:HandleButton(PartyKeystone_DetailsButton)
+		-- end
+		-- PartyKeystone_DetailsButton:SetSize(60, 16)
+		-- PartyKeystone_DetailsButton:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
+		-- PartyKeystone_DetailsButton:SetText("More")
+		-- PartyKeystone_DetailsButton.Text:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 12)
+
+		-- GreatVault_ButtonBorder = CreateFrame("Frame", "GreatVault_ButtonBorder", GreatVault_Button)
+		-- GreatVault_ButtonBorder:SetSize(GreatVault_Button:GetWidth() + 2, GreatVault_Button:GetHeight() + 3)
+		-- GreatVault_ButtonBorder:SetPoint("CENTER", GreatVault_Button, "CENTER")
+
+		-- GreatVault_ButtonBorder.tex = GreatVault_ButtonBorder:CreateTexture("GreatVault_ButtonBorderTexture")
+		-- GreatVault_ButtonBorder.tex:SetAtlas("SquareMask")
+		-- GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
+		-- GreatVault_ButtonBorder.tex:SetAllPoints()
+		-- GreatVault_ButtonBorder:SetFrameLevel(3)
+
+		-- GreatVault_Buttonlabel = KeystoneItem_Icon:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		-- GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 1)
+		-- GreatVault_Buttonlabel:SetText(" Open Vault ")
+		-- GreatVault_Buttonlabel:SetFont(GreatVault_Buttonlabel:GetFont(), 12, "OUTLINE")
+		-- GreatVault_Buttonlabel:SetTextColor(1, 0.784, 0.047)
 	end
 
 	--Create the interactions on hover, unhover, and onclick
 	GreatVault_Button:SetScript("OnEnter", function()
-		GreatVault_ButtonBorder.tex:SetVertexColor(0, 0.624, 0.863, 1.0)
+		GreatVault_Button_borderTop:Show()
+		GreatVault_Button_borderBottom:Show()
+		GreatVault_Button_borderLeft:Show()
+		GreatVault_Button_borderRight:Show()
+		-- GreatVault_ButtonBorder.tex:SetVertexColor(0, 0.624, 0.863, 1.0)
 	end)
 
 	GreatVault_Button:SetScript("OnLeave", function()
-		GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
+		GreatVault_Button_borderTop:Hide()
+		GreatVault_Button_borderBottom:Hide()
+		GreatVault_Button_borderLeft:Hide()
+		GreatVault_Button_borderRight:Hide()
+		-- GreatVault_ButtonBorder.tex:SetVertexColor(1, 0.784, 0.047, 0.75)
 	end)
 
 	GreatVault_Button:SetScript("OnClick", function()
@@ -1044,71 +1298,19 @@ Raid Lockout / Raid Kills per Difficulty
 	-- Check for Raid ID kills
 	Raidinfo = C_WeeklyRewards.GetActivityEncounterInfo(3, 1)
 
-	-- for i = 1, #Raidinfo do
-	-- 	BestRaid = Raidinfo[i].bestDifficulty
-	-- 	if BestRaid == 16 then
-	-- 		RaidKills_Count[1] = RaidKills_Count[1] + 1
-	-- 	end
-	-- 	if BestRaid == 15 then
-	-- 		RaidKills_Count[2] = RaidKills_Count[2] + 1
-	-- 	end
-	-- 	if BestRaid == 14 then
-	-- 		RaidKills_Count[3] = RaidKills_Count[3] + 1
-	-- 	end
-	-- 	if BestRaid == 17 then
-	-- 		RaidKills_Count[4] = RaidKills_Count[4] + 1
-	-- 	end
-	-- end
-
-	-- for i = 1, #raids.savedInstances do
-	-- 	if raids.savedInstances[i].difficultyID == 16 then
-	-- 		RaidKills_Count[1] = RaidKills_Count[1] + raids.savedInstances[i].bosseskilled
-	-- 		print(RaidKills_Count[1])
-	-- 	elseif raids.savedInstances[i].difficultyID == 15 then
-	-- 		RaidKills_Count[2] = RaidKills_Count[2] + raids.savedInstances[i].bosseskilled
-	-- 		print(RaidKills_Count[2])
-	-- 	elseif raids.savedInstances[i].difficultyID == 14 then
-	-- 		RaidKills_Count[3] = RaidKills_Count[3] + raids.savedInstances[i].bosseskilled
-	-- 		print(RaidKills_Count[3])
-	-- 	elseif raids.savedInstances[i].difficultyID == 17 then
-	-- 		RaidKills_Count[4] = RaidKills_Count[4] + raids.savedInstances[i].bosseskilled
-	-- 		print(RaidKills_Count[4])
-	-- 	end
-	-- end
-
-	-- for i = 1, #raids.savedInstances do
-	-- 	local BestRaid = raids.savedInstances[i].difficultyID
-	-- 	print("#raids.savedinstances: " .. #raids.savedInstances)
-	-- 	print("BestRaid: " .. BestRaid)
-	-- 	print("i = " .. i)
-	-- 	if BestRaid == 16 then
-	-- 		RaidKills_Count[1] = RaidKills_Count[1] + raids.savedInstances[i].bosseskilled
-	-- 		print("Mythic: " .. RaidKills_Count[1])
-	-- 	elseif BestRaid == 15 then
-	-- 		RaidKills_Count[2] = RaidKills_Count[2] + raids.savedInstances[i].bosseskilled
-	-- 		print("Heroic: " .. RaidKills_Count[2])
-	-- 	elseif BestRaid == 14 then
-	-- 		RaidKills_Count[3] = RaidKills_Count[3] + raids.savedInstances[i].bosseskilled
-	-- 		print("Normal: " .. RaidKills_Count[3])
-	-- 	elseif BestRaid == 17 then
-	-- 		RaidKills_Count[4] = RaidKills_Count[4] + raids.savedInstances[i].bosseskilled
-	-- 		print("LFR: " .. RaidKills_Count[4])
-	-- 	end
-	-- end
-
 	for _, instance in pairs(raids.savedInstances) do
-		if instance.difficultyID == 16 and instance.instanceID == 2549 then
+		if instance.difficultyID == 16 and instance.instanceID == 2522 then
 			RaidKills_Count[1] = RaidKills_Count[1] + instance.bosseskilled
-			print("Mythic: " .. RaidKills_Count[1])
-		elseif instance.difficultyID == 15 and instance.instanceID == 2549 then
+			-- print("Mythic: " .. RaidKills_Count[1])
+		elseif instance.difficultyID == 15 and instance.instanceID == 2522 then
 			RaidKills_Count[2] = RaidKills_Count[2] + instance.bosseskilled
-			print("Heroic: " .. RaidKills_Count[2])
-		elseif instance.difficultyID == 14 and instance.instanceID == 2549 then
+			-- print("Heroic: " .. RaidKills_Count[2])
+		elseif instance.difficultyID == 14 and instance.instanceID == 2522 then
 			RaidKills_Count[3] = RaidKills_Count[3] + instance.bosseskilled
-			print("Normal: " .. RaidKills_Count[3])
-		elseif instance.difficultyID == 17 and instance.instanceID == 2549 then
+			-- print("Normal: " .. RaidKills_Count[3])
+		elseif instance.difficultyID == 17 and instance.instanceID == 2522 then
 			RaidKills_Count[4] = RaidKills_Count[4] + instance.bosseskilled
-			print("LFR: " .. RaidKills_Count[4])
+			-- print("LFR: " .. RaidKills_Count[4])
 		end
 	end
 
@@ -1243,6 +1445,245 @@ function AMT:AMT_MythicPlus()
 				_G["Mplus_Box" .. i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
 			else
 				_G["Mplus_Box" .. i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+			end
+		end
+	end
+end
+
+function AMT:AMT_PartyKeystyone()
+	if not PartyKeystone_Container_Title then
+		PartyKeystone_Container_Title = PartyKeystone_Container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		PartyKeystone_Container_Title:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, -6)
+		PartyKeystone_Container_Title:SetJustifyH("LEFT")
+		PartyKeystone_Container_Title:SetFont(PartyKeystone_Container_Title:GetFont(), 14)
+
+		PartyKeystone_Container_Title:SetText("Party Keystones")
+	end
+	if Details then
+		if not PartyKeystone_DetailsButton then
+			PartyKeystone_DetailsButton = CreateFrame("Button", nil, PartyKeystone_Container, "UIPanelButtonTemplate")
+			if AMT_ElvUIEnabled then
+				S:HandleButton(PartyKeystone_DetailsButton)
+			end
+			PartyKeystone_DetailsButton:SetSize(60, 16)
+			PartyKeystone_DetailsButton:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
+			PartyKeystone_DetailsButton:SetText("More")
+			PartyKeystone_DetailsButton.Text:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 12)
+		end
+		PartyKeystone_DetailsButton:SetScript("OnClick", function()
+			if _G.SlashCmdList["KEYSTONE"] then
+				_G.SlashCmdList["KEYSTONE"]("")
+			end
+		end)
+	else
+		if not PartyKeystyone_MissingDetails then
+			PartyKeystyone_MissingDetails =
+				CreateFrame("Frame", "PartyKeystyone_MissingDetails", PartyKeystone_Container)
+			-- PartyKeystyone_MissingDetails:SetPoint("LEFT", PartyKeystone_Container_Title, "RIGHT", 6, 0)
+			PartyKeystyone_MissingDetails:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
+			PartyKeystyone_MissingDetails:SetSize(24, 24)
+			-- RuneArt:SetFrameStrata("HIGH")
+
+			PartyKeystyone_MissingDetails.tex = PartyKeystyone_MissingDetails:CreateTexture()
+			PartyKeystyone_MissingDetails.tex:SetAllPoints(PartyKeystyone_MissingDetails)
+			PartyKeystyone_MissingDetails.tex:SetAtlas("Campaign-QuestLog-LoreBook-Back", false)
+		end
+		PartyKeystyone_MissingDetails:SetScript("OnEnter", function()
+			GameTooltip:ClearAllPoints()
+			GameTooltip:ClearLines()
+			GameTooltip:SetOwner(PartyKeystyone_MissingDetails, "ANCHOR_RIGHT", 0, 0)
+			GameTooltip:SetText("Details! Missing", 1, 1, 1, 1)
+			GameTooltip:AddLine("To see a list of your group's Keystones,\ninstall/enable Details!.", true)
+			GameTooltip:Show()
+		end)
+		PartyKeystyone_MissingDetails:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+	end
+
+	GroupKeystone_Info = {}
+
+	if Details then
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if dungeon.challengeModeID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+
+						tinsert(GroupKeystone_Info, {
+							level = level,
+							name = Keyname_abbr,
+							player = AMT_ClassColorString(playerName, playerClass),
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if dungeon.challengeModeID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+
+						tinsert(GroupKeystone_Info, {
+							level = level,
+							name = Keyname_abbr,
+							player = AMT_ClassColorString(playerName, "DEMONHUNTER"),
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if dungeon.challengeModeID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+
+						tinsert(GroupKeystone_Info, {
+							level = 32,
+							name = "UNDR",
+							player = AMT_ClassColorString("Bigdumlock", "WARLOCK"),
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if dungeon.challengeModeID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+
+						tinsert(GroupKeystone_Info, {
+							level = 37,
+							name = "UNDR",
+							player = AMT_ClassColorString("Darkdrpepper", "DEATHKNIGHT"),
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = openRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(SeasonalDungeons) do
+				if dungeon.challengeModeID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+
+						tinsert(GroupKeystone_Info, {
+							level = level,
+							name = Keyname_abbr,
+							player = AMT_ClassColorString("Mysophobia", "DRUID"),
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+
+		PartyKeystone_Container.lines = {}
+
+		for i = 1, 5 do
+			local yOffset = 10
+			if not _G["PartyKeystyone_Right" .. i] and not _G["PartyKeystyone_Left" .. i] then
+				PartyKeystone_Rightext =
+					PartyKeystone_Container:CreateFontString("PartyKeystyone_Right" .. i, "OVERLAY")
+				PartyKeystone_Rightext:SetPoint("BOTTOMRIGHT", PartyKeystone_Container, "BOTTOMRIGHT", -10, yOffset)
+				PartyKeystone_Rightext:SetJustifyH("RIGHT")
+				PartyKeystone_Rightext:SetWidth(90)
+
+				PartyKeystone_Lefttext = PartyKeystone_Container:CreateFontString("PartyKeystyone_Left" .. i, "OVERLAY")
+				PartyKeystone_Lefttext:SetPoint("BOTTOMRIGHT", PartyKeystone_Container, "BOTTOMRIGHT", -100, yOffset)
+				PartyKeystone_Lefttext:SetJustifyH("LEFT")
+				PartyKeystone_Lefttext:SetWidth(90)
+			end
+			PartyKeystone_Container.lines[i] = {
+				left = PartyKeystone_Lefttext,
+				right = PartyKeystone_Rightext,
+			}
+		end
+
+		for i = 1, 5 do
+			local yOffset = 25 + 25 * (i - 1)
+			local xOffset = 6
+			PartyKeystone_Container.lines[i].right:ClearAllPoints()
+			PartyKeystone_Container.lines[i].left:ClearAllPoints()
+
+			PartyKeystone_Container.lines[i].right:SetPoint(
+				"TOPRIGHT",
+				PartyKeystone_Container,
+				"TOPRIGHT",
+				-4,
+				-yOffset - 4
+			)
+			PartyKeystone_Container.lines[i].right:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 13)
+			PartyKeystone_Container.lines[i].right:SetJustifyH("RIGHT")
+			PartyKeystone_Container.lines[i].right:SetWidth(100)
+
+			PartyKeystone_Container.lines[i].left:SetPoint(
+				"TOPLEFT",
+				PartyKeystone_Container,
+				"TOPLEFT",
+				xOffset,
+				-yOffset
+			)
+			PartyKeystone_Container.lines[i].left:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 13)
+			PartyKeystone_Container.lines[i].left:SetJustifyH("LEFT")
+			PartyKeystone_Container.lines[i].left:SetWidth(100)
+
+			if GroupKeystone_Info[i] then
+				PartyKeystone_Container.lines[i].right:SetText(GroupKeystone_Info[i].player)
+				PartyKeystone_Container.lines[i].left:SetText(
+					format(
+						"|T%s:20:20:0:0:64:64:4:60:7:57:255:255:255|t |c%s%s - %s|r",
+						GroupKeystone_Info[i].icon,
+						AMT_getKeystoneLevelColor(GroupKeystone_Info[i].level),
+						GroupKeystone_Info[i].level,
+						GroupKeystone_Info[i].name
+					)
+				)
+			else
+				PartyKeystone_Container.lines[i].right:SetText("")
+				PartyKeystone_Container.lines[i].left:SetText("")
 			end
 		end
 	end

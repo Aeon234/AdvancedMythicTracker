@@ -1,9 +1,11 @@
 local addonName, AMT = ...
 
 local E, S
+local AMT_ElvUIEnabled = false
 if ElvUI then
 	E = unpack(ElvUI)
 	S = ElvUI[1]:GetModule("Skins")
+	AMT_ElvUIEnabled = true
 end
 
 _G["BINDING_NAME_AMT"] = "Show/Hide the window"
@@ -101,7 +103,7 @@ AMT_TabButton:SetScript("OnClick", function()
 end)
 
 AMT_Window:SetScript("OnShow", function()
-	LoadTrackingData()
+	AMT_LoadTrackingData()
 	AMT.Check_PVEFrame_TabNums()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
 		for i = 1, #PVEFrame_Panels do

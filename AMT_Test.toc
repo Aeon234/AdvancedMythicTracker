@@ -7,7 +7,7 @@
 ## IconTexture: 
 ## X-Curse-Project-ID: 
 ## X-Wago-ID: 
-## OptionalDeps: ElvUI
+## OptionalDeps: ElvUI, Details
 
 AMT_Frames.xml
 

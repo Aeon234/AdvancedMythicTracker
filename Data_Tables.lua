@@ -40,6 +40,66 @@ local RewardsTable = {
 	{ "20", "470", "483" },
 }
 
+Challenges_Teleports = {
+	--Dragonflight
+	{ spellID = 393256, mapID = 399 }, --Ruby Life Pools
+	{ spellID = 393262, mapID = 400 }, --The Nokhud Offensive
+	{ spellID = 393279, mapID = 401 }, --The Azure Vault
+	{ spellID = 393273, mapID = 402 }, -- Algeth'ar Academy
+	{ spellID = 393222, mapID = 403 }, --Uldaman:Legacy of Tyr
+	{ spellID = 393276, mapID = 404 }, --Neltharus
+	{ spellID = 393283, mapID = 406 }, --Halls of Infusion
+	{ spellID = 393267, mapID = 405 }, -- Brakenhide Hollow
+	{ spellID = 424197, mapID = 463 }, --Dawn of the infinite: Galakrond's Fall
+	{ spellID = 424197, mapID = 464 }, --Dawn of the infinite: Murozond's Rise
+
+	--Shadowlands
+	{ spellID = 354464, mapID = 375 }, --Mist of Tirna Scithe
+	{ spellID = 354462, mapID = 376 }, --Necrotic Wake
+	{ spellID = 354468, mapID = 377 }, --De Other Side
+	{ spellID = 354465, mapID = 378 }, --Halls of Atonement
+	{ spellID = 354463, mapID = 379 }, --Plaguefall
+	{ spellID = 354469, mapID = 380 }, --Sanguine Depths
+	{ spellID = 354466, mapID = 381 }, --Spires of Ascension
+	{ spellID = 354467, mapID = 382 }, --Theater of Pain
+	{ spellID = 367416, mapID = 391 }, --Tazavesh, the Veiled Market: Streets of Wonder
+	{ spellID = 367416, mapID = 392 }, --Tazavesh, the Veiled Market: So'leah's Gambit
+
+	--Battle for Azeroth
+	{ spellID = 424187, mapID = 244 }, --Atal'Dazar
+	{ spellID = 410071, mapID = 245 }, --Freehold
+	{ spellID = 424167, mapID = 248 }, --Waycrest Manor
+	{ spellID = 410074, mapID = 251 }, --The Underrot
+	{ spellID = 373274, mapID = 369 }, --Operation: Mechagon: Junkyard
+	{ spellID = 373274, mapID = 370 }, --Operation: Mechagon: Workshop
+
+	--Legion
+	{ spellID = 424163, mapID = 198 }, --Darkheart Thicket
+	{ spellID = 424153, mapID = 199 }, --Black Rook Hold
+	{ spellID = 393764, mapID = 200 }, --Halls of Valor
+	{ spellID = 410078, mapID = 206 }, --Neltharion's Lair
+	{ spellID = 393766, mapID = 210 }, --Court of Stars
+	{ spellID = 373262, mapID = 277 }, --Return to Karazhan: Lower
+	{ spellID = 373262, mapID = 234 }, --Return to Karazhan: Upper
+
+	--Warlords of Draenor
+	{ spellID = 159898, mapID = 161 }, --Skyreach
+	{ spellID = 159895, mapID = 163 }, --Bloodmaul Slag Mines
+	{ spellID = 159897, mapID = 164 }, --Auchindoun
+	{ spellID = 159899, mapID = 165 }, --Shadowmoon Burial Grounds
+	{ spellID = 159900, mapID = 166 }, --Grimrail Depot
+	{ spellID = 159902, mapID = 167 }, --Upper Blackrock Spire
+	{ spellID = 159901, mapID = 168 }, --The Everbloom
+	{ spellID = 159896, mapID = 169 }, --Iron Docks
+
+	--Mist of Pandaria
+	{ spellID = 131204, mapID = 2 }, --Temple of the Jade Serpent
+
+	--Cataclysm
+	{ spellID = 410080, mapID = 438 }, --The Vortex Pinnacle
+	{ spellID = 424142, mapID = 456 }, --Throne of the Tides
+}
+
 KeyScore_Colors = {
 	{ "1", "ffffff" },
 	{ "2", "eeffe7" },
