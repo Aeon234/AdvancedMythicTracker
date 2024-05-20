@@ -1636,7 +1636,7 @@ end
 function AMT:AMT_MythicRunsGraph()
 	--MythicRunsGraph_Container
 
-	for i = 1, 5 do
+	for i = 1, 4 do
 		local graphline = MythicRunsGraph_Container:CreateLine("GraphLine" .. i)
 		graphline:SetThickness(2)
 		graphline:SetColorTexture(0.4, 0.4, 0.4, 1.000)
@@ -1646,19 +1646,18 @@ function AMT:AMT_MythicRunsGraph()
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 2 then
-			local xOffset = 38 + 130 * (i - 1)
+			local xOffset = 56 + 130 * (i - 1)
+			print("2: " .. xOffset)
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 3 then
-			local xOffset = 40 + 129 * (i - 1)
+			local xOffset = 76 + 130 * (i - 1)
+			print("3: " .. xOffset)
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 4 then
-			local xOffset = 38 + 130 * (i - 1)
-			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
-			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
-		elseif i == 5 then
-			local xOffset = 38 + 130 * (i - 1)
+			local xOffset = 96 + 130 * (i - 1)
+			print("4: " .. xOffset)
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		end
@@ -1704,7 +1703,7 @@ function AMT:AMT_MythicRunsGraph()
 			Dung_AntTrail =
 				MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
 		end
-		Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
+		-- Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
 		if BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
 			Dung_AntTrail:SetTextColor(1.000, 0.824, 0.000, 1.000)
 		else
