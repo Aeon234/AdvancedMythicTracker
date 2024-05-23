@@ -1,11 +1,7 @@
 local addonName, AMT = ...
-if Details then
-	AMT_OpenRaidLib = LibStub("LibOpenRaid-1.0", true)
-end
 
 local E, S
-local AMT_ElvUIEnabled = false
-if ElvUI then
+if AMT.ElvUIEnabled then
 	E = unpack(ElvUI)
 	S = ElvUI[1]:GetModule("Skins")
 	AMT_ElvUIEnabled = true
@@ -30,7 +26,7 @@ function AMT:AMT_Window_Containers()
 	]]
 	local AMT_Window_X_Offset = 4
 	local AMT_Window_Y_Offset = 22
-
+	local AMT_Window = _G["AMT_Window"]
 	if not WeeklyBest_Compartment then
 		WeeklyBest_Compartment = CreateFrame("Frame", "WeeklyBest_Compartment", AMT_Window, "BackdropTemplate")
 		-- WeeklyBest_Compartment:SetSize(AMT_Window:GetWidth() * 0.18, 180)
@@ -124,6 +120,56 @@ function AMT:AMT_Window_Containers()
 		PartyKeystone_Container:SetPoint("TOPRIGHT", Affixes_Compartment, "BOTTOMRIGHT", 0, 0)
 	end
 
+	if not PartyKeystone_Container_Title then
+		PartyKeystone_Container_Title = PartyKeystone_Container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		PartyKeystone_Container_Title:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, -6)
+		PartyKeystone_Container_Title:SetJustifyH("LEFT")
+		PartyKeystone_Container_Title:SetFont(PartyKeystone_Container_Title:GetFont(), 14)
+
+		PartyKeystone_Container_Title:SetText("Party Keystones")
+	end
+	if self.DetailsLoaded then
+		if not PartyKeystone_DetailsButton then
+			PartyKeystone_DetailsButton = CreateFrame("Button", nil, PartyKeystone_Container, "UIPanelButtonTemplate")
+			if AMT_ElvUIEnabled then
+				S:HandleButton(PartyKeystone_DetailsButton)
+			end
+			PartyKeystone_DetailsButton:SetSize(60, 16)
+			PartyKeystone_DetailsButton:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
+			PartyKeystone_DetailsButton:SetText("More")
+			PartyKeystone_DetailsButton.Text:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 12)
+		end
+		PartyKeystone_DetailsButton:SetScript("OnClick", function()
+			if _G.SlashCmdList["KEYSTONE"] then
+				_G.SlashCmdList["KEYSTONE"]("")
+			end
+		end)
+	else
+		if not PartyKeystyone_MissingDetails then
+			PartyKeystyone_MissingDetails =
+				CreateFrame("Frame", "PartyKeystyone_MissingDetails", PartyKeystone_Container)
+			-- PartyKeystyone_MissingDetails:SetPoint("LEFT", PartyKeystone_Container_Title, "RIGHT", 6, 0)
+			PartyKeystyone_MissingDetails:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
+			PartyKeystyone_MissingDetails:SetSize(24, 24)
+			-- RuneArt:SetFrameStrata("HIGH")
+
+			PartyKeystyone_MissingDetails.tex = PartyKeystyone_MissingDetails:CreateTexture()
+			PartyKeystyone_MissingDetails.tex:SetAllPoints(PartyKeystyone_MissingDetails)
+			PartyKeystyone_MissingDetails.tex:SetAtlas("Campaign-QuestLog-LoreBook-Back", false)
+		end
+		PartyKeystyone_MissingDetails:SetScript("OnEnter", function()
+			GameTooltip:ClearAllPoints()
+			GameTooltip:ClearLines()
+			GameTooltip:SetOwner(PartyKeystyone_MissingDetails, "ANCHOR_RIGHT", 0, 0)
+			GameTooltip:SetText("Details! Missing", 1, 1, 1, 1)
+			GameTooltip:AddLine("To see a list of your group's Keystones,\ninstall/enable Details!.", true)
+			GameTooltip:Show()
+		end)
+		PartyKeystyone_MissingDetails:SetScript("OnLeave", function()
+			GameTooltip:Hide()
+		end)
+	end
+
 	--[[
 		Second column of AMT_Window
 		]]
@@ -177,22 +223,30 @@ function AMT:AMT_Window_Containers()
 	AMT:AMT_KeystoneItem_Display()
 	AMT:AMT_Raid()
 	AMT:AMT_MythicPlus()
-	AMT:AMT_PartyKeystyone()
 	AMT:AMT_MythicRunsGraph()
+	if IsInGroup() and Details then
+		self.OpenRaidLib.RequestKeystoneDataFromParty()
+		C_Timer.After(0.5, function()
+			AMT:AMT_PartyKeystone()
+		end)
+		C_Timer.After(2, function()
+			AMT:AMT_PartyKeystone()
+		end)
+	else
+		AMT:AMT_PartyKeystone()
+	end
 end
 
 function AMT:AMT_WeeklyBest_Display()
-	--Update the Keys info for tables Current_SeasonalDung_Info and BestKeys_per_Dungeon
-	AMT_Update_PlayerDungeonInfo()
 	--Establish the highest key done for the weekly currently
 	WeeklyBest_Key = 0
 	local WeeklyBest_Color
-	if KeysDone[1] ~= 0 then
-		WeeklyBest_Key = KeysDone[1].level
+	if self.KeysDone[1] ~= 0 then
+		WeeklyBest_Key = self.KeysDone[1].level
 	else
-		WeeklyBest_Key = KeysDone[1]
+		WeeklyBest_Key = self.KeysDone[1]
 	end
-	if KeysDone[1] ~= 0 then
+	if self.KeysDone[1] ~= 0 then
 		WeeklyBest_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(KeysDone[1].level)
 	else
 		WeeklyBest_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(2)
@@ -221,7 +275,7 @@ function AMT:AMT_WeeklyBest_Display()
 	if not WeeklyBest_Keylevel then
 		WeeklyBest_Keylevel = WeeklyBest_Bg:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
 	end
-	if KeysDone[1] == 0 then
+	if self.KeysDone[1] == 0 then
 		WeeklyBest_Keylevel:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 3, 0)
 		WeeklyBest_Keylevel:SetTextColor(0.804, 0.804, 0.804, 1.0)
 		WeeklyBest_Keylevel:SetFont(WeeklyBest_Keylevel:GetFont(), 38)
@@ -237,39 +291,40 @@ end
 
 function AMT:AMT_DungeonList_Display()
 	--Create the icon for each dungeon
-	if not _G["DungeonIcon_" .. #Current_SeasonalDung_Info] then
-		for i = 1, #Current_SeasonalDung_Info do
+	local DungIcon = {}
+	if not _G["DungeonIcon_" .. #self.Current_SeasonalDung_Info] then
+		for i = 1, #self.Current_SeasonalDung_Info do
 			local dungIconHeight = DungeonIcons_Container:GetHeight()
 			local dungIconWidth = DungeonIcons_Container:GetWidth() / 8
-			DungIcon =
+			DungIcon[i] =
 				CreateFrame("Button", "DungeonIcon_" .. i, DungeonIcons_Container, "InsecureActionButtonTemplate")
-			DungIcon:SetSize(dungIconWidth, dungIconHeight)
-			DungIcon.tex = DungIcon:CreateTexture()
-			DungIcon.tex:SetAllPoints(DungIcon)
-			DungIcon.tex:SetTexture(Current_SeasonalDung_Info[i].dungIcon)
+			DungIcon[i]:SetSize(dungIconWidth, dungIconHeight)
+			DungIcon.tex = DungIcon[i]:CreateTexture()
+			DungIcon.tex:SetAllPoints(DungIcon[i])
+			DungIcon.tex:SetTexture(self.Current_SeasonalDung_Info[i].dungIcon)
 
 			if i == 1 then
-				DungIcon:SetPoint("BOTTOMLEFT", DungeonIcons_Container, "BOTTOMLEFT", 0, 0)
+				DungIcon[i]:SetPoint("BOTTOMLEFT", DungeonIcons_Container, "BOTTOMLEFT", 0, 0)
 			else
 				local previousBox = _G["DungeonIcon_" .. (i - 1)]
-				DungIcon:SetPoint("LEFT", previousBox, "RIGHT", 0, 0)
+				DungIcon[i]:SetPoint("LEFT", previousBox, "RIGHT", 0, 0)
 			end
 		end
 	end
 	if not DungIconName_Label then
-		for i = 1, #Current_SeasonalDung_Info do
-			CurrentmapID = Current_SeasonalDung_Info[i].mapID
+		for i = 1, #self.Current_SeasonalDung_Info do
+			CurrentmapID = self.Current_SeasonalDung_Info[i].mapID
 			DungIcon_Abbr = nil
 
-			for j = 1, #SeasonalDungeons do
-				if SeasonalDungeons[j].challengeModeID == CurrentmapID then
-					DungIcon_Abbr = SeasonalDungeons[j].abbr
+			for j = 1, #AMT.SeasonalDungeons do
+				if AMT.SeasonalDungeons[j].challengeModeID == CurrentmapID then
+					DungIcon_Abbr = AMT.SeasonalDungeons[j].abbr
 					break -- Exit loop once a match is found
 				end
 			end
 
-			-- DungIcon_Abbr = DungeonAbbr[Current_SeasonalDung_Info[i].mapID]
-			DungIconName_Label = DungIcon:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
+			-- DungIcon_Abbr = DungeonAbbr[self.Current_SeasonalDung_Info[i].mapID]
+			DungIconName_Label = DungIcon[i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
 			DungIconName_Label:SetPoint("TOP", _G["DungeonIcon_" .. i], "TOP", 0, 10)
 			DungIconName_Label:SetFont(DungIconName_Label:GetFont(), 20, "OUTLINE")
 			DungIconName_Label:SetTextColor(1, 1, 1)
@@ -278,9 +333,9 @@ function AMT:AMT_DungeonList_Display()
 	end
 	--Create label for Overall Dungeon Level
 	if not DungOverallLevel_Label then
-		for i = 1, #Current_SeasonalDung_Info do
+		for i = 1, #self.Current_SeasonalDung_Info do
 			DungOverallLevel_Label =
-				DungIcon:CreateFontString("DungOverallLevel_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
+				DungIcon[i]:CreateFontString("DungOverallLevel_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
 			DungOverallLevel_Label:SetPoint("CENTER", _G["DungeonIcon_" .. i], "CENTER", 0, 2)
 			DungOverallLevel_Label:SetFont(DungOverallLevel_Label:GetFont(), 32, "OUTLINE")
 			DungOverallLevel_Label:SetTextColor(1, 1, 1)
@@ -289,9 +344,9 @@ function AMT:AMT_DungeonList_Display()
 	end
 	--Create label for Tyrannical Score Information
 	if not DungTyrScore_Label then
-		for i = 1, #Current_SeasonalDung_Info do
+		for i = 1, #self.Current_SeasonalDung_Info do
 			DungTyrScore_Label =
-				DungIcon:CreateFontString("DungTyrScore_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
+				DungIcon[i]:CreateFontString("DungTyrScore_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
 			DungTyrScore_Label:SetPoint("BOTTOMLEFT", _G["DungeonIcon_" .. i], "BOTTOMLEFT", 4, 2)
 			DungTyrScore_Label:SetJustifyH("LEFT")
 			DungTyrScore_Label:SetJustifyV("TOP")
@@ -302,9 +357,9 @@ function AMT:AMT_DungeonList_Display()
 	end
 	--Create label for Fortified Score Information
 	if not DungFortScore_Label then
-		for i = 1, #Current_SeasonalDung_Info do
+		for i = 1, #self.Current_SeasonalDung_Info do
 			DungFortScore_Label =
-				DungIcon:CreateFontString("DungFortScore_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
+				DungIcon[i]:CreateFontString("DungFortScore_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
 			DungFortScore_Label:SetPoint("BOTTOMRIGHT", _G["DungeonIcon_" .. i], "BOTTOMRIGHT", -2, 2)
 			DungFortScore_Label:SetJustifyH("RIGHT")
 			DungFortScore_Label:SetJustifyV("TOP")
@@ -314,15 +369,15 @@ function AMT:AMT_DungeonList_Display()
 		end
 	end
 	--Update each of the labels with updated information each time AMT Window is opened
-	for i = 1, #Current_SeasonalDung_Info do
+	for i = 1, #self.Current_SeasonalDung_Info do
 		local Dung_HighestKey = 0
 		local HighestKey_Label = _G["DungOverallLevel_Label" .. i]
 		local Tyrranical_Label = _G["DungTyrScore_Label" .. i]
 		local Fortified_Label = _G["DungFortScore_Label" .. i]
-		if Current_SeasonalDung_Info[i].dungTyrLevel >= Current_SeasonalDung_Info[i].dungFortLevel then
-			Dung_HighestKey = Current_SeasonalDung_Info[i].dungTyrLevel
-		elseif Current_SeasonalDung_Info[i].dungFortLevel > Current_SeasonalDung_Info[i].dungTyrLevel then
-			Dung_HighestKey = Current_SeasonalDung_Info[i].dungFortLevel
+		if self.Current_SeasonalDung_Info[i].dungTyrLevel >= self.Current_SeasonalDung_Info[i].dungFortLevel then
+			Dung_HighestKey = self.Current_SeasonalDung_Info[i].dungTyrLevel
+		elseif self.Current_SeasonalDung_Info[i].dungFortLevel > self.Current_SeasonalDung_Info[i].dungTyrLevel then
+			Dung_HighestKey = self.Current_SeasonalDung_Info[i].dungFortLevel
 		else
 			Dung_HighestKey = 0
 		end
@@ -330,28 +385,28 @@ function AMT:AMT_DungeonList_Display()
 		Dung_HighestKey_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(Dung_HighestKey)
 		--Grab the color information for the tyrannical level
 		TyrLevel_Color = CreateColor(
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrLevel).r,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrLevel).g,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrLevel).b
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrLevel).r,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrLevel).g,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrLevel).b
 		)
 
 		--Grab the color information for the fortified level
 		FortLevel_Color = CreateColor(
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortLevel).r,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortLevel).g,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortLevel).b
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortLevel).r,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortLevel).g,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortLevel).b
 		)
 		--Grab the color information for the tyrannical score
 		TyrScore_Color = CreateColor(
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrScore).r,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrScore).g,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungTyrScore).b
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrScore).r,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrScore).g,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungTyrScore).b
 		)
 		--Grab the color information for the fortified score
 		FortScore_Color = CreateColor(
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortScore).r,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortScore).g,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Current_SeasonalDung_Info[i].dungFortScore).b
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortScore).r,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortScore).g,
+			C_ChallengeMode.GetKeystoneLevelRarityColor(self.Current_SeasonalDung_Info[i].dungFortScore).b
 		)
 		--Set the Highest Key Level Label to be the highest key level number and appropriate color for it.
 		HighestKey_Label:SetText(Dung_HighestKey)
@@ -360,31 +415,31 @@ function AMT:AMT_DungeonList_Display()
 		--Set the highest Tyr dungeon score info
 		Tyrranical_Label:SetText(
 			"T: "
-				.. TyrLevel_Color:WrapTextInColorCode(Current_SeasonalDung_Info[i].dungTyrLevel)
+				.. TyrLevel_Color:WrapTextInColorCode(self.Current_SeasonalDung_Info[i].dungTyrLevel)
 				.. "\n "
-				.. TyrLevel_Color:WrapTextInColorCode(Current_SeasonalDung_Info[i].dungTyrScore)
+				.. TyrLevel_Color:WrapTextInColorCode(self.Current_SeasonalDung_Info[i].dungTyrScore)
 		)
 		--Set the highest Fort dungeon score info
 		Fortified_Label:SetText(
 			"F: "
-				.. FortLevel_Color:WrapTextInColorCode(Current_SeasonalDung_Info[i].dungFortLevel)
+				.. FortLevel_Color:WrapTextInColorCode(self.Current_SeasonalDung_Info[i].dungFortLevel)
 				.. "\n"
-				.. FortScore_Color:WrapTextInColorCode(Current_SeasonalDung_Info[i].dungFortScore)
+				.. FortScore_Color:WrapTextInColorCode(self.Current_SeasonalDung_Info[i].dungFortScore)
 		)
 	end
 
-	for i = 1, #Current_SeasonalDung_Info do
+	for i = 1, #self.Current_SeasonalDung_Info do
 		local DungIcon = _G["DungeonIcon_" .. i]
-		local DungName = Current_SeasonalDung_Info[i].dungName
-		local DungOverallScore = Current_SeasonalDung_Info[i].dungOverallScore
-		local inTimeInfo = Current_SeasonalDung_Info[i].intimeInfo
-		local overtimeInfo = Current_SeasonalDung_Info[i].overtimeInfo
-		local affixScores, _ = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(Current_SeasonalDung_Info[i].mapID)
+		local DungName = self.Current_SeasonalDung_Info[i].dungName
+		local DungOverallScore = self.Current_SeasonalDung_Info[i].dungOverallScore
+		local inTimeInfo = self.Current_SeasonalDung_Info[i].intimeInfo
+		local overtimeInfo = self.Current_SeasonalDung_Info[i].overtimeInfo
+		local affixScores, _ = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.Current_SeasonalDung_Info[i].mapID)
 		local dungSpellID
 		local dungSpellName
 
-		for _, dungeons in ipairs(Challenges_Teleports) do
-			if dungeons.mapID == Current_SeasonalDung_Info[i].mapID then
+		for _, dungeons in ipairs(AMT.Challenges_Teleports) do
+			if dungeons.mapID == self.Current_SeasonalDung_Info[i].mapID then
 				dungSpellID = dungeons.spellID
 				dungSpellName = GetSpellInfo(dungSpellID)
 			end
@@ -490,16 +545,16 @@ end
 function AMT:AMT_Affixes_Display()
 	--Affixes_Compartment
 
-	if #GetCurrentAffixesTable == 0 then
+	if #AMT.GetCurrentAffixesTable == 0 then
 		local currentAffixes = C_MythicPlus.GetCurrentAffixes()
 		if currentAffixes then
-			GetCurrentAffixesTable = currentAffixes
+			AMT.GetCurrentAffixesTable = currentAffixes
 		end
 	end
-	if #CurrentWeek_AffixTable == 0 then
+	if #self.CurrentWeek_AffixTable == 0 then
 		table.insert(
-			CurrentWeek_AffixTable,
-			{ GetCurrentAffixesTable[1].id, GetCurrentAffixesTable[2].id, GetCurrentAffixesTable[3].id }
+			self.CurrentWeek_AffixTable,
+			{ AMT.GetCurrentAffixesTable[1].id, AMT.GetCurrentAffixesTable[2].id, AMT.GetCurrentAffixesTable[3].id }
 		)
 	end
 
@@ -549,13 +604,13 @@ function AMT:AMT_Affixes_Display()
 		NextWeekAffixes_Container:SetBackdropColor(1, 0, 1, 0.0)
 	end
 
-	GetNextAffixRotation(CurrentWeek_AffixTable, AffixRotation)
+	AMT:GetNextAffixRotation(self.CurrentWeek_AffixTable, self.AffixRotation)
 
-	for i = 1, #GetCurrentAffixesTable do
-		for _, affixID in ipairs(CurrentWeek_AffixTable) do
+	for i = 1, #self.GetCurrentAffixesTable do
+		for _, affixID in ipairs(self.CurrentWeek_AffixTable) do
 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
 
-			if not _G["AffixIcon" .. #GetCurrentAffixesTable] then
+			if not _G["AffixIcon" .. #self.GetCurrentAffixesTable] then
 				local iconSize = 40
 				local iconPadding = 5
 				AffixIcon = CreateFrame("Frame", "AffixIcon" .. i, CurrentAffixes_Container)
@@ -570,8 +625,8 @@ function AMT:AMT_Affixes_Display()
 						"LEFT",
 						(
 							AffixIcon:GetParent():GetWidth()
-							- (iconSize * #GetCurrentAffixesTable)
-							- (iconPadding * (#GetCurrentAffixesTable - 1))
+							- (iconSize * #AMT.GetCurrentAffixesTable)
+							- (iconPadding * (#AMT.GetCurrentAffixesTable - 1))
 						) / 2,
 						0
 					)
@@ -593,11 +648,11 @@ function AMT:AMT_Affixes_Display()
 		end
 	end
 
-	for i = 1, #GetCurrentAffixesTable do
+	for i = 1, #AMT.GetCurrentAffixesTable do
 		for _, affixID in ipairs(NextWeek_AffixTable) do
 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
 
-			if not _G["NexWeek_AffixIcon" .. #GetCurrentAffixesTable] then
+			if not _G["NexWeek_AffixIcon" .. #AMT.GetCurrentAffixesTable] then
 				local iconSize = 40
 				local iconPadding = 5
 				AffixIcon = CreateFrame("Frame", "NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
@@ -612,8 +667,8 @@ function AMT:AMT_Affixes_Display()
 						"LEFT",
 						(
 							AffixIcon:GetParent():GetWidth()
-							- (iconSize * #GetCurrentAffixesTable)
-							- (iconPadding * (#GetCurrentAffixesTable - 1))
+							- (iconSize * #AMT.GetCurrentAffixesTable)
+							- (iconPadding * (#AMT.GetCurrentAffixesTable - 1))
 						) / 2,
 						0
 					)
@@ -739,7 +794,7 @@ Mythic Keystone Section
 		--Grab the name and icon of the Dungeon the Keystone belongs to
 		Keystone_Name, _, _, Keystone_Icon = C_ChallengeMode.GetMapUIInfo(Keystone_ID)
 		--Get the abbreviated name of the dungeon the player has a key for
-		local abbr = GetAbbrFromChallengeModeID(Keystone_ID)
+		local abbr = AMT:GetAbbrFromChallengeModeID(Keystone_ID)
 		--Get the Keystone level
 		Keystone_level = C_MythicPlus.GetOwnedKeystoneLevel()
 		--Set Label text for Keystone info
@@ -1048,8 +1103,8 @@ Raid Lockout / Raid Kills per Difficulty
 	--
 	--Get what the current season is and establish the name of the raid
 	local seasonID = C_MythicPlus.GetCurrentSeason()
-	raids = AMT:Filter_Table(SeasonalRaids, function(SeasonalRaids)
-		return SeasonalRaids.seasonID == seasonID
+	raids = AMT:Filter_Table(self.SeasonalRaids, function(SeasonalRaids)
+		return self.SeasonalRaids.seasonID == seasonID
 	end)
 
 	table.sort(raids, function(a, b)
@@ -1113,8 +1168,8 @@ Raid Lockout / Raid Kills per Difficulty
 			if reset and reset > 0 then
 				savedInstance.expires = reset + time()
 			end
-			for i = 1, #SeasonalRaids do
-				if savedInstance.instanceID == SeasonalRaids[i].instanceID then
+			for i = 1, #AMT.SeasonalRaids do
+				if savedInstance.instanceID == AMT.SeasonalRaids[i].instanceID then
 					raids.savedInstances[savedInstanceIndex] = savedInstance
 				end
 			end
@@ -1123,7 +1178,7 @@ Raid Lockout / Raid Kills per Difficulty
 	end
 	--Create the frames that will store the boxes for each difficulty, running through each difficulty level for the current season's Raid
 	if not Raid_MainFrame then
-		for i, difficulty in ipairs(RaidDifficulty_Levels) do
+		for i, difficulty in ipairs(AMT.RaidDifficulty_Levels) do
 			Raid_MainFrame = CreateFrame("Frame", "RaidDifficulty" .. i, Lockouts_Comparment, "BackdropTemplate")
 			Raid_MainFrame:SetSize(180, 20)
 
@@ -1161,7 +1216,7 @@ Raid Lockout / Raid Kills per Difficulty
 				local previousFrame = _G["RaidDifficulty" .. (i - 1)]
 				Raid_MainFrame:SetPoint("TOP", previousFrame, "BOTTOM", 0, 0)
 			end
-			for raidIndex, raid in ipairs(SeasonalRaids) do
+			for raidIndex, raid in ipairs(self.SeasonalRaids) do
 				Raid_MainFrame:SetScript("OnEnter", function()
 					GameTooltip:ClearAllPoints()
 					GameTooltip:ClearLines()
@@ -1216,7 +1271,7 @@ Raid Lockout / Raid Kills per Difficulty
 	end
 	--Create the boxes within the frames for each difficulty
 	if not RaidBox then
-		for i, difficulty in ipairs(RaidDifficulty_Levels) do
+		for i, difficulty in ipairs(AMT.RaidDifficulty_Levels) do
 			local DifficultyName = difficulty.abbr
 			for n = 1, AMT_VaultRaid_Num do
 				RaidBox = CreateFrame("Frame", DifficultyName .. n, _G["RaidDifficulty" .. i])
@@ -1258,8 +1313,8 @@ Raid Lockout / Raid Kills per Difficulty
 		end
 	end
 
-	for i = 1, #RaidDifficulty_Levels do
-		local DifficultyName = RaidDifficulty_Levels[i].abbr
+	for i = 1, #AMT.RaidDifficulty_Levels do
+		local DifficultyName = AMT.RaidDifficulty_Levels[i].abbr
 		local Difficulty_KillCount = RaidKills_Count[i]
 		if Difficulty_KillCount ~= 0 then
 			for n = 1, Difficulty_KillCount do
@@ -1329,19 +1384,19 @@ function AMT:AMT_MythicPlus()
 		GameTooltip:ClearLines()
 		GameTooltip:SetOwner(Mplus_Mainframe, "ANCHOR_RIGHT")
 		GameTooltip:SetText("Mythic Plus Progress", 1, 1, 1, 1, true)
-		if KeysDone[1] ~= 0 then
+		if self.KeysDone[1] ~= 0 then
 			GameTooltip:AddLine(format("Number of keys done this week: |cffffffff%s|r", #KeysDone))
 		else
 			GameTooltip:AddLine(format("Number of keys done this week: |cffffffff%s|r", 0))
 		end
-		if KeysDone[1] ~= 0 then
+		if self.KeysDone[1] ~= 0 then
 			GameTooltip:AddLine(" ")
 			GameTooltip:AddLine("Top 8 Runs This Week")
 			for i = 1, 8 do
-				if KeysDone[i] and (i == 1 or i == 4 or i == 8) then
-					GameTooltip:AddLine("|cff00ff12" .. KeysDone[i].level .. " - " .. KeysDone[i].keyname)
-				elseif KeysDone[i] then
-					GameTooltip:AddLine(Whitetext .. KeysDone[i].level .. " - " .. KeysDone[i].keyname)
+				if self.KeysDone[i] and (i == 1 or i == 4 or i == 8) then
+					GameTooltip:AddLine("|cff00ff12" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
+				elseif self.KeysDone[i] then
+					GameTooltip:AddLine(Whitetext .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
 				end
 			end
 		end
@@ -1355,7 +1410,7 @@ function AMT:AMT_MythicPlus()
 
 	if not _G["Mplus_Box" .. AMT_VaultDungeons_Num] then
 		for i = 1, AMT_VaultDungeons_Num do
-			local AMT_box_size = 14
+			AMT.box_size = 14
 
 			Mplus_Box = CreateFrame("Frame", "Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
 			Mplus_Box:SetSize(AMT_box_size, AMT_box_size)
@@ -1376,10 +1431,10 @@ function AMT:AMT_MythicPlus()
 	WeeklyKeysHistory = {}
 
 	for i = 1, AMT_VaultDungeons_Num do
-		if i <= #KeysDone and #WeeklyInfo > 0 then
-			tinsert(WeeklyKeysHistory, KeysDone[i].level)
+		if i <= #self.KeysDone and #self.RunHistory > 0 then
+			tinsert(WeeklyKeysHistory, self.KeysDone[i].level)
 		else
-			break -- Exit the loop if KeysDone[i] or KeysDone[i].level doesn't exist
+			break -- Exit the loop if self.KeysDone[i] or self.KeysDone[i].level doesn't exist
 		end
 	end
 
@@ -1394,65 +1449,15 @@ function AMT:AMT_MythicPlus()
 	end
 end
 
-function AMT:AMT_PartyKeystyone()
-	if not PartyKeystone_Container_Title then
-		PartyKeystone_Container_Title = PartyKeystone_Container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-		PartyKeystone_Container_Title:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, -6)
-		PartyKeystone_Container_Title:SetJustifyH("LEFT")
-		PartyKeystone_Container_Title:SetFont(PartyKeystone_Container_Title:GetFont(), 14)
-
-		PartyKeystone_Container_Title:SetText("Party Keystones")
-	end
-	if Details then
-		if not PartyKeystone_DetailsButton then
-			PartyKeystone_DetailsButton = CreateFrame("Button", nil, PartyKeystone_Container, "UIPanelButtonTemplate")
-			if AMT_ElvUIEnabled then
-				S:HandleButton(PartyKeystone_DetailsButton)
-			end
-			PartyKeystone_DetailsButton:SetSize(60, 16)
-			PartyKeystone_DetailsButton:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
-			PartyKeystone_DetailsButton:SetText("More")
-			PartyKeystone_DetailsButton.Text:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 12)
-		end
-		PartyKeystone_DetailsButton:SetScript("OnClick", function()
-			if _G.SlashCmdList["KEYSTONE"] then
-				_G.SlashCmdList["KEYSTONE"]("")
-			end
-		end)
-	else
-		if not PartyKeystyone_MissingDetails then
-			PartyKeystyone_MissingDetails =
-				CreateFrame("Frame", "PartyKeystyone_MissingDetails", PartyKeystone_Container)
-			-- PartyKeystyone_MissingDetails:SetPoint("LEFT", PartyKeystone_Container_Title, "RIGHT", 6, 0)
-			PartyKeystyone_MissingDetails:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
-			PartyKeystyone_MissingDetails:SetSize(24, 24)
-			-- RuneArt:SetFrameStrata("HIGH")
-
-			PartyKeystyone_MissingDetails.tex = PartyKeystyone_MissingDetails:CreateTexture()
-			PartyKeystyone_MissingDetails.tex:SetAllPoints(PartyKeystyone_MissingDetails)
-			PartyKeystyone_MissingDetails.tex:SetAtlas("Campaign-QuestLog-LoreBook-Back", false)
-		end
-		PartyKeystyone_MissingDetails:SetScript("OnEnter", function()
-			GameTooltip:ClearAllPoints()
-			GameTooltip:ClearLines()
-			GameTooltip:SetOwner(PartyKeystyone_MissingDetails, "ANCHOR_RIGHT", 0, 0)
-			GameTooltip:SetText("Details! Missing", 1, 1, 1, 1)
-			GameTooltip:AddLine("To see a list of your group's Keystones,\ninstall/enable Details!.", true)
-			GameTooltip:Show()
-		end)
-		PartyKeystyone_MissingDetails:SetScript("OnLeave", function()
-			GameTooltip:Hide()
-		end)
-	end
-
+function AMT:AMT_PartyKeystone()
 	GroupKeystone_Info = {}
 
-	if Details then
+	if self.DetailsLoaded then
 		for i = 1, 5 do
 			local unitID = i == 1 and "player" or "party" .. i - 1
-			local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
+			local data = self.OpenRaidLib.GetKeystoneInfo(unitID)
 			local mapID = data and data.mythicPlusMapID
-			for _, dungeon in ipairs(DungeonAbbr) do
+			for _, dungeon in ipairs(self.DungeonAbbr) do
 				if dungeon.mapID == mapID then
 					Keyname_abbr = dungeon.Abbr
 					if mapID and Keyname_abbr then
@@ -1475,7 +1480,7 @@ function AMT:AMT_PartyKeystyone()
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
 		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
-		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
 		-- 			Keyname_abbr = dungeon.abbr
 		-- 			if mapID and Keyname_abbr then
@@ -1498,7 +1503,7 @@ function AMT:AMT_PartyKeystyone()
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
 		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
-		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
 		-- 			Keyname_abbr = dungeon.abbr
 		-- 			if mapID and Keyname_abbr then
@@ -1521,7 +1526,7 @@ function AMT:AMT_PartyKeystyone()
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
 		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
-		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
 		-- 			Keyname_abbr = dungeon.abbr
 		-- 			if mapID and Keyname_abbr then
@@ -1544,7 +1549,7 @@ function AMT:AMT_PartyKeystyone()
 		-- 	local unitID = i == 1 and "player" or "party" .. i - 1
 		-- 	local data = AMT_OpenRaidLib.GetKeystoneInfo(unitID)
 		-- 	local mapID = data and data.mythicPlusMapID
-		-- 	for _, dungeon in ipairs(SeasonalDungeons) do
+		-- 	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
 		-- 		if dungeon.challengeModeID == mapID then
 		-- 			Keyname_abbr = dungeon.abbr
 		-- 			if mapID and Keyname_abbr then
@@ -1635,7 +1640,7 @@ end
 
 function AMT:AMT_MythicRunsGraph()
 	--MythicRunsGraph_Container
-
+	print("running MythicRunsGraph")
 	for i = 1, 4 do
 		local graphline = MythicRunsGraph_Container:CreateLine("GraphLine" .. i)
 		graphline:SetThickness(2)
@@ -1647,17 +1652,17 @@ function AMT:AMT_MythicRunsGraph()
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 2 then
 			local xOffset = 56 + 130 * (i - 1)
-			print("2: " .. xOffset)
+			-- print("2: " .. xOffset) 186
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 3 then
 			local xOffset = 76 + 130 * (i - 1)
-			print("3: " .. xOffset)
+			-- print("3: " .. xOffset) 336
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		elseif i == 4 then
 			local xOffset = 96 + 130 * (i - 1)
-			print("4: " .. xOffset)
+			-- print("4: " .. xOffset) 486
 			graphline:SetStartPoint("TOPLEFT", xOffset, -30)
 			graphline:SetEndPoint("BOTTOMLEFT", xOffset, 20)
 		end
@@ -1673,11 +1678,11 @@ function AMT:AMT_MythicRunsGraph()
 		Graphline_Label:SetPoint("BOTTOM", _G["GraphLine" .. i + 1], "TOP", 0, 4)
 	end
 
-	for i = 1, #Current_SeasonalDung_Info do
+	for i = 1, #self.Current_SeasonalDung_Info do
 		local graphline = _G["GraphLine1"]
-		local dungID = Current_SeasonalDung_Info[i].mapID
+		local dungID = self.Current_SeasonalDung_Info[i].mapID
 		local dungAbbr = ""
-		for _, dungeon in ipairs(DungeonAbbr) do
+		for _, dungeon in ipairs(self.DungeonAbbr) do
 			if dungID == dungeon.mapID then
 				dungAbbr = dungeon.Abbr
 			end
@@ -1697,21 +1702,27 @@ function AMT:AMT_MythicRunsGraph()
 			GraphDung_Label:SetPoint("RIGHT", graphline, "TOPLEFT", -4, -yMargin - (yOffset * (i - 1)))
 		end
 	end
-	for i = 1, #BestKeys_per_Dungeon do
+	local dungLines = {}
+	for i = 1, #self.BestKeys_per_Dungeon do
 		local graphlabel = _G["GraphDung_Label" .. i]
-		if not _G["Dung_AntTrail" .. i] then
-			Dung_AntTrail =
-				MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+		if not dungLines[i] then
+			dungLines[i] = MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
 		end
-		-- Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
-		if BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
-			Dung_AntTrail:SetTextColor(1.000, 0.824, 0.000, 1.000)
+
+		local dungLine = dungLines[i]
+
+		--If highest key done is same as the current weekly best color the line gold
+		if self.BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
+			dungLine:SetTextColor(1.000, 0.824, 0.000, 1.000)
 		else
-			Dung_AntTrail:SetTextColor(1, 1, 1, 1.0)
+			--Otherwise color it white
+			dungLine:SetTextColor(1, 1, 1, 1.0)
 		end
-		if BestKeys_per_Dungeon[i].HighestKey > 0 then
-			Dung_AntTrail:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
-			Dung_AntTrail:SetText(BestKeys_per_Dungeon[i].DungBullets .. BestKeys_per_Dungeon[i].HighestKey)
+		--If the key actually exists/was done, set the ant trail
+		if self.BestKeys_per_Dungeon[i].HighestKey > 0 then
+			dungLine:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
+			dungLine:SetText(self.BestKeys_per_Dungeon[i].DungBullets .. self.BestKeys_per_Dungeon[i].HighestKey)
 		end
 	end
+	-- AMT:AMT_UpdateMythicGraph()
 end

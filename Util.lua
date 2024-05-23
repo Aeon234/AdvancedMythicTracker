@@ -1,4 +1,5 @@
 local addonName, AMT = ...
+
 --Figure out how many tabs are being displayed for the character so that we can assign what number our new custom tab will be.
 PVEFrame_Panels = {
 	{
@@ -23,7 +24,7 @@ PVEFrame_Panels = {
 	},
 }
 
-function AMT.Check_PVEFrame_TabNums()
+function AMT:Check_PVEFrame_TabNums()
 	for i = 1, PVEFrame.numTabs do
 		local PVEFrame_Tab = _G["PVEFrameTab" .. i]
 
@@ -38,8 +39,8 @@ function AMT.Check_PVEFrame_TabNums()
 	end
 end
 
-function GetNextAffixRotation(CurrentWeek_AffixTable, AffixRotation)
-	if #CurrentWeek_AffixTable == 0 then
+function AMT:GetNextAffixRotation(CurrentWeek_AffixTable, AffixRotation)
+	if #self.CurrentWeek_AffixTable == 0 then
 		return nil -- No affixes in CurrentWeek_AffixTable
 	end
 
@@ -48,7 +49,7 @@ function GetNextAffixRotation(CurrentWeek_AffixTable, AffixRotation)
 
 	-- Find the index of the current rotation in AffixRotation
 	for i, rotationInfo in ipairs(AffixRotation) do
-		if CompareArrays(rotationInfo.rotation, currentRotation) then
+		if AMT:CompareArrays(rotationInfo.rotation, currentRotation) then
 			nextRotationIndex = i + 1
 			break
 		end
@@ -68,7 +69,7 @@ function GetNextAffixRotation(CurrentWeek_AffixTable, AffixRotation)
 end
 
 -- Function to compare two arrays
-function CompareArrays(arr1, arr2)
+function AMT:CompareArrays(arr1, arr2)
 	if #arr1 ~= #arr2 then
 		return false
 	end
@@ -117,8 +118,8 @@ function AMT:Table_Recall(tbl, callback)
 	return tbl
 end
 
-function AMT_LoadTrackingData()
-	for _, raid in pairs(SeasonalRaids) do
+function AMT:LoadTrackingData()
+	for _, raid in pairs(self.SeasonalRaids) do
 		-- EncounterJournal Quirk: This has to be called first before we can get encounter journal info.
 		EJ_SelectInstance(raid.journalInstanceID)
 		wipe(raid.encounters or {})
@@ -169,30 +170,32 @@ function AMT_getKeystoneLevelColor(level)
 	end
 end
 
-function AMT_Update_PlayerDungeonInfo()
+function AMT:Update_PlayerDungeonInfo()
+	print("updating player dung info")
 	--Reset the state of the tables
-	KeysDone = {}
-	Current_SeasonalDung_Info = {}
-	BestKeys_per_Dungeon = {}
+	self.KeysDone = {}
+	self.BestKeys_per_Dungeon = {}
+	self.Current_SeasonalDung_Info = {}
+	self.RunHistory = {}
 	--Grab Weekly Run history for this season and only timed keys
-	WeeklyInfo = C_MythicPlus.GetRunHistory(false, true)
+	self.RunHistory = C_MythicPlus.GetRunHistory(false, true)
 	--Grab Vault Rewards Info
-	VaultInfo = C_WeeklyRewards.GetActivities()
-	--For each key done insert them into KeysDone table
-	for i = 1, #WeeklyInfo do
-		local KeyLevel = WeeklyInfo[i].level
-		local KeyID = WeeklyInfo[i].mapChallengeModeID
-		tinsert(KeysDone, { level = KeyLevel, keyid = KeyID, keyname = "" })
+	VaultInfo = C_WeeklyRewards.GetActivities() --Not doing anything with this right now
+	--For each key done insert them into self.KeysDone table
+	for i = 1, #self.RunHistory do
+		local KeyLevel = self.RunHistory[i].level
+		local KeyID = self.RunHistory[i].mapChallengeModeID
+		tinsert(self.KeysDone, { level = KeyLevel, keyid = KeyID, keyname = "" })
 	end
-	--Sort KeysDone so that the highest keys are at the top. This is how we'll grab top key of the week info
-	if KeysDone[1] == nil then
-		KeysDone = { 0 }
+	--Sort self.KeysDone so that the highest keys are at the top. This is how we'll grab top key of the week info
+	if self.KeysDone[1] == nil then
+		self.KeysDone = { 0 }
 	else
-		table.sort(KeysDone, function(a, b)
+		table.sort(self.KeysDone, function(a, b)
 			return b.level < a.level
 		end)
-		for _, entry in ipairs(KeysDone) do
-			for _, dungeon in ipairs(SeasonalDungeons) do
+		for _, entry in ipairs(self.KeysDone) do
+			for _, dungeon in ipairs(self.SeasonalDungeons) do
 				if entry.keyid == dungeon.challengeModeID then
 					entry.keyname = dungeon.name
 					break -- Once found, no need to continue searching
@@ -213,7 +216,7 @@ function AMT_Update_PlayerDungeonInfo()
 		local FortDungScore = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].score or 0
 		local TyrDungLevel = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].level or 0
 		local FortDungLevel = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].level or 0
-		tinsert(Current_SeasonalDung_Info, {
+		tinsert(self.Current_SeasonalDung_Info, {
 			mapID = dungeonID,
 			dungName = name,
 			dungIcon = icon,
@@ -226,10 +229,10 @@ function AMT_Update_PlayerDungeonInfo()
 			overtimeInfo = overtimeInfo,
 		})
 		local dungAbbr = ""
-		for _, dungeon in ipairs(DungeonAbbr) do
+		for _, dungeon in ipairs(self.DungeonAbbr) do
 			if dungeonID == dungeon.mapID then
 				dungAbbr = dungeon.Abbr
-				tinsert(BestKeys_per_Dungeon, {
+				tinsert(self.BestKeys_per_Dungeon, {
 					mapID = dungeon.mapID,
 					dungAbbr = dungAbbr,
 					HighestKey = 0,
@@ -240,21 +243,42 @@ function AMT_Update_PlayerDungeonInfo()
 	end
 
 	--Update BestKeys_per_Dungeon with the Highest Keys done per dungeon
-	local KeyBullets = ""
-	local BulletTemplate = "• "
-	for _, bestKey in ipairs(BestKeys_per_Dungeon) do
+	for _, bestKey in ipairs(self.BestKeys_per_Dungeon) do
 		local highestKey = 0
-		if #KeysDone > 0 and KeysDone[1] ~= 0 then
-			for _, key in ipairs(KeysDone) do
+		if #self.KeysDone > 0 and self.KeysDone[1] ~= 0 then
+			for _, key in ipairs(self.KeysDone) do
 				if key.keyid == bestKey.mapID and key.level > highestKey then
 					highestKey = key.level
 				end
 			end
 		end
+		local KeyBullets = ""
+		local BulletTemplate = "• "
+		bestKey.HighestKey = 0
 		bestKey.HighestKey = highestKey or 0
 		for i = 1, bestKey.HighestKey do
 			KeyBullets = KeyBullets .. BulletTemplate
 		end
 		bestKey.DungBullets = KeyBullets
+	end
+end
+
+function AMT:AMT_UpdateMythicGraph()
+	for i = 1, #self.BestKeys_per_Dungeon do
+		local graphlabel = _G["GraphDung_Label" .. i]
+		if not _G["Dung_AntTrail" .. i] then
+			Dung_AntTrail =
+				MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+		end
+		-- Dung_AntTrail:SetFont(Dung_AntTrail:GetFont(), 13)
+		if self.BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
+			Dung_AntTrail:SetTextColor(1.000, 0.824, 0.000, 1.000)
+		else
+			Dung_AntTrail:SetTextColor(1, 1, 1, 1.0)
+		end
+		if self.BestKeys_per_Dungeon[i].HighestKey > 0 then
+			Dung_AntTrail:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
+			Dung_AntTrail:SetText(self.BestKeys_per_Dungeon[i].DungBullets .. self.BestKeys_per_Dungeon[i].HighestKey)
+		end
 	end
 end

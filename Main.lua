@@ -1,30 +1,88 @@
 local addonName, AMT = ...
+-- local E, S
+AMT.ElvUIEnabled = false
+AMT.DetailsLoaded = false
+AMT.DebugMode = false
 
-local E, S
-local AMT_ElvUIEnabled = false
 if ElvUI then
-	E = unpack(ElvUI)
-	S = ElvUI[1]:GetModule("Skins")
-	AMT_ElvUIEnabled = true
+	AMT.E = unpack(ElvUI)
+	AMT.S = ElvUI[1]:GetModule("Skins")
+	AMT.ElvUIEnabled = true
 end
 
-_G["BINDING_NAME_AMT"] = "Show/Hide the window"
+if Details then
+	AMT.OpenRaidLib = LibStub("LibOpenRaid-1.0", true)
+	AMT.DetailsLoaded = true
+end
+-- ====================================
+-- === Setup Shortcuts and Keybinds ===
+-- ====================================
+_G["BINDING_NAME_AMT"] = "Show/Hide the window" -- Keybind option name
 
-if ElvUI then
+-- Function to update the highest key for a dungeon
+function AMT:UpdateHighestKey(dungeonAbbr, keylevel)
+	for _, dungeon in ipairs(self.BestKeys_per_Dungeon) do
+		print("Checking dungeon:", dungeon.dungAbbr) -- Debug print
+		if dungeon.dungAbbr == dungeonAbbr then
+			dungeon.HighestKey = tonumber(keylevel)
+			local KeyBullets = ""
+			local BulletTemplate = "• "
+			for i = 1, keylevel do
+				KeyBullets = KeyBullets .. BulletTemplate
+			end
+			dungeon.DungBullets = KeyBullets
+			print("Updated " .. dungeon.dungAbbr .. " with key level " .. keylevel)
+			AMT:AMT_UpdateMythicGraph()
+			return
+		end
+	end
+	print("Dungeon abbreviation not found: " .. dungeonAbbr)
+end
+
+local function handler(msg, editBox)
+	if msg == "debug" then
+		AMT.DebugMode = not AMT.DebugMode
+		print("DebugMode: " .. tostring(AMT.DebugMode))
+	elseif msg:match("^add") then
+		local command, dungeon, keylevel = msg:match("^(%S*)%s*(%S*)%s*(%S*)$")
+		if command == "add" then
+			if dungeon and keylevel then
+				print("running updatehighestkey")
+				-- Update the highest key for the specified dungeon
+				AMT:UpdateHighestKey(dungeon, keylevel)
+			else
+				print("Usage: /amt add <dungeon_abbr> <key_level>")
+			end
+		end
+	elseif msg == "print AMT" then
+		if AMT and AMT.BestKeys_per_Dungeon then
+			print("Contents of BestKeys_per_Dungeon:")
+			for index, dungeon in ipairs(AMT.BestKeys_per_Dungeon) do
+				print("Dungeon #" .. index .. ":")
+				for key, value in pairs(dungeon) do
+					print("\t", key, value)
+				end
+			end
+		else
+			print("AMT or BestKeys_per_Dungeon is nil.")
+		end
+	end
+end
+SLASH_AMT1 = "/amt"
+SlashCmdList["AMT"] = handler
+
+-- ======================================
+-- === Create AMT_Window ===
+-- ======================================
+
+local AMT_Window
+if AMT.ElvUIEnabled then
 	AMT_Window = CreateFrame("Frame", "AMT_Window", UIParent, "AMT_Window_ElvUITemplate")
-	S:HandleFrame(AMT_Window)
-	-- S:HandleFrame(AMT_Window.NineSlice)
-	-- AMT_Window:StripTextures()
-	-- AMT_Window:SetTemplate("Transparent")
-	-- AMT_Window.Bg:StripTextures()
-	-- AMT_Window.Bg:SetTemplate("Transparent")
-	-- AMT_Window.NineSlice:StripTextures()
-	-- AMT_Window.NineSlice:SetTemplate("Transparent")
+	AMT.S:HandleFrame(AMT_Window)
 else
 	AMT_Window = CreateFrame("Frame", "AMT_Window", UIParent, "AMT_Window_RetailTemplate")
-	--Set the Portrait of the PVEFrame
-	-- AMT_Window:SetPortraitToAsset("Interface\\Icons\\Ability_BossMagistrix_TimeWarp2")
 end
+
 AMT_Window:SetSize(1000, PVEFrame:GetHeight())
 -- AMT_Window:SetFrameStrata("HIGH")
 AMT_Window:Raise()
@@ -56,10 +114,18 @@ AMT_Window:SetScript("OnMouseUp", function(self, button)
 	self:StopMovingOrSizing()
 end)
 
+-- ======================================
+-- === On addon load pull player data ===
+-- ======================================
+
+-- ======================================
+-- === Create AMT Tab for PVEFrame ===
+-- ======================================
+
 --Create the tab button that will open up the AMT Tab in PVEFrame.
 local AMT_TabButton = CreateFrame("Button", "AMT_Tab", PVEFrame, "PanelTabButtonTemplate", (PVEFrame.numTabs + 1))
-if ElvUI then
-	S:HandleTab(AMT_TabButton)
+if AMT.ElvUIEnabled then
+	AMT.S:HandleTab(AMT_TabButton)
 	AMT_TabButton:SetText("Keystone Tracker")
 else
 	AMT_TabButton:SetText("Advanced Keystone Tracker")
@@ -71,7 +137,7 @@ PanelTemplates_DeselectTab(AMT_TabButton)
 PVEFrame:HookScript("OnShow", function()
 	AMT.Check_PVEFrame_TabNums()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
-		if ElvUI then
+		if AMT.ElvUIEnabled then
 			AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
 		else
 			--Now that we've checked # of active tabs we'll anchor the AMT button to the last active tab
@@ -105,7 +171,9 @@ AMT_TabButton:SetScript("OnClick", function()
 end)
 
 AMT_Window:SetScript("OnShow", function()
-	AMT_LoadTrackingData()
+	AMT:LoadTrackingData()
+	--Update the Keys info for tables self.Current_SeasonalDung_Info and BestKeys_per_Dungeon
+	AMT:Update_PlayerDungeonInfo()
 	AMT.Check_PVEFrame_TabNums()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
 		for i = 1, #PVEFrame_Panels do
@@ -140,8 +208,8 @@ AMT_Window:SetScript("OnShow", function()
 				tabButton:SetScript("OnClick", function()
 					PVEFrame_ToggleFrame(VisiblePanels[i].frameName)
 				end)
-				if ElvUI then
-					S:HandleTab(AMT_Window_TabButton)
+				if AMT.ElvUIEnabled then
+					AMT.S:HandleTab(AMT_Window_TabButton)
 					if i == 1 then
 						AMT_Window_TabButton:SetPoint("TOPLEFT", AMT_Window, "BOTTOMLEFT", -3, 0)
 					else
