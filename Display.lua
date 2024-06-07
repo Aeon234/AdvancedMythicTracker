@@ -90,7 +90,7 @@ function AMT:AMT_Creation()
 	local WeeklyBest_Compartment
 	if not _G["AMT_WeeklyBest_Compartment"] then
 		WeeklyBest_Compartment = CreateFrame("Frame", "AMT_WeeklyBest_Compartment", AMT_Window)
-		WeeklyBest_Compartment:SetSize(180, 82)
+		WeeklyBest_Compartment:SetSize(180, 68)
 		WeeklyBest_Compartment:SetPoint("TOPLEFT", AMT_Window, "TOPLEFT", AMT_Window_X_Offset, -AMT_Window_Y_Offset)
 		WeeklyBest_Compartment.tex = WeeklyBest_Compartment:CreateTexture()
 		WeeklyBest_Compartment.tex:SetAllPoints(WeeklyBest_Compartment)
@@ -103,7 +103,7 @@ function AMT:AMT_Creation()
 		WeeklyBest_Label:SetTextColor(1, 1, 1, 1.0)
 		--Generates the background where the weekly best key # is going to be displayed
 		local WeeklyBest_Bg = CreateFrame("Frame", "AMT_WeeklyBest_Bg", WeeklyBest_Compartment)
-		WeeklyBest_Bg:SetSize(112, 50)
+		WeeklyBest_Bg:SetSize(112, 40)
 		WeeklyBest_Bg:SetPoint("TOP", WeeklyBest_Label, "BOTTOM", 0, -4)
 		WeeklyBest_Bg.tex = WeeklyBest_Bg:CreateTexture()
 		WeeklyBest_Bg.tex:SetAllPoints(WeeklyBest_Bg)
@@ -242,23 +242,23 @@ function AMT:AMT_Creation()
 		--Create the Raid Header
 		local Raid_Goals_Header = CreateFrame("Frame", "AMT_Raid_Goals_Header", Lockouts_Comparment)
 		Raid_Goals_Header:SetSize(180, 18)
-		Raid_Goals_Header:SetPoint("TOP", Lockouts_Comparment, "TOP", 0, 0)
+		Raid_Goals_Header:SetPoint("TOP", Lockouts_Comparment, "TOP", 0, -2)
 		Raid_Goals_Header.tex = Raid_Goals_Header:CreateTexture()
 		Raid_Goals_Header.tex:SetAllPoints(Raid_Goals_Header)
 		Raid_Goals_Header.tex:SetColorTexture(unpack(self.BackgroundClear))
 		--Create the Raid Label Text
 		local WeeklyRaid_Label = Raid_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
-		WeeklyRaid_Label:SetPoint("TOPLEFT", Lockouts_Comparment, "TOPLEFT", 8, 0)
-		WeeklyRaid_Label:SetText("Raid:")
+		WeeklyRaid_Label:SetPoint("TOP", Raid_Goals_Header, "TOP", 0, 0)
+		WeeklyRaid_Label:SetText("Raid")
 		WeeklyRaid_Label:SetFont(WeeklyRaid_Label:GetFont(), 14)
 
 		--Create the Main Compartment for all Raid Difficulties
-		Raid_Compartment = CreateFrame("Frame", "AMT_Raid_Compartment", AMT_Window)
-		Raid_Compartment:SetSize(180, 20 * 4)
-		Raid_Compartment:SetPoint("TOPLEFT", WeeklyRaid_Label, "BOTTOMLEFT", -8, -1)
-		Raid_Compartment.tex = Raid_Compartment:CreateTexture()
-		Raid_Compartment.tex:SetAllPoints(Raid_Compartment)
-		Raid_Compartment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		-- Raid_Compartment = CreateFrame("Frame", "AMT_Raid_Compartment", AMT_Window)
+		-- Raid_Compartment:SetSize(180, 20 * 4)
+		-- Raid_Compartment:SetPoint("TOPLEFT", WeeklyRaid_Label, "BOTTOMLEFT", -8, -1)
+		-- Raid_Compartment.tex = Raid_Compartment:CreateTexture()
+		-- Raid_Compartment.tex:SetAllPoints(Raid_Compartment)
+		-- Raid_Compartment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
 
 		--Create the frames that will store the boxes for each difficulty, running through each difficulty level for the current season's Raid
 		local Raid_MainFrame = {}
@@ -273,11 +273,35 @@ function AMT:AMT_Creation()
 			Raid_MainFrame[i].tex:SetAllPoints(Raid_MainFrame[i])
 			Raid_MainFrame[i].tex:SetColorTexture(unpack(self.BackgroundClear))
 
+			-- Create the frame that will hold the boxes for each difficulty
+			Raid_MainFrame_BoxFrame[i] = CreateFrame("Frame", "AMT_Raid_MainFrame_BoxFrame" .. i, Raid_MainFrame[i])
+			Raid_MainFrame_BoxFrame[i]:SetSize(180, 22)
+			Raid_MainFrame_BoxFrame[i]:SetPoint("CENTER", Raid_MainFrame[i], "CENTER", 0, 0)
+			Raid_MainFrame_BoxFrame[i].tex = Raid_MainFrame_BoxFrame[i]:CreateTexture()
+			Raid_MainFrame_BoxFrame[i].tex:SetAllPoints(Raid_MainFrame_BoxFrame[i])
+			Raid_MainFrame_BoxFrame[i].tex:SetColorTexture(unpack(self.BackgroundClear))
+			-- Set the position of each frame
+			if i == 1 then
+				Raid_MainFrame[i]:SetPoint("TOPLEFT", Raid_Goals_Header, "BOTTOMLEFT", 4, 4)
+			else
+				local previousFrame = _G["AMT_RaidDifficulty" .. (i - 1)]
+				Raid_MainFrame[i]:SetPoint("TOP", previousFrame, "BOTTOM", 0, 0)
+			end
+			local Raid_BoxMargin = (
+				Raid_MainFrame[1]:GetWidth()
+				- ((self.Vault_BoxSize * AMT.Vault_RaidReq) + (3 * (AMT.Vault_RaidReq - 1)))
+			) / 2
 			-- Create the Frame that will house the label for the difficulty
 			Raid_MainFrame_LabelFrame[i] =
 				CreateFrame("Frame", "AMT_Raid_MainFrame_Label" .. i, _G["AMT_RaidDifficulty" .. i])
 			Raid_MainFrame_LabelFrame[i]:SetSize(42, 22)
-			Raid_MainFrame_LabelFrame[i]:SetPoint("LEFT", _G["AMT_RaidDifficulty" .. i], "LEFT", 0, 0)
+			Raid_MainFrame_LabelFrame[i]:SetPoint(
+				"RIGHT",
+				_G["AMT_Raid_MainFrame_BoxFrame" .. i],
+				"LEFT",
+				Raid_BoxMargin,
+				0
+			)
 			Raid_MainFrame_LabelFrame[i].tex = Raid_MainFrame_LabelFrame[i]:CreateTexture()
 			Raid_MainFrame_LabelFrame[i].tex:SetAllPoints(Raid_MainFrame_LabelFrame[i])
 			Raid_MainFrame_LabelFrame[i].tex:SetColorTexture(unpack(self.BackgroundClear))
@@ -289,31 +313,17 @@ function AMT:AMT_Creation()
 				"MovieSubtitleFont"
 			)
 			RaidDifficulty_Label[i]:SetPoint("RIGHT", Raid_MainFrame_LabelFrame[i], "RIGHT", 0, 0)
-			RaidDifficulty_Label[i]:SetText("|cffffffff" .. difficulty.label)
-			RaidDifficulty_Label[i]:SetFont(RaidDifficulty_Label[i]:GetFont(), 14)
+			RaidDifficulty_Label[i]:SetText("|cffffffff" .. difficulty.abbr)
+			RaidDifficulty_Label[i]:SetFont(RaidDifficulty_Label[i]:GetFont(), 12)
 			RaidDifficulty_Label[i]:SetJustifyH("RIGHT")
 			RaidDifficulty_Label[i]:SetJustifyV("MIDDLE")
-			-- Create the frame that will hold the boxes for each difficulty
-			Raid_MainFrame_BoxFrame[i] = CreateFrame("Frame", "AMT_Raid_MainFrame_BoxFrame" .. i, Raid_MainFrame[i])
-			Raid_MainFrame_BoxFrame[i]:SetSize(148, 22)
-			Raid_MainFrame_BoxFrame[i]:SetPoint("LEFT", RaidDifficulty_Label[i], "RIGHT", 0, 0)
-			Raid_MainFrame_BoxFrame[i].tex = Raid_MainFrame_BoxFrame[i]:CreateTexture()
-			Raid_MainFrame_BoxFrame[i].tex:SetAllPoints(Raid_MainFrame_BoxFrame[i])
-			Raid_MainFrame_BoxFrame[i].tex:SetColorTexture(unpack(self.BackgroundClear))
-			-- Set the position of each frame
-			if i == 1 then
-				Raid_MainFrame[i]:SetPoint("TOPLEFT", Raid_Goals_Header, "BOTTOMLEFT", 0, 4)
-			else
-				local previousFrame = _G["AMT_RaidDifficulty" .. (i - 1)]
-				Raid_MainFrame[i]:SetPoint("TOP", previousFrame, "BOTTOM", 0, 0)
-			end
 			--
 			--MARK: REWORK THIS WHOLE THING TOOLTIPS
 			--
 			Raid_MainFrame[i]:SetScript("OnEnter", function()
 				GameTooltip:ClearAllPoints()
 				GameTooltip:ClearLines()
-				GameTooltip:SetOwner(_G["AMT_Raid_Compartment"], "ANCHOR_RIGHT")
+				GameTooltip:SetOwner(Raid_MainFrame[i], "ANCHOR_RIGHT")
 				GameTooltip:SetText(difficulty.name .. " Progress", 1, 1, 1, 1, true)
 				Raid_LockoutInfo = AMT:Filter_LockedBosses(self.SeasonalRaids, difficulty.abbr)
 				AMTTestTable = self.SeasonalRaids
@@ -360,6 +370,11 @@ function AMT:AMT_Creation()
 		--MARK: REWORK THIS WHOLE THING
 		--
 		--Create the boxes within the frames for each difficulty
+		local Raid_BoxSpacing = 3
+		local Raid_BoxMargin = (
+			Raid_MainFrame[1]:GetWidth()
+			- ((self.Vault_BoxSize * AMT.Vault_RaidReq) + (Raid_BoxSpacing * (AMT.Vault_RaidReq - 1)))
+		) / 2
 		for i, difficulty in ipairs(self.RaidDifficulty_Levels) do
 			local DifficultyName = difficulty.abbr
 			local RaidBox = {}
@@ -370,10 +385,10 @@ function AMT:AMT_Creation()
 				RaidBox[i].tex:SetAllPoints(RaidBox[i])
 				RaidBox[i].tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
 				if n == 1 then
-					RaidBox[i]:SetPoint("LEFT", _G["AMT_Raid_MainFrame_BoxFrame" .. i], "LEFT", 0, 0)
+					RaidBox[i]:SetPoint("LEFT", _G["AMT_Raid_MainFrame_BoxFrame" .. i], "LEFT", Raid_BoxMargin, 0)
 				else
 					local previousBox = _G["AMT_" .. DifficultyName .. (n - 1)]
-					RaidBox[i]:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+					RaidBox[i]:SetPoint("LEFT", previousBox, "RIGHT", Raid_BoxSpacing, 0)
 				end
 			end
 		end
@@ -387,36 +402,22 @@ function AMT:AMT_Creation()
 
 		--Create the M+ Section Label
 		local WeeklyMplus_Label = Mplus_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
-		WeeklyMplus_Label:SetPoint("TOPLEFT", Mplus_Goals_Header, "TOPLEFT", 6, 0)
-		WeeklyMplus_Label:SetText("Mythic+:")
+		WeeklyMplus_Label:SetPoint("TOP", Mplus_Goals_Header, "TOP", 0, -2)
+		WeeklyMplus_Label:SetText("Mythic+")
 		WeeklyMplus_Label:SetFont(WeeklyMplus_Label:GetFont(), 14)
 
 		--Create the Mythic Plus Main Frame that will house the label and the boxes
 		local Mplus_Mainframe = CreateFrame("Frame", "AMT_Mplus_Mainframe", Lockouts_Comparment)
 		Mplus_Mainframe:SetSize(180, 22)
-		Mplus_Mainframe:SetPoint("TOPLEFT", Mplus_Goals_Header, "BOTTOMLEFT", 0, 4)
+		Mplus_Mainframe:SetPoint("TOPLEFT", Mplus_Goals_Header, "BOTTOMLEFT", 0, 0)
 		Mplus_Mainframe.tex = Mplus_Mainframe:CreateTexture()
 		Mplus_Mainframe.tex:SetAllPoints(Mplus_Mainframe)
 		Mplus_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundClear))
-		--Create the label container for the M+ Boxes
-		local Mplus_MainFrame_LabelFrame = CreateFrame("Frame", "AMT_Mplus_MainFrame_Label", Mplus_Mainframe)
-		Mplus_MainFrame_LabelFrame:SetSize(42, 22)
-		Mplus_MainFrame_LabelFrame:SetPoint("LEFT", Mplus_Mainframe, "LEFT", 0, 0)
-		Mplus_MainFrame_LabelFrame.tex = Mplus_MainFrame_LabelFrame:CreateTexture()
-		Mplus_MainFrame_LabelFrame.tex:SetAllPoints(Mplus_MainFrame_LabelFrame)
-		Mplus_MainFrame_LabelFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
-		--Create the label for the M+ Boxes
-		local MplusDifficulty_Label =
-			Mplus_MainFrame_LabelFrame:CreateFontString("AMT_MplusDifficulty_Label", "OVERLAY", "MovieSubtitleFont")
-		MplusDifficulty_Label:SetPoint("RIGHT", Mplus_MainFrame_LabelFrame, "RIGHT", 0, 0)
-		MplusDifficulty_Label:SetText("|cffffffffM - ")
-		MplusDifficulty_Label:SetFont(MplusDifficulty_Label:GetFont(), 14)
-		MplusDifficulty_Label:SetJustifyH("RIGHT")
-		MplusDifficulty_Label:SetJustifyV("MIDDLE")
+
 		--Create the M+ Boxes Container
 		local Mplus_MainFrame_BoxFrame = CreateFrame("Frame", "AMT_Mplus_MainFrame_BoxFrame", Mplus_Mainframe)
-		Mplus_MainFrame_BoxFrame:SetSize(148, 22)
-		Mplus_MainFrame_BoxFrame:SetPoint("LEFT", Mplus_MainFrame_LabelFrame, "RIGHT", 0, 0)
+		Mplus_MainFrame_BoxFrame:SetSize(180, 22)
+		Mplus_MainFrame_BoxFrame:SetPoint("CENTER", Mplus_Mainframe, "CENTER", 0, 0)
 		Mplus_MainFrame_BoxFrame.tex = Mplus_MainFrame_BoxFrame:CreateTexture()
 		Mplus_MainFrame_BoxFrame.tex:SetAllPoints(Mplus_MainFrame_BoxFrame)
 		Mplus_MainFrame_BoxFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
@@ -451,20 +452,57 @@ function AMT:AMT_Creation()
 		end)
 
 		--Create the M+ Boxes
+		local Mplus_BoxSpacing = 3
+		local Mplus_BoxMargin = (
+			Mplus_Mainframe:GetWidth()
+			- ((self.Vault_BoxSize * AMT.Vault_DungeonReq) + (Mplus_BoxSpacing * (AMT.Vault_DungeonReq - 1)))
+		) / 2
 		for i = 1, AMT.Vault_DungeonReq do
 			Mplus_Box = CreateFrame("Frame", "AMT_Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
 			Mplus_Box:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
 			Mplus_Box.tex = Mplus_Box:CreateTexture()
 			Mplus_Box.tex:SetAllPoints(Mplus_Box)
 			Mplus_Box.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+
 			if i == 1 then
-				Mplus_Box:SetPoint("LEFT", Mplus_MainFrame_BoxFrame, "LEFT", 0, 0)
+				Mplus_Box:SetPoint("LEFT", Mplus_MainFrame_BoxFrame, "LEFT", Mplus_BoxMargin, 0)
 			else
 				local previousBox = _G["AMT_Mplus_Box" .. (i - 1)]
-				Mplus_Box:SetPoint("LEFT", previousBox, "RIGHT", 3, 0)
+				Mplus_Box:SetPoint("LEFT", previousBox, "RIGHT", Mplus_BoxSpacing, 0)
 			end
 		end
 	end
+	-- MARK: Create World Container
+	--Create the M+ Header Container
+	local World_Goals_Header = CreateFrame("Frame", "AMT_World_Goals_Header", Lockouts_Comparment)
+	World_Goals_Header:SetSize(180, 18)
+	World_Goals_Header:SetPoint("TOP", _G["AMT_Mplus_Mainframe"], "BOTTOM", 0, 0)
+	World_Goals_Header.tex = World_Goals_Header:CreateTexture()
+	World_Goals_Header.tex:SetAllPoints(World_Goals_Header)
+	World_Goals_Header.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+
+	--Create the M+ Section Label
+	local WeeklyWorld_Label = World_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+	WeeklyWorld_Label:SetPoint("TOP", World_Goals_Header, "TOP", 0, 0)
+	WeeklyWorld_Label:SetText("World")
+	WeeklyWorld_Label:SetFont(WeeklyWorld_Label:GetFont(), 14)
+
+	--Create the Mythic Plus Main Frame that will house the label and the boxes
+	local World_Mainframe = CreateFrame("Frame", "AMT_World_Mainframe", Lockouts_Comparment)
+	World_Mainframe:SetSize(180, 22)
+	World_Mainframe:SetPoint("TOPLEFT", World_Goals_Header, "BOTTOMLEFT", 0, 2)
+	World_Mainframe.tex = World_Mainframe:CreateTexture()
+	World_Mainframe.tex:SetAllPoints(World_Mainframe)
+	World_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+
+	--Create the M+ Boxes Container
+	local World_Mainframe_BoxFrame = CreateFrame("Frame", "AMT_World_Mainframe_BoxFrame", World_Mainframe)
+	World_Mainframe_BoxFrame:SetSize(180, 22)
+	World_Mainframe_BoxFrame:SetPoint("CENTER", World_Mainframe, "CENTER", 0, 0)
+	World_Mainframe_BoxFrame.tex = World_Mainframe_BoxFrame:CreateTexture()
+	World_Mainframe_BoxFrame.tex:SetAllPoints(World_Mainframe_BoxFrame)
+	World_Mainframe_BoxFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+
 	-- MARK: Create Dungeons Icon Container
 	local DungeonIcons_Container
 	if not _G["AMT_DungeonIcons_Container"] then
@@ -1130,7 +1168,7 @@ function AMT:AMT_DataUpdate()
 		end
 		local difficulty = self.Weekly_KillCount[i].abbr
 		for j = 1, RaidBosses_Killed do
-			if j == 2 or j == 4 or j == 6 then
+			if j == self.Raid_VaultUnlocks[1] or j == self.Raid_VaultUnlocks[2] or j == self.Raid_VaultUnlocks[3] then
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
 			else
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
@@ -1152,7 +1190,11 @@ function AMT:AMT_DataUpdate()
 
 	for i = 1, AMT.Vault_DungeonReq do
 		if WeeklyKeysHistory[i] ~= nil and WeeklyKeysHistory[i] > 0 then
-			if i == 1 or i == 4 or i == 8 then
+			if
+				i == self.Mplus_VaultUnlocks[1]
+				or i == self.Mplus_VaultUnlocks[2]
+				or i == self.Mplus_VaultUnlocks[3]
+			then
 				_G["AMT_Mplus_Box" .. i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
 			else
 				_G["AMT_Mplus_Box" .. i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)

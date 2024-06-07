@@ -265,6 +265,23 @@ function AMT:LoadTrackingData()
 	end
 end
 
+function AMT:Pull_VaultRequirements()
+	local Mplus_VaultReqs = C_WeeklyRewards.GetActivities(1)
+	local Raid_VaultReqs = C_WeeklyRewards.GetActivities(3)
+	wipe(self.Mplus_VaultUnlocks or {})
+	wipe(self.Raid_VaultUnlocks or {})
+
+	for i = 1, #Mplus_VaultReqs do
+		tinsert(self.Mplus_VaultUnlocks, Mplus_VaultReqs[i].threshold)
+	end
+	for i = 1, #Raid_VaultReqs do
+		tinsert(self.Raid_VaultUnlocks, Raid_VaultReqs[i].threshold)
+	end
+
+	AMT.Vault_DungeonReq = math.max(unpack(self.Mplus_VaultUnlocks))
+	AMT.Vault_RaidReq = math.max(unpack(self.Raid_VaultUnlocks))
+end
+
 function AMT:RaidTest()
 	self.RaidVault_Bosses = C_WeeklyRewards.GetActivityEncounterInfo(3, 1) --Grab current encounters that count towards vault
 	--sort the encounters so in case of multiple raids so that first raid appears first.
@@ -825,13 +842,9 @@ function AMT:Filter_LockedBosses(seasonalRaids, difficulty)
 	local filteredLockouts = {}
 	for _, raid in ipairs(seasonalRaids) do
 		-- for i = 1, #seasonalRaids do
-		print(raid.name)
 		-- Check if the specified difficulty exists in the raid
-		print(difficulty)
 		if raid.difficulty[difficulty].reset > 0 then
 			for _, lockout in ipairs(raid.difficulty[difficulty].lockout) do
-				print(lockout.name)
-				print(lockout.killed)
 				if lockout.killed == true then
 					-- print(lockout.bossName)
 					-- local bossName = raid.difficulty[difficulty].lockout[1].bossName

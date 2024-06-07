@@ -27,6 +27,8 @@ end
 AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
 AMT.Vault_DungeonReq = 8 -- Number of Dungeon completions required for max rewards
+AMT.Mplus_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for M+
+AMT.Raid_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for Raid
 AMT.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 AMT.CurrentWeek_AffixTable = {} --Cleaned Affix Table
 AMT.NextWeek_AffixTable = {} --Next Week's Affix Table
@@ -42,7 +44,7 @@ AMT.SeasonalRaids = {}
 AMT.Raid_Progress = {}
 AMT.Tab = "          "
 AMT.Whitetext = "|cffffffff"
-AMT.BackgroundClear = { 0, 0, 0, 0.0 } --Clear Background
+AMT.BackgroundClear = { 1, 1, 1, 0.0 } --Clear Background
 AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
 AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
 

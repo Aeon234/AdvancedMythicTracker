@@ -82,6 +82,7 @@ end)
 -- === Set AMT_Window "On Show" ===
 -- ================================
 AMT_Window:SetScript("OnShow", function()
+	AMT:Pull_VaultRequirements()
 	AMT:RaidTest()
 	AMT:AMT_UpdateAffixInformation()
 	AMT:Update_PlayerDungeonInfo()
