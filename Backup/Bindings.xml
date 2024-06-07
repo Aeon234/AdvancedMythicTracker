@@ -1,5 +1,5 @@
 <Bindings>
-  <Binding name="AMT" category="|cff18a8ffAdvanced Mythic Tracker|r">
+  <Binding name="AMT" category="Advanced Mythic Tracker">
     if (InCombatLockdown()) or (UnitLevel("player") ~= GetMaxLevelForPlayerExpansion()) then return end
     if AMT_Window:IsVisible()then
       AMT_Window:Hide()

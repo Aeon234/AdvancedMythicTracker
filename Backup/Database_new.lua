@@ -6,7 +6,6 @@ local addonName, AMT = ...
 AMT.AMT_CreationComplete = false
 AMT.ElvUIEnabled = false
 AMT.DetailsEnabled = false
-AMT.RaiderIOEnabled = false
 AMT.DebugMode = false
 
 if ElvUI then
@@ -20,36 +19,26 @@ if Details then
 	AMT.OpenRaidLib = LibStub("LibOpenRaid-1.0", true) -- Call OpenRaidLib functions
 end
 
-if RaiderIO then
-	AMT.RaiderIOEnabled = true
-end
-
-AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
 AMT.Vault_DungeonReq = 8 -- Number of Dungeon completions required for max rewards
 AMT.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 AMT.CurrentWeek_AffixTable = {} --Cleaned Affix Table
 AMT.NextWeek_AffixTable = {} --Next Week's Affix Table
-AMT.RaidVault_Bosses = C_WeeklyRewards.GetActivityEncounterInfo(3, 1)
 AMT.Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player") --Raw Player M+ Summary
 AMT.Player_Mplus_ScoreColor = nil --M+ Score Color
 AMT.RunHistory = {} --M+ runs history
 AMT.KeysDone = {} --Cleaned M+ runs history
 AMT.Current_SeasonalDung_Info = {} --Current M+ dungeons info
 AMT.BestKeys_per_Dungeon = {} --Highest keys done per M+ dungeon
-AMT.GroupKeystone_Info = {}
-AMT.SeasonalRaids = {}
-AMT.Raid_Progress = {}
 AMT.Tab = "          "
 AMT.Whitetext = "|cffffffff"
-AMT.BackgroundClear = { 0, 0, 0, 0.0 } --Clear Background
-AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
-AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
+AMT.BackgroundClear = { 0, 0, 0, 0.0 }
+AMT.BackgroundClear = { 0, 0, 0, 0.4 }
 
 -- ==============================
 -- === Shortcuts and Keybinds ===
 -- ==============================
-_G["BINDING_NAME_AMT"] = "Toggle AMT Window" -- Keybind option name
+_G["BINDING_NAME_AMT"] = "Show/Hide the window" -- Keybind option name
 
 -- ===================
 -- === Data Tables ===
@@ -82,70 +71,70 @@ AMT.PVEFrame_Panels = {
 -- Rewards table for each key level
 AMT.RewardsTable = {
 	{
-		Key = 2,
+		Key = "2",
 		EndofDungeon = "496",
 		DungeonUpgradeTrack = "Champion 2/8",
 		GreatVault = "509",
 		VaultUpgradeTrack = "Hero 2/6",
 	},
 	{
-		Key = 3,
+		Key = "3",
 		EndofDungeon = "499",
 		DungeonUpgradeTrack = "Champion 3/8",
 		GreatVault = "509",
 		VaultUpgradeTrack = "Hero 2/6",
 	},
 	{
-		Key = 4,
+		Key = "4",
 		EndofDungeon = "499",
 		DungeonUpgradeTrack = "Champion 3/8",
 		GreatVault = "512",
 		VaultUpgradeTrack = "Hero 3/6",
 	},
 	{
-		Key = 5,
+		Key = "5",
 		EndofDungeon = "502",
 		DungeonUpgradeTrack = "Champion 4/8",
 		GreatVault = "512",
 		VaultUpgradeTrack = "Hero 3/6",
 	},
 	{
-		Key = 6,
+		Key = "6",
 		EndofDungeon = "502",
 		DungeonUpgradeTrack = "Champion 4/8",
 		GreatVault = "515",
 		VaultUpgradeTrack = "Hero 4/6",
 	},
 	{
-		Key = 7,
+		Key = "7",
 		EndofDungeon = "506",
 		DungeonUpgradeTrack = "Hero 1/6",
 		GreatVault = "515",
 		VaultUpgradeTrack = "Hero 4/6",
 	},
 	{
-		Key = 8,
+		Key = "8",
 		EndofDungeon = "506",
 		DungeonUpgradeTrack = "Hero 1/6",
 		GreatVault = "519",
 		VaultUpgradeTrack = "Myth 1/4",
 	},
 	{
-		Key = 9,
+		Key = "9",
 		EndofDungeon = "509",
 		DungeonUpgradeTrack = "Hero 2/6",
 		GreatVault = "519",
 		VaultUpgradeTrack = "Myth 1/4",
 	},
 	{
-		Key = 10,
+		Key = "10",
 		EndofDungeon = "509",
 		DungeonUpgradeTrack = "Hero 2/6",
 		GreatVault = "522",
 		VaultUpgradeTrack = "Myth 2/4",
 	},
 }
--- Dungeon info by expansion
+
 AMT.SeasonalDungeons = {
 	--Dragonflight
 	{ abbr = "RLP", name = "Ruby Life Pools", spellID = 393256, mapID = 399 }, -- Ruby Life Pools
@@ -206,32 +195,6 @@ AMT.SeasonalDungeons = {
 	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456 }, -- Throne of the Tides
 }
 
-AMT.Raids = {
-
-	{
-		abbr = "VOTI",
-		name = "Vault of the Incarnates",
-		journalInstanceID = 1200,
-		instanceID = 2522,
-		numEncounters = 8,
-	},
-	{
-		abbr = "ATSC",
-		name = "Aberrus, the Shadowed Crucible",
-		journalInstanceID = 1208,
-		instanceID = 2569,
-		numEncounters = 9,
-	},
-	{
-		abbr = "ATDH",
-		name = "Amirdrassil, the Dream's Hope",
-		journalInstanceID = 1207,
-		instanceID = 2549,
-		numEncounters = 9,
-	},
-}
-
---Raid Difficulties
 AMT.RaidDifficulty_Levels = {
 	{ id = 16, color = LEGENDARY_ORANGE_COLOR, order = 1, label = "M - ", name = "Mythic", abbr = "M" },
 	{ id = 15, color = EPIC_PURPLE_COLOR, order = 2, label = "H - ", name = "Heroic", abbr = "H" },
@@ -239,13 +202,88 @@ AMT.RaidDifficulty_Levels = {
 	{ id = 17, color = UNCOMMON_GREEN_COLOR, order = 4, label = "LFR - ", name = "Looking For Raid", abbr = "LFR" },
 }
 
--- M+ Weekly Modifiers
-AMT.Keystone_Modifiers = {
-	{ mod = "Tyrannical", id = 9, values = { 30, 15, 0, 0 } },
-	{ mod = "Fortified", id = 10, values = { 0, 0, 20, 30 } },
+AMT.SeasonalRaids = {
+	{
+		seasonID = 9,
+		seasonDisplayID = 1,
+		journalInstanceID = 1200,
+		instanceID = 2522,
+		order = 1,
+		numEncounters = 8,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "VOTI",
+		name = "Vault of the Incarnates",
+	},
+	{
+		seasonID = 10,
+		seasonDisplayID = 2,
+		journalInstanceID = 1208,
+		instanceID = 2569,
+		order = 2,
+		numEncounters = 9,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "ATSC",
+		name = "Aberrus, the Shadowed Crucible",
+	},
+	{
+		seasonID = 11,
+		seasonDisplayID = 3,
+		journalInstanceID = 1207,
+		instanceID = 2549,
+		order = 3,
+		numEncounters = 9,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "ATDH",
+		name = "Amirdrassil, the Dream's Hope",
+	},
+	{
+		seasonID = 12,
+		seasonDisplayID = 4,
+		journalInstanceID = 1200,
+		instanceID = 2522,
+		order = 1,
+		numEncounters = 8,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "VOTI",
+		name = "Vault of the Incarnates",
+	},
+	{
+		seasonID = 12,
+		seasonDisplayID = 4,
+		journalInstanceID = 1208,
+		instanceID = 2569,
+		order = 2,
+		numEncounters = 9,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "ATSC",
+		name = "Aberrus, the Shadowed Crucible",
+	},
+	{
+		seasonID = 12,
+		seasonDisplayID = 4,
+		journalInstanceID = 1207,
+		instanceID = 2549,
+		order = 3,
+		numEncounters = 9,
+		encounters = {},
+		modifiedInstanceInfo = nil,
+		abbr = "ATDH",
+		name = "Amirdrassil, the Dream's Hope",
+	},
 }
 
--- Affix Rotation for the Season
+AMT.Weekly_KillCount = {
+	{ name = "M", kills = 0 },
+	{ name = "H", kills = 0 },
+	{ name = "N", kills = 0 },
+	{ name = "LFR", kills = 0 },
+}
+
 AMT.AffixRotation = {
 	{ rotation = { 9, 124, 6 } },
 	{ rotation = { 10, 134, 7 } },
@@ -257,11 +295,4 @@ AMT.AffixRotation = {
 	{ rotation = { 10, 136, 8 } },
 	{ rotation = { 9, 134, 11 } },
 	{ rotation = { 10, 3, 123 } },
-}
-
-AMT.Weekly_KillCount = {
-	{ name = "Mythic", abbr = "M", kills = 0 },
-	{ name = "Heroic", abbr = "H", kills = 0 },
-	{ name = "Normal", abbr = "N", kills = 0 },
-	{ name = "Looking For Raid", abbr = "LFR", kills = 0 },
 }

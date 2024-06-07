@@ -7,7 +7,7 @@
 ## IconTexture: Interface\Addons\AdvancedMythicTracker\AMT_Logo.png
 ## X-Curse-Project-ID: 
 ## X-Wago-ID: 
-## OptionalDeps: ElvUI, Details, RaiderIO
+## OptionalDeps: ElvUI, Details
 
 AMT_Frames.xml
 

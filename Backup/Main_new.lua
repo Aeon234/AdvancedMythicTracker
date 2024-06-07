@@ -10,20 +10,6 @@ if AMT.ElvUIEnabled then
 else
 	AMT_Window = CreateFrame("Frame", "AMT_Window", UIParent, "AMT_Window_RetailTemplate")
 end
-AMT_Window:SetSize(960, PVEFrame:GetHeight()) -- Set Size
-AMT_Window:Raise() --Set frame layer to be at the top of others
-AMT_Window:SetToplevel(true)
-AMT_Window:Hide() --Hide Window
-AMT_Window:SetClampedToScreen(true) -- Clamp to screen
-AMT_Window:SetMovable(true) -- Set frame to be movable
-AMT_Window:EnableMouse(true) -- Capture mouse interaction with window
-AMT_Window:RegisterForDrag("LeftButton") -- Register left mouse button click for dragging
-AMT_Window:SetScript("OnDragStart", function(self, button)
-	self:StartMoving()
-end)
-AMT_Window:SetScript("OnDragStop", function(self, button)
-	self:StopMovingOrSizing()
-end)
 
 -- =================================
 -- === Initialize AMT Tab Button ===
@@ -55,7 +41,7 @@ end)
 -- === Hook PVEFrame "On Show" ===
 -- ===============================
 PVEFrame:HookScript("OnShow", function()
-	AMT:Check_PVEFrame_TabNums()
+	AMT.Check_PVEFrame_TabNums()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
 		if AMT.ElvUIEnabled then
 			AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
@@ -81,14 +67,4 @@ end)
 -- ================================
 -- === Set AMT_Window "On Show" ===
 -- ================================
-AMT_Window:SetScript("OnShow", function()
-	AMT:RaidTest()
-	AMT:AMT_UpdateAffixInformation()
-	AMT:Update_PlayerDungeonInfo()
-	AMT:AMT_Update_PlayerMplus_Score()
-	if AMT.AMT_CreationComplete then
-		AMT:AMT_DataUpdate()
-	else
-		AMT:AMT_Creation()
-	end
-end)
+AMT_Window:SetScript("OnShow", function() end)
