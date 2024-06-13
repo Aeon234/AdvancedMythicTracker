@@ -1,4 +1,4 @@
-## Interface: 100207
+## Interface: 110000
 ## Title: |cff18a8ffAdvanced Mythic Tracker|r
 ## Notes: Track your |cffffd200Raid|r, |cffffd200Mythic+|r, and |cffffd200World|r activities.
 ## Author: Aeon

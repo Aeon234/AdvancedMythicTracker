@@ -27,6 +27,7 @@ end
 AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
 AMT.Vault_DungeonReq = 8 -- Number of Dungeon completions required for max rewards
+AMT.Vault_WorldReq = 12 -- Number of Delves or World Activities required for max rewards
 AMT.Mplus_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for M+
 AMT.Raid_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for Raid
 AMT.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
@@ -75,7 +76,7 @@ AMT.PVEFrame_Panels = {
 		isVisible = false,
 	},
 	{
-		text = "Advanced Keystone Tracker",
+		text = "Advanced Mythic Tracker",
 		frameName = "AMT_Window",
 		isVisible = false,
 	},
@@ -149,6 +150,15 @@ AMT.RewardsTable = {
 }
 -- Dungeon info by expansion
 AMT.SeasonalDungeons = {
+	--The War Within
+	{ abbr = "SF", name = "Priory of the Sacred Flame", spellID = 445444, mapID = 499 }, -- Priory of the Sacred Flame
+	{ abbr = "ROOK", name = "The Rookery", spellID = 445443, mapID = 500 }, -- The Rookery
+	{ abbr = "SV", name = "The Stonevault", spellID = 445269, mapID = 501 }, -- The Stonevault
+	{ abbr = "CoT", name = "City of Threads", spellID = 445416, mapID = 502 }, -- City of Threads
+	{ abbr = "CoE", name = "Ara-Kara, City of Echoes", spellID = 445417, mapID = 503 }, -- Ara-Kara, City of Echoes
+	{ abbr = "DC", name = "Darkflame Cleft", spellID = 445441, mapID = 504 }, -- Darkflame Cleft
+	{ abbr = "DAWN", name = "The Dawnbreaker", spellID = 445414, mapID = 505 }, -- The Dawnbreaker
+	{ abbr = "CM", name = "Cinderbrew Meadery", spellID = 445440, mapID = 506 }, -- Cinderbrew Meadery
 	--Dragonflight
 	{ abbr = "RLP", name = "Ruby Life Pools", spellID = 393256, mapID = 399 }, -- Ruby Life Pools
 	{ abbr = "NO", name = "The Nokhud Offensive", spellID = 393262, mapID = 400 }, -- The Nokhud Offensive
@@ -176,8 +186,14 @@ AMT.SeasonalDungeons = {
 	--Battle for Azeroth
 	{ abbr = "AD", name = "Atal'Dazar", spellID = 424187, mapID = 244 }, -- Atal'Dazar
 	{ abbr = "FH", name = "Freehold", spellID = 410071, mapID = 245 }, -- Freehold
+	-- { abbr = "SIEGE", name = "Tol Dagor", spellID = 445418, mapID = 246 }, -- Tol Dagor
+	-- { abbr = "SIEGE", name = "The MOTHERLODE!!", spellID = 445418, mapID = 247 }, -- The MOTHERLODE!!
 	{ abbr = "WM", name = "Waycrest Manor", spellID = 424167, mapID = 248 }, -- Waycrest Manor
+	-- { abbr = "SIEGE", name = "Kings' Rest", spellID = 445418, mapID = 249 }, -- Kings' Rest
+	-- { abbr = "SIEGE", name = "Siege of Boralus", spellID = 445418, mapID = 250 }, -- Temple of Sethraliss
 	{ abbr = "UNDR", name = "The Underrot", spellID = 410074, mapID = 251 }, -- The Underrot
+	-- { abbr = "SIEGE", name = "Shrine of the Storm", spellID = 445418, mapID = 252 }, -- Shrine of the Storm
+	{ abbr = "SIEGE", name = "Siege of Boralus", spellID = 445418, mapID = 353 }, -- Siege of Boralus
 	{ abbr = "JY", name = "Operation: Mechagon: Junkyard", spellID = 373274, mapID = 369 }, -- Operation: Mechagon: Junkyard
 	{ abbr = "WS", name = "Operation: Mechagon: Workshop", spellID = 373274, mapID = 370 }, -- Operation: Mechagon: Workshop
 
@@ -206,10 +222,13 @@ AMT.SeasonalDungeons = {
 	--Cataclysm
 	{ abbr = "VP", name = "The Vortex Pinnacle", spellID = 410080, mapID = 438 }, -- The Vortex Pinnacle
 	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456 }, -- Throne of the Tides
+	{ abbr = "GB", name = "Grim Batol", spellID = 445424, mapID = 507 }, -- Grim Batol
 }
 
 AMT.Raids = {
+	--The War Within
 
+	--Dragonflight
 	{
 		abbr = "VOTI",
 		name = "Vault of the Incarnates",
