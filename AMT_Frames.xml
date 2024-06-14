@@ -6,7 +6,17 @@
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 			<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 		</Anchors>
-				<Frames>
+		<Layers>
+			<Layer level="BACKGROUND" textureSubLevel="-6">
+				<Texture name="$parentBg" file="Interface\FrameGeneral\UI-Background-Rock" horizTile="true" vertTile="true" parentKey="Bg">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="6" y="-21"/>
+						<Anchor point="BOTTOMRIGHT" x="-2" y="2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			</Layers>
+		<Frames>
 			<Button parentKey="CloseButton" inherits="UIPanelCloseButtonDefaultAnchors"/>
 		</Frames>
 		<Scripts>

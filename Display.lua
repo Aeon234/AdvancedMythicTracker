@@ -615,11 +615,11 @@ function AMT:AMT_Creation()
 				C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.Current_SeasonalDung_Info[i].mapID)
 			local dungSpellID
 			local dungSpellName
-
+			--MARK: BROKEN IN BETA
 			for _, dungeons in ipairs(self.SeasonalDungeons) do
 				if dungeons.mapID == self.Current_SeasonalDung_Info[i].mapID then
 					dungSpellID = dungeons.spellID
-					dungSpellName = GetSpellBookItemName(dungSpellID)
+					dungSpellName = C_Spell.GetSpellName(dungSpellID)
 				end
 			end
 
@@ -681,6 +681,7 @@ function AMT:AMT_Creation()
 						end
 					end
 				end
+				print(dungSpellID)
 				if IsSpellKnown(dungSpellID, false) then
 					local start, duration = GetSpellCooldown(dungSpellID)
 

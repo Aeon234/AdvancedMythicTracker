@@ -26,6 +26,47 @@ AMT_Window:SetScript("OnDragStop", function(self, button)
 end)
 
 -- =================================
+-- === Initialize AMT Icon Button ===
+-- =================================
+local AMT_PVEFrame_IconFrame = CreateFrame("Button", "AMT_PVEFrame_IconFrame", PVEFrame) --, "BackdropTemplate"
+AMT_PVEFrame_IconFrame:SetSize(112, 48)
+AMT_PVEFrame_IconFrame:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 60, AMT_PVEFrame_IconFrame:GetHeight() / 4)
+AMT_PVEFrame_IconFrame:Raise()
+AMT_PVEFrame_IconFrame:SetToplevel(true)
+AMT_PVEFrame_IconFrame:SetFrameLevel(1000)
+AMT_PVEFrame_IconFrame.tex = AMT_PVEFrame_IconFrame:CreateTexture()
+AMT_PVEFrame_IconFrame.tex:SetAllPoints(AMT_PVEFrame_IconFrame)
+AMT_PVEFrame_IconFrame.tex:SetTexture("Interface/AddOns/AdvancedMythicTracker/Art/AMT_Logo_Test.png")
+-- AMT_PVEFrame_IconFrame.mask = AMT_PVEFrame_IconFrame:CreateMaskTexture()
+-- AMT_PVEFrame_IconFrame.mask:SetAllPoints(AMT_PVEFrame_IconFrame.tex)
+-- AMT_PVEFrame_IconFrame.mask:SetTexture("Interface/AddOns/AdvancedMythicTracker/Art/AMT_PVEFrame_BaseIcon_Mask")
+-- AMT_PVEFrame_IconFrame.tex:AddMaskTexture(AMT_PVEFrame_IconFrame.mask)
+AMT_PVEFrame_IconFrame.highlight = AMT_PVEFrame_IconFrame:CreateTexture(nil, "HIGHLIGHT")
+AMT_PVEFrame_IconFrame.highlight:SetTexture("Interface\\Buttons\\UI-Panel-MinimizeButton-Highlight")
+AMT_PVEFrame_IconFrame.highlight:SetBlendMode("ADD")
+AMT_PVEFrame_IconFrame.highlight:SetAllPoints(AMT_PVEFrame_IconFrame)
+AMT_PVEFrame_IconFrame.highlight:Hide() -- Initially hide the highlight
+-- Set up the OnEnter and OnLeave scripts to handle the highlight effect
+AMT_PVEFrame_IconFrame:SetScript("OnEnter", function(self)
+	AMT_PVEFrame_IconFrame.highlight:Show()
+end)
+
+AMT_PVEFrame_IconFrame:SetScript("OnLeave", function(self)
+	AMT_PVEFrame_IconFrame.highlight:Hide()
+end)
+
+AMT_PVEFrame_IconFrame:SetScript("OnClick", function(self)
+	if AMT_Window:IsVisible() then
+		AMT_Window:Hide()
+	else
+		AMT_Window:ClearAllPoints()
+		AMT_Window:SetPoint("TOPLEFT", PVEFrame)
+		AMT_Window:Show()
+		PVEFrame_ToggleFrame()
+	end
+end)
+
+-- =================================
 -- === Initialize AMT Tab Button ===
 -- =================================
 local AMT_TabButton = CreateFrame("Button", "AMT_Tab", PVEFrame, "PanelTabButtonTemplate", (PVEFrame.numTabs + 1))
