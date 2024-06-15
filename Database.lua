@@ -43,11 +43,19 @@ AMT.BestKeys_per_Dungeon = {} --Highest keys done per M+ dungeon
 AMT.GroupKeystone_Info = {}
 AMT.SeasonalRaids = {}
 AMT.Raid_Progress = {}
+AMT.AMT_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/Expressway.TTF"
+AMT.Clean_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/AMT_Clean"
+AMT.Atrocity_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Atrocity"
+AMT.Minimalist_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Minimalist"
 AMT.Tab = "          "
 AMT.Whitetext = "|cffffffff"
 AMT.BackgroundClear = { 1, 1, 1, 0.0 } --Clear Background
 AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
 AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
+AMT.Uncommon_Color = { 0.118, 1.000, 0.000, 1.000 }
+AMT.Rare_Color = { 0.000, 0.569, 0.949, 1.000 }
+AMT.Epic_Color = { 0.639, 0.208, 0.933, 1.000 }
+AMT.Legendary_Color = { 1.000, 0.502, 0.000, 1.000 }
 
 -- ==============================
 -- === Shortcuts and Keybinds ===
@@ -74,6 +82,11 @@ AMT.PVEFrame_Panels = {
 		text = "Mythic+ Dungeons",
 		frameName = "ChallengesFrame",
 		isVisible = false,
+	},
+	{
+		text = "Delves",
+		frameName = "DelvesDashboardFrame",
+		isVisible = true,
 	},
 	{
 		text = "Advanced Mythic Tracker",

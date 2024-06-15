@@ -5,7 +5,7 @@
     4a. Add : after each?
 5. Clicking window with anything but leftmouse makes the window jump
 6. Display separate highest dungeons or scores per dungeon over the icons or no?
-
+7. Best Weekly in top left... should it maybe be weekly tracker for gained io? or remove completely. Weekly best is represented in the weekly m+ run graph in middle
 
 
 For displaying of dungeon scores, do it so it only shows that week's scores? both weeks?

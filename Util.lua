@@ -75,14 +75,14 @@ end
 -- =========================
 -- === Utility Functions ===
 -- =========================
-function AMT.Update_PVEFrame_Panels()
+function AMT:Update_PVEFrame_Panels()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
-		for i = 1, #AMT.PVEFrame_Panels do
+		for i = 1, #self.PVEFrame_Panels do
 			if
-				AMT.PVEFrame_Panels[i].text == "Mythic+ Dungeons"
-				or AMT.PVEFrame_Panels[i].text == "Advanced Keystone Tracker"
+				self.PVEFrame_Panels[i].text == "Mythic+ Dungeons"
+				or self.PVEFrame_Panels[i].text == "Advanced Mythic Tracker"
 			then
-				AMT.PVEFrame_Panels[i].isVisible = true
+				self.PVEFrame_Panels[i].isVisible = true
 			end
 		end
 	end
@@ -603,7 +603,7 @@ function AMT_CreateBorderButton(
 	-- Create the font string and attach it to the button
 	local buttonLabel = button:CreateFontString(name .. "Label", "OVERLAY", "GameFontNormal")
 	buttonLabel:SetPoint("CENTER", button, "CENTER", 2, 0)
-	buttonLabel:SetFont(buttonLabel:GetFont(), 12, "OUTLINE")
+	buttonLabel:SetFont(AMT.AMT_Font, 12, "OUTLINE")
 	buttonLabel:SetJustifyH("CENTER")
 	buttonLabel:SetJustifyV("MIDDLE")
 	buttonLabel:SetText(buttonText)
@@ -658,6 +658,46 @@ function AMT_CreateBorderButton(
 	end)
 
 	return button
+end
+
+function AMT:CreateProgressBar(
+	name,
+	texture,
+	color,
+	parent,
+	width,
+	height,
+	point,
+	relativeTo,
+	relativePoint,
+	offsetX,
+	offsetY
+)
+	local StatusBar_Container = CreateFrame("Frame", name .. "_Frame", parent)
+	StatusBar_Container:SetSize(width, height)
+	StatusBar_Container:SetPoint(point, relativeTo, relativePoint, offsetX, offsetY)
+
+	local StatusBar_ProgressBar = CreateFrame("StatusBar", name .. "StatusBar", StatusBar_Container)
+	StatusBar_ProgressBar:SetSize(width, height)
+	StatusBar_ProgressBar:SetPoint("CENTER")
+	StatusBar_ProgressBar:SetStatusBarTexture(texture)
+	StatusBar_ProgressBar:GetStatusBarTexture():SetHorizTile(false)
+	StatusBar_ProgressBar:SetMinMaxValues(0, 100)
+	StatusBar_ProgressBar:SetStatusBarColor(unpack(color))
+
+	local bg = StatusBar_ProgressBar:CreateTexture(nil, "BACKGROUND")
+	bg:SetAtlas("widgetstatusbar-bgcenter")
+	bg:SetAllPoints(true)
+	bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
+
+	local StatusBar_Text = StatusBar_ProgressBar:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+	StatusBar_Text:SetPoint("BOTTOM", StatusBar_ProgressBar, "TOP", 0, 3)
+
+	-- hooksecurefunc(StatusBar_ProgressBar, "SetValue", function(self, value)
+	-- 	text:SetText(text .. "%")
+	-- end)
+
+	return StatusBar_Container, StatusBar_ProgressBar, StatusBar_Text
 end
 
 -- ========================

@@ -29,14 +29,15 @@ end)
 -- === Initialize AMT Icon Button ===
 -- =================================
 local AMT_PVEFrame_IconFrame = CreateFrame("Button", "AMT_PVEFrame_IconFrame", PVEFrame) --, "BackdropTemplate"
-AMT_PVEFrame_IconFrame:SetSize(112, 48)
-AMT_PVEFrame_IconFrame:SetPoint("TOPLEFT", PVEFrame, "TOPLEFT", 60, AMT_PVEFrame_IconFrame:GetHeight() / 4)
+-- AMT_PVEFrame_IconFrame:SetSize(112, 48)
+AMT_PVEFrame_IconFrame:SetSize(80, 32)
+AMT_PVEFrame_IconFrame:SetPoint("BOTTOMLEFT", PVEFrame, "TOPLEFT", 60, -29)
 AMT_PVEFrame_IconFrame:Raise()
 AMT_PVEFrame_IconFrame:SetToplevel(true)
 AMT_PVEFrame_IconFrame:SetFrameLevel(1000)
 AMT_PVEFrame_IconFrame.tex = AMT_PVEFrame_IconFrame:CreateTexture()
 AMT_PVEFrame_IconFrame.tex:SetAllPoints(AMT_PVEFrame_IconFrame)
-AMT_PVEFrame_IconFrame.tex:SetTexture("Interface/AddOns/AdvancedMythicTracker/Art/AMT_Logo_Test.png")
+AMT_PVEFrame_IconFrame.tex:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Art/AMT_Logo_Test.png")
 -- AMT_PVEFrame_IconFrame.mask = AMT_PVEFrame_IconFrame:CreateMaskTexture()
 -- AMT_PVEFrame_IconFrame.mask:SetAllPoints(AMT_PVEFrame_IconFrame.tex)
 -- AMT_PVEFrame_IconFrame.mask:SetTexture("Interface/AddOns/AdvancedMythicTracker/Art/AMT_PVEFrame_BaseIcon_Mask")
@@ -118,11 +119,11 @@ PVEFrame:HookScript("OnShow", function()
 	end
 	AMT_Window:Hide()
 end)
-
 -- ================================
 -- === Set AMT_Window "On Show" ===
 -- ================================
 AMT_Window:SetScript("OnShow", function()
+	AMT:Update_PVEFrame_Panels()
 	AMT:Pull_VaultRequirements()
 	AMT:AMT_UpdateRaidProg()
 	AMT:AMT_UpdateAffixInformation()
