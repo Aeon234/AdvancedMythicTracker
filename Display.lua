@@ -1428,6 +1428,7 @@ function AMT:AMT_DataUpdate()
 		if not dungeonLine then
 			dungLines[i] =
 				MythicRunsGraph_Container:CreateFontString("AMT_Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+			dungLines[i]:SetFont(AMT.AntTrail_Font, 14)
 		else
 			dungLines[i] = dungeonLine
 		end

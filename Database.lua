@@ -44,6 +44,7 @@ AMT.GroupKeystone_Info = {}
 AMT.SeasonalRaids = {}
 AMT.Raid_Progress = {}
 AMT.AMT_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/Expressway.TTF"
+AMT.AntTrail_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/AntTrail_Font.TTF"
 AMT.Clean_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/AMT_Clean"
 AMT.Atrocity_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Atrocity"
 AMT.Minimalist_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Minimalist"
