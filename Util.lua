@@ -80,7 +80,7 @@ function AMT.Update_PVEFrame_Panels()
 		for i = 1, #AMT.PVEFrame_Panels do
 			if
 				AMT.PVEFrame_Panels[i].text == "Mythic+ Dungeons"
-				or AMT.PVEFrame_Panels[i].text == "Advanced Keystone Tracker"
+				or AMT.PVEFrame_Panels[i].text == "Advanced Mythic Tracker"
 			then
 				AMT.PVEFrame_Panels[i].isVisible = true
 			end
@@ -282,7 +282,7 @@ function AMT:Pull_VaultRequirements()
 	AMT.Vault_RaidReq = math.max(unpack(self.Raid_VaultUnlocks))
 end
 
-function AMT:RaidTest()
+function AMT:AMT_UpdateRaidProg()
 	self.RaidVault_Bosses = C_WeeklyRewards.GetActivityEncounterInfo(3, 1) --Grab current encounters that count towards vault
 	--sort the encounters so in case of multiple raids so that first raid appears first.
 	if self.RaidVault_Bosses then
@@ -290,11 +290,6 @@ function AMT:RaidTest()
 			if left.instanceID ~= right.instanceID then
 				return left.instanceID < right.instanceID
 			end
-			-- local leftCompleted = left.bestDifficulty > 0
-			-- local rightCompleted = right.bestDifficulty > 0
-			-- if leftCompleted ~= rightCompleted then
-			-- 	return leftCompleted
-			-- end
 			return left.uiOrder < right.uiOrder
 		end)
 	end
@@ -363,54 +358,18 @@ function AMT:RaidTest()
 					end
 				end
 			end
-			AMTTestTable2 = self.Weekly_KillCount
-			local savedInstance = {
-				index = savedInstanceIndex,
-				name = name,
-				lockoutID = lockoutID,
-				reset = reset,
-				difficultyID = difficultyID,
-				locked = locked,
-				extended = extended,
-				instanceIDMostSig = instanceIDMostSig,
-				isRaid = isRaid,
-				maxPlayers = maxPlayers,
-				difficultyName = difficultyName,
-				numEncounters = numEncounters,
-				encounterProgress = encounterProgress,
-				extendDisabled = extendDisabled,
-				instanceID = instanceID,
-				link = GetSavedInstanceChatLink(savedInstanceIndex),
-				expires = 0,
-				encounters = {},
-			}
 
 			for encounterIndex = 1, numEncounters do
 				local bossName, fileDataID, killed = GetSavedInstanceEncounterInfo(savedInstanceIndex, encounterIndex)
 				local instanceEncounterID = 0
-				-- if killed then
-				-- 	if reset and reset > 0 then
-				-- 		resettime = reset + time()
-				-- 	end
-				-- else
-				-- 	resettime = 0
-				-- end
 
 				if reset and reset > 0 then
 					resettime = reset + time()
 				else
 					resettime = 0
 				end
-				local encounter = {
-					index = encounterIndex,
-					instanceEncounterID = instanceEncounterID,
-					bossName = bossName,
-					fileDataID = fileDataID or 0,
-					killed = killed,
-				}
 				for _, SeasonalRaid_Info in pairs(self.SeasonalRaids) do
 					if instanceID == SeasonalRaid_Info.journalInstanceID then
-						-- print(SeasonalRaid_Info.name)
 						if difficultyID == 17 then
 							SeasonalRaid_Info.difficulty.LFR.reset = resettime
 							tinsert(SeasonalRaid_Info.difficulty.LFR.lockout, {
@@ -430,10 +389,6 @@ function AMT:RaidTest()
 								killed = killed,
 							})
 						elseif difficultyID == 15 then
-							-- print(bossName)
-							-- if killed then
-							-- 	print(format("Expires: |cffffffff%s|r", date("%c", resettime)))
-							-- end
 							SeasonalRaid_Info.difficulty.H.reset = resettime
 							tinsert(SeasonalRaid_Info.difficulty.H.lockout, {
 								index = encounterIndex,
@@ -443,10 +398,6 @@ function AMT:RaidTest()
 								killed = killed,
 							})
 						elseif difficultyID == 14 then
-							-- print(bossName)
-							-- if killed then
-							-- 	print(format("Expires: |cffffffff%s|r", date("%c", resettime)))
-							-- end
 							SeasonalRaid_Info.difficulty.N.reset = resettime
 							tinsert(SeasonalRaid_Info.difficulty.N.lockout, {
 								index = encounterIndex,
@@ -461,36 +412,6 @@ function AMT:RaidTest()
 			end
 		end
 	end
-	-- Assuming self.SeasonalRaids is the table to print
-	-- for raidIndex, raid in pairs(self.SeasonalRaids) do
-	-- 	print("Raid " .. raidIndex .. ":")
-
-	-- 	for key, value in pairs(raid) do
-	-- 		if type(value) == "table" then
-	-- 			print("  " .. key .. ":")
-	-- 			for subKey, subValue in pairs(value) do
-	-- 				if type(subValue) == "table" then
-	-- 					print("    " .. subKey .. ":")
-	-- 					for subSubKey, subSubValue in pairs(subValue) do
-	-- 						if type(subSubValue) == "table" then
-	-- 							print("      " .. subSubKey .. ":")
-	-- 							for subSubSubKey, subSubSubValue in pairs(subSubValue) do
-	-- 								print("        " .. subSubSubKey .. ": " .. tostring(subSubSubValue))
-	-- 							end
-	-- 						else
-	-- 							print("      " .. subSubKey .. ": " .. tostring(subSubValue))
-	-- 						end
-	-- 					end
-	-- 				else
-	-- 					print("    " .. subKey .. ": " .. tostring(subValue))
-	-- 				end
-	-- 			end
-	-- 		else
-	-- 			print("  " .. key .. ": " .. tostring(value))
-	-- 		end
-	-- 	end
-	-- 	print("")
-	-- end
 end
 
 --Grab the Keystone color to be used for the Party Keystone Container
@@ -610,6 +531,7 @@ function AMT:AMT_UpdateMythicGraph()
 		local dungeonLine = _G["Dung_AntTrail" .. i]
 		if not dungeonLine then
 			dungLines[i] = MythicRunsGraph_Container:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+			dungLines[i]:SetFont(AMT.AntTrail_Font, 14)
 		else
 			dungLines[i] = dungeonLine
 		end
@@ -682,7 +604,7 @@ function AMT_CreateBorderButton(
 	-- Create the font string and attach it to the button
 	local buttonLabel = button:CreateFontString(name .. "Label", "OVERLAY", "GameFontNormal")
 	buttonLabel:SetPoint("CENTER", button, "CENTER", 2, 0)
-	buttonLabel:SetFont(buttonLabel:GetFont(), 12, "OUTLINE")
+	buttonLabel:SetFont(AMT.AMT_Font, 12, "OUTLINE")
 	buttonLabel:SetJustifyH("CENTER")
 	buttonLabel:SetJustifyV("MIDDLE")
 	buttonLabel:SetText(buttonText)

@@ -4,7 +4,7 @@
 ## Author: Aeon
 ## Version: 1.0.0
 ## SavedVariables: AMT
-## IconTexture: Interface\Addons\AdvancedMythicTracker\AMT_Logo.png
+## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\Icon\AMT_Logo.png
 ## X-Curse-Project-ID: 
 ## X-Wago-ID: 
 ## OptionalDeps: ElvUI, Details, RaiderIO

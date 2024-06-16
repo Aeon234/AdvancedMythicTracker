@@ -10,7 +10,7 @@ function AMT:AMT_Creation()
 	-- ==============================
 	-- === AMT Window Tabs Set-up ===
 	-- ==============================
-	AMT.Update_PVEFrame_Panels()
+	self.Update_PVEFrame_Panels()
 	local VisiblePanels = {}
 	-- Filter out visible panels
 	for i = 1, #self.PVEFrame_Panels do
@@ -62,8 +62,8 @@ function AMT:AMT_Creation()
 
 		PanelTemplates_TabResize(AMTtab, 0, nil, minWidth)
 
-		if i == #AMT.PVEFrame_Panels then
-			PanelTemplates_SelectTab(_G["AMT_Window_Tab" .. #AMT.PVEFrame_Panels])
+		if i == #self.PVEFrame_Panels then
+			PanelTemplates_SelectTab(_G["AMT_Window_Tab" .. #self.PVEFrame_Panels])
 		else
 			PanelTemplates_DeselectTab(_G["AMT_Window_Tab" .. i])
 		end
@@ -99,7 +99,7 @@ function AMT:AMT_Creation()
 		local WeeklyBest_Label = WeeklyBest_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
 		WeeklyBest_Label:SetPoint("TOP", 0, -2) -- Set the position of the text
 		WeeklyBest_Label:SetText("Weekly Best") -- Set the text content
-		WeeklyBest_Label:SetFont(WeeklyBest_Label:GetFont(), 20)
+		WeeklyBest_Label:SetFont(self.AMT_Font, 20)
 		WeeklyBest_Label:SetTextColor(1, 1, 1, 1.0)
 		--Generates the background where the weekly best key # is going to be displayed
 		local WeeklyBest_Bg = CreateFrame("Frame", "AMT_WeeklyBest_Bg", WeeklyBest_Compartment)
@@ -120,7 +120,7 @@ function AMT:AMT_Creation()
 		CurrentKeystone_Compartment:SetPoint("BOTTOMLEFT", AMT_Window, "BOTTOMLEFT", AMT_Window_X_Offset, 0)
 		CurrentKeystone_Compartment.tex = CurrentKeystone_Compartment:CreateTexture()
 		CurrentKeystone_Compartment.tex:SetAllPoints(CurrentKeystone_Compartment)
-		CurrentKeystone_Compartment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		CurrentKeystone_Compartment.tex:SetColorTexture(unpack(self.BackgroundClear))
 		-- Create the Rune Art that'll house the Keystone Icon
 		local RuneArt = CreateFrame("Frame", "AMT_RuneTexture", CurrentKeystone_Compartment)
 		RuneArt:SetPoint("BOTTOM", CurrentKeystone_Compartment, "BOTTOM", 0, 5)
@@ -137,6 +137,7 @@ function AMT:AMT_Creation()
 		local KeystoneItem_Glow = CreateFrame("Frame", "AMT_KeystoneItem_Glow", RuneArt)
 		KeystoneItem_Glow:SetPoint("CENTER")
 		KeystoneItem_Glow:SetSize(80, 80)
+		KeystoneItem_Glow:SetFrameLevel(5)
 		KeystoneItem_Glow.tex = KeystoneItem_Glow:CreateTexture()
 		KeystoneItem_Glow.tex:SetSize(65, 65)
 		KeystoneItem_Glow.tex:SetAllPoints(KeystoneItem_Glow)
@@ -151,14 +152,14 @@ function AMT:AMT_Creation()
 		local Keystone_DungName =
 			Keystone_DungName_Bg:CreateFontString("AMT_Keystone_DungName", "OVERLAY", "MovieSubtitleFont")
 		Keystone_DungName:SetPoint("CENTER", Keystone_DungName_Bg, "CENTER", 0, 0)
-		Keystone_DungName:SetFont(Keystone_DungName:GetFont(), 14)
+		Keystone_DungName:SetFont(self.AMT_Font, 14)
 		Keystone_DungName:SetText("Key Missing")
 
 		--Create the Great Vault Button
 		local GreatVault_Button = CreateFrame("Button", "AMT_GreatVault_Button", RuneArt)
 		GreatVault_Button:SetPoint("BOTTOM", KeystoneItem_Icon, "BOTTOM", 0, -37)
 		GreatVault_Button:SetSize(74, 22)
-		GreatVault_Button:SetText("Open Vault") --MARK: FIX
+		GreatVault_Button:SetText("Open Vault")
 		GreatVault_Button_bg = GreatVault_Button:CreateTexture(nil, "ARTWORK")
 		GreatVault_Button_bg:SetAllPoints(GreatVault_Button)
 		GreatVault_Button_bg:SetColorTexture(0, 0, 0, 1)
@@ -166,7 +167,7 @@ function AMT:AMT_Creation()
 		local GreatVault_Buttonlabel =
 			GreatVault_Button:CreateFontString("AMT_GreatVault_Buttonlabel", "OVERLAY", "MovieSubtitleFont")
 		GreatVault_Buttonlabel:SetPoint("CENTER", GreatVault_Button, "CENTER", 0, 0) -- Center the text on the button
-		GreatVault_Buttonlabel:SetFont(GreatVault_Buttonlabel:GetFont(), 12, "OUTLINE")
+		GreatVault_Buttonlabel:SetFont(self.AMT_Font, 12, "OUTLINE")
 		GreatVault_Buttonlabel:SetText(" Open Vault")
 
 		-- Create border textures
@@ -237,7 +238,7 @@ function AMT:AMT_Creation()
 		Lockouts_Comparment:SetPoint("TOP", WeeklyBest_Compartment, "BOTTOM", 0, 0)
 		Lockouts_Comparment.tex = Lockouts_Comparment:CreateTexture()
 		Lockouts_Comparment.tex:SetAllPoints(Lockouts_Comparment)
-		Lockouts_Comparment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		Lockouts_Comparment.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		--Create the Raid Header
 		local Raid_Goals_Header = CreateFrame("Frame", "AMT_Raid_Goals_Header", Lockouts_Comparment)
@@ -250,22 +251,14 @@ function AMT:AMT_Creation()
 		local WeeklyRaid_Label = Raid_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
 		WeeklyRaid_Label:SetPoint("TOP", Raid_Goals_Header, "TOP", 0, 0)
 		WeeklyRaid_Label:SetText("Raid")
-		WeeklyRaid_Label:SetFont(WeeklyRaid_Label:GetFont(), 14)
-
-		--Create the Main Compartment for all Raid Difficulties
-		-- Raid_Compartment = CreateFrame("Frame", "AMT_Raid_Compartment", AMT_Window)
-		-- Raid_Compartment:SetSize(180, 20 * 4)
-		-- Raid_Compartment:SetPoint("TOPLEFT", WeeklyRaid_Label, "BOTTOMLEFT", -8, -1)
-		-- Raid_Compartment.tex = Raid_Compartment:CreateTexture()
-		-- Raid_Compartment.tex:SetAllPoints(Raid_Compartment)
-		-- Raid_Compartment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		WeeklyRaid_Label:SetFont(self.AMT_Font, 14)
 
 		--Create the frames that will store the boxes for each difficulty, running through each difficulty level for the current season's Raid
 		local Raid_MainFrame = {}
 		local Raid_MainFrame_LabelFrame = {}
 		local RaidDifficulty_Label = {}
 		local Raid_MainFrame_BoxFrame = {}
-		for i, difficulty in ipairs(AMT.RaidDifficulty_Levels) do
+		for i, difficulty in ipairs(self.RaidDifficulty_Levels) do
 			-- Create the Frames for each difficulty
 			Raid_MainFrame[i] = CreateFrame("Frame", "AMT_RaidDifficulty" .. i, Lockouts_Comparment)
 			Raid_MainFrame[i]:SetSize(180, 20)
@@ -289,7 +282,7 @@ function AMT:AMT_Creation()
 			end
 			local Raid_BoxMargin = (
 				Raid_MainFrame[1]:GetWidth()
-				- ((self.Vault_BoxSize * AMT.Vault_RaidReq) + (3 * (AMT.Vault_RaidReq - 1)))
+				- ((self.Vault_BoxSize * self.Vault_RaidReq) + (3 * (self.Vault_RaidReq - 1)))
 			) / 2
 			-- Create the Frame that will house the label for the difficulty
 			Raid_MainFrame_LabelFrame[i] =
@@ -314,21 +307,15 @@ function AMT:AMT_Creation()
 			)
 			RaidDifficulty_Label[i]:SetPoint("RIGHT", Raid_MainFrame_LabelFrame[i], "RIGHT", 0, 0)
 			RaidDifficulty_Label[i]:SetText("|cffffffff" .. difficulty.abbr)
-			RaidDifficulty_Label[i]:SetFont(RaidDifficulty_Label[i]:GetFont(), 12)
+			RaidDifficulty_Label[i]:SetFont(self.AMT_Font, 12)
 			RaidDifficulty_Label[i]:SetJustifyH("RIGHT")
 			RaidDifficulty_Label[i]:SetJustifyV("MIDDLE")
-			--
-			--MARK: REWORK THIS WHOLE THING TOOLTIPS
-			--
 			Raid_MainFrame[i]:SetScript("OnEnter", function()
 				GameTooltip:ClearAllPoints()
 				GameTooltip:ClearLines()
 				GameTooltip:SetOwner(Raid_MainFrame[i], "ANCHOR_RIGHT")
 				GameTooltip:SetText(difficulty.name .. " Progress", 1, 1, 1, 1, true)
 				Raid_LockoutInfo = AMT:Filter_LockedBosses(self.SeasonalRaids, difficulty.abbr)
-				AMTTestTable = self.SeasonalRaids
-				AMTVaultTest = self.RaidVault_Bosses
-				-- print(#Raid_LockoutInfo)
 				for index, encounter in ipairs(self.RaidVault_Bosses) do
 					local name, description, encounterID, rootSectionID, link, instanceID =
 						EJ_GetEncounterInfo(encounter.encounterID)
@@ -339,13 +326,11 @@ function AMT:AMT_Creation()
 						lastInstanceID = instanceID
 					end
 					if name then
-						-- if encounter.bestDifficulty > 0 then
 						local killed = AMT:Check_BossLockout(Raid_LockoutInfo, name)
 						if killed then
 							local completedDifficultyName = DifficultyUtil.GetDifficultyName(encounter.bestDifficulty)
 							GameTooltip_AddColoredLine(
 								GameTooltip,
-								-- string.format(WEEKLY_REWARDS_COMPLETED_ENCOUNTER, name, completedDifficultyName),
 								string.format(DASH_WITH_TEXT, name),
 								GREEN_FONT_COLOR
 							)
@@ -366,21 +351,18 @@ function AMT:AMT_Creation()
 				Raid_MainFrame[i].tex:SetColorTexture(unpack(self.BackgroundClear))
 			end)
 		end
-		--
-		--MARK: REWORK THIS WHOLE THING
-		--
 		--Create the boxes within the frames for each difficulty
 		local Raid_BoxSpacing = 3
 		local Raid_BoxMargin = (
 			Raid_MainFrame[1]:GetWidth()
-			- ((self.Vault_BoxSize * AMT.Vault_RaidReq) + (Raid_BoxSpacing * (AMT.Vault_RaidReq - 1)))
+			- ((self.Vault_BoxSize * self.Vault_RaidReq) + (Raid_BoxSpacing * (self.Vault_RaidReq - 1)))
 		) / 2
 		for i, difficulty in ipairs(self.RaidDifficulty_Levels) do
 			local DifficultyName = difficulty.abbr
 			local RaidBox = {}
 			for n = 1, self.Vault_RaidReq do
 				RaidBox[i] = CreateFrame("Frame", "AMT_" .. DifficultyName .. n, _G["AMT_RaidDifficulty" .. i])
-				RaidBox[i]:SetSize(AMT.Vault_BoxSize, AMT.Vault_BoxSize)
+				RaidBox[i]:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
 				RaidBox[i].tex = RaidBox[i]:CreateTexture()
 				RaidBox[i].tex:SetAllPoints(RaidBox[i])
 				RaidBox[i].tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
@@ -398,13 +380,13 @@ function AMT:AMT_Creation()
 		Mplus_Goals_Header:SetPoint("TOP", _G["AMT_RaidDifficulty4"], "BOTTOM", 0, 0)
 		Mplus_Goals_Header.tex = Mplus_Goals_Header:CreateTexture()
 		Mplus_Goals_Header.tex:SetAllPoints(Mplus_Goals_Header)
-		Mplus_Goals_Header.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		Mplus_Goals_Header.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		--Create the M+ Section Label
 		local WeeklyMplus_Label = Mplus_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
 		WeeklyMplus_Label:SetPoint("TOP", Mplus_Goals_Header, "TOP", 0, -2)
 		WeeklyMplus_Label:SetText("Mythic+")
-		WeeklyMplus_Label:SetFont(WeeklyMplus_Label:GetFont(), 14)
+		WeeklyMplus_Label:SetFont(self.AMT_Font, 14)
 
 		--Create the Mythic Plus Main Frame that will house the label and the boxes
 		local Mplus_Mainframe = CreateFrame("Frame", "AMT_Mplus_Mainframe", Lockouts_Comparment)
@@ -412,7 +394,7 @@ function AMT:AMT_Creation()
 		Mplus_Mainframe:SetPoint("TOPLEFT", Mplus_Goals_Header, "BOTTOMLEFT", 0, 0)
 		Mplus_Mainframe.tex = Mplus_Mainframe:CreateTexture()
 		Mplus_Mainframe.tex:SetAllPoints(Mplus_Mainframe)
-		Mplus_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		Mplus_Mainframe.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		--Create the M+ Boxes Container
 		local Mplus_MainFrame_BoxFrame = CreateFrame("Frame", "AMT_Mplus_MainFrame_BoxFrame", Mplus_Mainframe)
@@ -420,7 +402,7 @@ function AMT:AMT_Creation()
 		Mplus_MainFrame_BoxFrame:SetPoint("CENTER", Mplus_Mainframe, "CENTER", 0, 0)
 		Mplus_MainFrame_BoxFrame.tex = Mplus_MainFrame_BoxFrame:CreateTexture()
 		Mplus_MainFrame_BoxFrame.tex:SetAllPoints(Mplus_MainFrame_BoxFrame)
-		Mplus_MainFrame_BoxFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		Mplus_MainFrame_BoxFrame.tex:SetColorTexture(unpack(self.BackgroundClear))
 		--Set up the Tooltip info for M+
 		Mplus_Mainframe:SetScript("OnEnter", function()
 			GameTooltip:ClearAllPoints()
@@ -443,21 +425,21 @@ function AMT:AMT_Creation()
 					end
 				end
 			end
-			Mplus_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundHover))
+			Mplus_Mainframe.tex:SetColorTexture(unpack(self.BackgroundHover))
 			GameTooltip:Show()
 		end)
 		Mplus_Mainframe:SetScript("OnLeave", function()
 			GameTooltip:Hide()
-			Mplus_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+			Mplus_Mainframe.tex:SetColorTexture(unpack(self.BackgroundClear))
 		end)
 
 		--Create the M+ Boxes
 		local Mplus_BoxSpacing = 3
 		local Mplus_BoxMargin = (
 			Mplus_Mainframe:GetWidth()
-			- ((self.Vault_BoxSize * AMT.Vault_DungeonReq) + (Mplus_BoxSpacing * (AMT.Vault_DungeonReq - 1)))
+			- ((self.Vault_BoxSize * self.Vault_DungeonReq) + (Mplus_BoxSpacing * (self.Vault_DungeonReq - 1)))
 		) / 2
-		for i = 1, AMT.Vault_DungeonReq do
+		for i = 1, self.Vault_DungeonReq do
 			Mplus_Box = CreateFrame("Frame", "AMT_Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
 			Mplus_Box:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
 			Mplus_Box.tex = Mplus_Box:CreateTexture()
@@ -472,36 +454,6 @@ function AMT:AMT_Creation()
 			end
 		end
 	end
-	-- MARK: Create World Container
-	--Create the M+ Header Container
-	local World_Goals_Header = CreateFrame("Frame", "AMT_World_Goals_Header", Lockouts_Comparment)
-	World_Goals_Header:SetSize(180, 18)
-	World_Goals_Header:SetPoint("TOP", _G["AMT_Mplus_Mainframe"], "BOTTOM", 0, 0)
-	World_Goals_Header.tex = World_Goals_Header:CreateTexture()
-	World_Goals_Header.tex:SetAllPoints(World_Goals_Header)
-	World_Goals_Header.tex:SetColorTexture(unpack(AMT.BackgroundClear))
-
-	--Create the M+ Section Label
-	local WeeklyWorld_Label = World_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
-	WeeklyWorld_Label:SetPoint("TOP", World_Goals_Header, "TOP", 0, 0)
-	WeeklyWorld_Label:SetText("World")
-	WeeklyWorld_Label:SetFont(WeeklyWorld_Label:GetFont(), 14)
-
-	--Create the Mythic Plus Main Frame that will house the label and the boxes
-	local World_Mainframe = CreateFrame("Frame", "AMT_World_Mainframe", Lockouts_Comparment)
-	World_Mainframe:SetSize(180, 22)
-	World_Mainframe:SetPoint("TOPLEFT", World_Goals_Header, "BOTTOMLEFT", 0, 2)
-	World_Mainframe.tex = World_Mainframe:CreateTexture()
-	World_Mainframe.tex:SetAllPoints(World_Mainframe)
-	World_Mainframe.tex:SetColorTexture(unpack(AMT.BackgroundClear))
-
-	--Create the M+ Boxes Container
-	local World_Mainframe_BoxFrame = CreateFrame("Frame", "AMT_World_Mainframe_BoxFrame", World_Mainframe)
-	World_Mainframe_BoxFrame:SetSize(180, 22)
-	World_Mainframe_BoxFrame:SetPoint("CENTER", World_Mainframe, "CENTER", 0, 0)
-	World_Mainframe_BoxFrame.tex = World_Mainframe_BoxFrame:CreateTexture()
-	World_Mainframe_BoxFrame.tex:SetAllPoints(World_Mainframe_BoxFrame)
-	World_Mainframe_BoxFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
 
 	-- MARK: Create Dungeons Icon Container
 	local DungeonIcons_Container
@@ -514,7 +466,7 @@ function AMT:AMT_Creation()
 		DungeonIcons_Container:SetPoint("BOTTOMLEFT", CurrentKeystone_Compartment, "BOTTOMRIGHT", -1, 1)
 		DungeonIcons_Container.tex = DungeonIcons_Container:CreateTexture()
 		DungeonIcons_Container.tex:SetAllPoints(DungeonIcons_Container)
-		DungeonIcons_Container.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		DungeonIcons_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		-- Create the icon for each dungeon
 		local DungIcon = {}
@@ -540,15 +492,15 @@ function AMT:AMT_Creation()
 			CurrentmapID = self.Current_SeasonalDung_Info[i].mapID
 			DungIcon_Abbr = nil
 
-			for j = 1, #AMT.SeasonalDungeons do
-				if AMT.SeasonalDungeons[j].mapID == CurrentmapID then
-					DungIcon_Abbr = AMT.SeasonalDungeons[j].abbr
+			for j = 1, #self.SeasonalDungeons do
+				if self.SeasonalDungeons[j].mapID == CurrentmapID then
+					DungIcon_Abbr = self.SeasonalDungeons[j].abbr
 					break -- Exit loop once a match is found
 				end
 			end
 			local DungIconName_Label = DungIcon[i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
 			DungIconName_Label:SetPoint("TOP", _G["AMT_DungeonIcon_" .. i], "TOP", 0, 10)
-			DungIconName_Label:SetFont(DungIconName_Label:GetFont(), 20, "OUTLINE")
+			DungIconName_Label:SetFont(self.AMT_Font, 20, "OUTLINE")
 			DungIconName_Label:SetTextColor(1, 1, 1)
 			DungIconName_Label:SetText(DungIcon_Abbr)
 		end
@@ -557,14 +509,14 @@ function AMT:AMT_Creation()
 			local DungWeekLevel_Label =
 				DungIcon[i]:CreateFontString("AMT_DungWeekLevel_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
 			DungWeekLevel_Label:SetPoint("CENTER", _G["AMT_DungeonIcon_" .. i], "CENTER", 0, 2)
-			DungWeekLevel_Label:SetFont(DungWeekLevel_Label:GetFont(), 32, "OUTLINE")
+			DungWeekLevel_Label:SetFont(self.AMT_Font, 32, "OUTLINE")
 			DungWeekLevel_Label:SetTextColor(1, 1, 1)
 			DungWeekLevel_Label:SetText("20")
 
 			local DungWeekScore_Label =
 				DungIcon[i]:CreateFontString("AMT_DungWeekScore_Label" .. i, "OVERLAY", "GameFontHighlightOutline22")
 			DungWeekScore_Label:SetPoint("BOTTOM", _G["AMT_DungeonIcon_" .. i], "BOTTOM", 0, 4)
-			DungWeekScore_Label:SetFont(DungWeekScore_Label:GetFont(), 18, "OUTLINE")
+			DungWeekScore_Label:SetFont(self.AMT_Font, 18, "OUTLINE")
 			DungWeekScore_Label:SetTextColor(1, 1, 1)
 			DungWeekScore_Label:SetText("174.5")
 		end
@@ -579,7 +531,7 @@ function AMT:AMT_Creation()
 			local dungSpellID
 			local dungSpellName
 
-			for _, dungeons in ipairs(AMT.SeasonalDungeons) do
+			for _, dungeons in ipairs(self.SeasonalDungeons) do
 				if dungeons.mapID == self.Current_SeasonalDung_Info[i].mapID then
 					dungSpellID = dungeons.spellID
 					dungSpellName = GetSpellInfo(dungSpellID)
@@ -682,13 +634,13 @@ function AMT:AMT_Creation()
 		Affixes_Compartment:SetPoint("TOPRIGHT", AMT_Window, "TOPRIGHT", -AMT_Window_X_Offset, -AMT_Window_Y_Offset)
 		Affixes_Compartment.tex = Affixes_Compartment:CreateTexture()
 		Affixes_Compartment.tex:SetAllPoints(Affixes_Compartment)
-		Affixes_Compartment.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		Affixes_Compartment.tex:SetColorTexture(unpack(self.BackgroundClear))
 		-- Create this week's Label
 		local CurrentAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_CurrentAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
 		CurrentAffixes_Label:SetPoint("TOPLEFT", 35, -2) -- Set the position of the text
 		CurrentAffixes_Label:SetText("This Week") -- Set the text content
-		CurrentAffixes_Label:SetFont(CurrentAffixes_Label:GetFont(), 20)
+		CurrentAffixes_Label:SetFont(self.AMT_Font, 20)
 		CurrentAffixes_Label:SetTextColor(1, 1, 1, 1.0)
 
 		-- Create Current Affixes Container
@@ -698,14 +650,14 @@ function AMT:AMT_Creation()
 		CurrentAffixes_Container:SetPoint("TOP", Affixes_Compartment, "TOP", 0, -CurrentAffixes_Label:GetHeight())
 		CurrentAffixes_Container.tex = CurrentAffixes_Container:CreateTexture()
 		CurrentAffixes_Container.tex:SetAllPoints(CurrentAffixes_Container)
-		CurrentAffixes_Container.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		CurrentAffixes_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		-- Create next week's Label
 		local NextWeekAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_NextWeekAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
 		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 35, -4) -- Set the position of the text
 		NextWeekAffixes_Label:SetText("Next Week") -- Set the text content
-		NextWeekAffixes_Label:SetFont(NextWeekAffixes_Label:GetFont(), 20)
+		NextWeekAffixes_Label:SetFont(self.AMT_Font, 20)
 		NextWeekAffixes_Label:SetTextColor(1, 1, 1, 1.0)
 
 		-- Create next week's affixes container
@@ -744,8 +696,8 @@ function AMT:AMT_Creation()
 						"LEFT",
 						(
 							AffixIcon[i]:GetParent():GetWidth()
-							- (iconSize * #AMT.GetCurrentAffixesTable)
-							- (iconPadding * (#AMT.GetCurrentAffixesTable - 1))
+							- (iconSize * #self.GetCurrentAffixesTable)
+							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
 						) / 2,
 						0
 					)
@@ -766,7 +718,7 @@ function AMT:AMT_Creation()
 			end
 		end
 		-- Create next week's affix icons
-		for i = 1, #AMT.GetCurrentAffixesTable do
+		for i = 1, #self.GetCurrentAffixesTable do
 			for _, affixID in ipairs(NextWeek_AffixTable) do
 				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
 				local AffixIcon = {}
@@ -784,8 +736,8 @@ function AMT:AMT_Creation()
 						"LEFT",
 						(
 							AffixIcon[i]:GetParent():GetWidth()
-							- (iconSize * #AMT.GetCurrentAffixesTable)
-							- (iconPadding * (#AMT.GetCurrentAffixesTable - 1))
+							- (iconSize * #self.GetCurrentAffixesTable)
+							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
 						) / 2,
 						0
 					)
@@ -823,34 +775,20 @@ function AMT:AMT_Creation()
 		else
 			PartyKeystone_Container.tex = PartyKeystone_Container:CreateTexture()
 			PartyKeystone_Container.tex:SetAllPoints(PartyKeystone_Container)
-			PartyKeystone_Container.tex:SetColorTexture(unpack(AMT.BackgroundDark))
+			PartyKeystone_Container.tex:SetColorTexture(unpack(self.BackgroundDark))
 		end
 		PartyKeystone_Container:SetPoint("TOPRIGHT", Affixes_Compartment, "BOTTOMRIGHT", 0, 0)
 		-- Set the title text for the container
 		local PartyKeystone_Container_Title = PartyKeystone_Container:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 		PartyKeystone_Container_Title:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, -6)
 		PartyKeystone_Container_Title:SetJustifyH("LEFT")
-		PartyKeystone_Container_Title:SetFont(PartyKeystone_Container_Title:GetFont(), 14)
+		PartyKeystone_Container_Title:SetFont(self.AMT_Font, 14)
 		PartyKeystone_Container_Title:SetText("Party Keystones")
 		-- Create the Party Keystone Buttons
 		local PartyKeystone_DetailsButton
 		local PartyKeystone_RefreshButton
 		local PartyKeystone_RollButton
 		if self.DetailsEnabled then
-			-- PartyKeystone_DetailsButton = CreateFrame(
-			-- 	"Button",
-			-- 	"AMT_PartyKeystone_DetailsButton",
-			-- 	PartyKeystone_Container,
-			-- 	"UIPanelButtonTemplate"
-			-- )
-			-- if AMT.ElvUIEnabled then
-			-- 	AMT.S:HandleButton(PartyKeystone_DetailsButton)
-			-- end
-			-- PartyKeystone_DetailsButton:SetSize(16, 16)
-			-- PartyKeystone_DetailsButton:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -4, -4)
-			-- PartyKeystone_DetailsButton:SetText("!")
-			-- PartyKeystone_DetailsButton.Text:SetFont(PartyKeystone_DetailsButton.Text:GetFont(), 12)
-
 			PartyKeystone_DetailsButton = AMT_CreateBorderButton(
 				PartyKeystone_Container,
 				"AMT_PartyKeystone_DetailsButton",
@@ -870,22 +808,6 @@ function AMT:AMT_Creation()
 				end
 			end)
 
-			-- PartyKeystone_RefreshButton = CreateFrame(
-			-- 	"Button",
-			-- 	"AMT_PartyKeystone_RefreshButton",
-			-- 	PartyKeystone_Container,
-			-- 	"UIPanelButtonTemplate"
-			-- )
-			-- if AMT.ElvUIEnabled then
-			-- 	AMT.S:HandleButton(PartyKeystone_RefreshButton)
-			-- end
-			-- PartyKeystone_RefreshButton:SetSize(54, 16)
-			-- PartyKeystone_RefreshButton:SetPoint("RIGHT", PartyKeystone_DetailsButton, "LEFT", -4, 0)
-			-- PartyKeystone_RefreshButton:SetText("Refresh")
-			-- PartyKeystone_RefreshButton.Text:SetFont(PartyKeystone_RefreshButton.Text:GetFont(), 12)
-			-- PartyKeystone_RefreshButton:SetScript("OnClick", function()
-			-- 	AMT:AMT_PartyKeystoneRefreshRequest()
-			-- end)
 			PartyKeystone_RefreshButton = AMT_CreateBorderButton(
 				PartyKeystone_Container,
 				"AMT_PartyKeystone_RefreshButton",
@@ -901,16 +823,6 @@ function AMT:AMT_Creation()
 			PartyKeystone_RefreshButton:SetScript("OnClick", function()
 				AMT:AMT_PartyKeystoneRefreshRequest()
 			end)
-
-			-- PartyKeystone_RollButton =
-			-- 	CreateFrame("Button", "AMT_PartyKeystone_RollButton", PartyKeystone_Container, "UIPanelButtonTemplate")
-			-- if AMT.ElvUIEnabled then
-			-- 	AMT.S:HandleButton(PartyKeystone_RollButton)
-			-- end
-			-- PartyKeystone_RollButton:SetSize(90, 16)
-			-- PartyKeystone_RollButton:SetPoint("BOTTOM", PartyKeystone_Container, "BOTTOM", 0, 2)
-			-- PartyKeystone_RollButton:SetText("Random Key")
-			-- PartyKeystone_RollButton.Text:SetFont(PartyKeystone_RollButton.Text:GetFont(), 12)
 
 			PartyKeystone_RollButton = AMT_CreateBorderButton(
 				PartyKeystone_Container,
@@ -945,7 +857,7 @@ function AMT:AMT_Creation()
 				PartyKeystone_Rightext:SetPoint("TOPRIGHT", PartyKeystone_Container, "TOPRIGHT", -6, yOffset * i - 2)
 				PartyKeystone_Rightext:SetJustifyH("RIGHT")
 				PartyKeystone_Rightext:SetWidth(90)
-				PartyKeystone_Rightext:SetFont(PartyKeystone_Rightext:GetFont(), 14)
+				PartyKeystone_Rightext:SetFont(self.AMT_Font, 14)
 				PartyKeystone_Rightext:SetText("")
 
 				PartyKeystone_Lefttext = PartyKeystone_Container:CreateFontString(
@@ -956,7 +868,7 @@ function AMT:AMT_Creation()
 				PartyKeystone_Lefttext:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, yOffset * i)
 				PartyKeystone_Lefttext:SetJustifyH("LEFT")
 				PartyKeystone_Lefttext:SetWidth(90)
-				PartyKeystone_Lefttext:SetFont(PartyKeystone_Lefttext:GetFont(), 14)
+				PartyKeystone_Lefttext:SetFont(self.AMT_Font, 14)
 				PartyKeystone_Lefttext:SetText("")
 				PartyKeystone_Container.lines[i] = {
 					left = PartyKeystone_Lefttext,
@@ -996,25 +908,25 @@ function AMT:AMT_Creation()
 		MythicScore_Container:SetPoint("TOP", AMT_Window, "TOP", 0, -AMT_Window_Y_Offset)
 		MythicScore_Container.tex = MythicScore_Container:CreateTexture()
 		MythicScore_Container.tex:SetAllPoints(MythicScore_Container)
-		MythicScore_Container.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		MythicScore_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		-- Create label
 		local MythicScore_Title_Label = MythicScore_Container:CreateFontString(nil, "OVERLAY", "GameFontWhite")
 		MythicScore_Title_Label:SetPoint("TOP", 0, -4)
 		MythicScore_Title_Label:SetText("Mythic+ Rating")
-		MythicScore_Title_Label:SetFont(MythicScore_Title_Label:GetFont(), 20)
+		MythicScore_Title_Label:SetFont(self.AMT_Font, 20)
 		MythicScore_Title_Label:SetTextColor(1, 1, 1, 1.0)
 
 		-- Create the text string for mythic score
 		local MythicScore_Label =
 			MythicScore_Container:CreateFontString("MythicScore_Label", "OVERLAY", "GameFontNormal")
 		MythicScore_Label:SetPoint("TOP", MythicScore_Title_Label, "BOTTOM", 0, -4)
-		MythicScore_Label:SetText(AMT.Player_Mplus_Summary.currentSeasonScore)
-		MythicScore_Label:SetFont(MythicScore_Label:GetFont(), 28)
+		MythicScore_Label:SetText(self.Player_Mplus_Summary.currentSeasonScore)
+		MythicScore_Label:SetFont(self.AMT_Font, 28)
 		MythicScore_Label:SetTextColor(
-			AMT.Player_Mplus_ScoreColor.r,
-			AMT.Player_Mplus_ScoreColor.g,
-			AMT.Player_Mplus_ScoreColor.b,
+			self.Player_Mplus_ScoreColor.r,
+			self.Player_Mplus_ScoreColor.g,
+			self.Player_Mplus_ScoreColor.b,
 			1.0
 		)
 
@@ -1061,7 +973,7 @@ function AMT:AMT_Creation()
 		MythicRunsGraph_Container:SetPoint("TOP", MythicScore_Container, "BOTTOM", -AMT_Window_X_Offset * 2 - 2, 0)
 		MythicRunsGraph_Container.tex = MythicRunsGraph_Container:CreateTexture()
 		MythicRunsGraph_Container.tex:SetAllPoints(MythicRunsGraph_Container)
-		MythicRunsGraph_Container.tex:SetColorTexture(unpack(AMT.BackgroundClear))
+		MythicRunsGraph_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
 
 		local graphline = {}
 		local graphline_label = {}
@@ -1116,7 +1028,7 @@ function AMT:AMT_Creation()
 				"MovieSubtitleFont"
 			)
 
-			graphDung_label[i]:SetFont(graphDung_label[i]:GetFont(), 14)
+			graphDung_label[i]:SetFont(self.AMT_Font, 14)
 			graphDung_label[i]:SetText(dungAbbr)
 			graphDung_label[i]:SetJustifyH("RIGHT")
 			if i == 1 then
@@ -1147,12 +1059,12 @@ function AMT:AMT_DataUpdate()
 	if WeeklyBest_Key == 0 then
 		WeeklyBest_Text:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 3)
 		WeeklyBest_Text:SetTextColor(0.804, 0.804, 0.804, 1.0)
-		WeeklyBest_Text:SetFont(WeeklyBest_Text:GetFont(), 38)
+		WeeklyBest_Text:SetFont(self.AMT_Font, 38)
 		WeeklyBest_Text:SetText("-")
 	else
 		WeeklyBest_Text:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 0)
 		WeeklyBest_Text:SetText(WeeklyBest_Color:WrapTextInColorCode(WeeklyBest_Key))
-		WeeklyBest_Text:SetFont(WeeklyBest_Text:GetFont(), 42)
+		WeeklyBest_Text:SetFont(self.AMT_Font, 42)
 		WeeklyBest_Text:SetTextColor(1, 1, 1, 1.0)
 	end
 
@@ -1180,7 +1092,7 @@ function AMT:AMT_DataUpdate()
 	-- =======================================
 	local WeeklyKeysHistory = {}
 
-	for i = 1, AMT.Vault_DungeonReq do
+	for i = 1, self.Vault_DungeonReq do
 		if i <= #self.KeysDone and #self.RunHistory > 0 then
 			tinsert(WeeklyKeysHistory, self.KeysDone[i].level)
 		else
@@ -1188,7 +1100,7 @@ function AMT:AMT_DataUpdate()
 		end
 	end
 
-	for i = 1, AMT.Vault_DungeonReq do
+	for i = 1, self.Vault_DungeonReq do
 		if WeeklyKeysHistory[i] ~= nil and WeeklyKeysHistory[i] > 0 then
 			if
 				i == self.Mplus_VaultUnlocks[1]
@@ -1211,8 +1123,8 @@ function AMT:AMT_DataUpdate()
 	-- =====================================
 
 	local MythicScore_Label = _G["MythicScore_Label"]
-	AMT.Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
-	MythicScore_Label:SetText(AMT.Player_Mplus_Summary.currentSeasonScore)
+	self.Player_Mplus_Summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
+	MythicScore_Label:SetText(self.Player_Mplus_Summary.currentSeasonScore)
 
 	-- =========================================
 	-- === MARK: Update Keystone Information ===
@@ -1239,10 +1151,10 @@ function AMT:AMT_DataUpdate()
 		-- vaultReward, dungeonReward = C_MythicPlus.GetRewardLevelForDifficultyLevel(keystone_level) --dungeonRewards API is broken for the time being
 		vaultReward, dungeonReward = AMT:AMT_GetKeystoneRewards(keystone_level)
 		Keystone_DungName:SetText("+" .. keystone_level .. " " .. keystone_abbr)
-		Keystone_DungName:SetFont(Keystone_DungName:GetFont(), 14)
+		Keystone_DungName:SetFont(self.AMT_Font, 14)
 		--Set the icon textures
 		KeystoneItem_Icon.tex:SetTexture(keystone_icontex)
-		KeystoneItem_Icon:SetSize(46, 46)
+		KeystoneItem_Icon:SetSize(52, 52)
 		KeystoneItem_Icon.tex:SetDesaturated(false)
 		--Since Keystone was detected we now create a glow around the icon.
 		KeystoneItem_Glow.tex:SetAtlas("BattleBar-Button-Highlight")
@@ -1291,17 +1203,17 @@ function AMT:AMT_DataUpdate()
 		--If Great Vault Rewards are uncollected create the
 		if C_WeeklyRewards.HasAvailableRewards() then
 			Keystone_DungName:SetText("Pending Vault")
-			Keystone_DungName:SetFont(Keystone_DungName:GetFont(), 12)
+			Keystone_DungName:SetFont(self.AMT_Font, 12)
 			KeystoneItem_Icon.tex:SetAtlas("CovenantChoice-Celebration-Content-Soulbind")
 			KeystoneItem_Icon:SetSize(58, 58)
 			KeystoneItem_Icon.tex:SetDesaturated(false)
 		else
 			Keystone_DungName:SetText("No Key") --MARK: FIX
-			Keystone_DungName:SetFont(Keystone_DungName:GetFont(), 14)
+			Keystone_DungName:SetFont(self.AMT_Font, 14)
 			--If a Keystone level is not detected, we'll set the texture of the keystone to a default texture and a glow
 			KeystoneItem_Icon.tex:SetTexture(4352494)
 			KeystoneItem_Icon.tex:SetDesaturated(true)
-			KeystoneItem_Icon:SetSize(46, 46)
+			KeystoneItem_Icon:SetSize(52, 52)
 			KeystoneItem_Glow.tex:SetAtlas("BattleBar-Button-Highlight")
 		end
 	end
@@ -1380,10 +1292,10 @@ function AMT:AMT_DataUpdate()
 		local Dung_WeekScore_Color
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		if AMT.CurrentWeek_AffixTable[1][1] == 9 then
+		if self.CurrentWeek_AffixTable[1][1] == 9 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungTyrLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungTyrScore
-		elseif AMT.CurrentWeek_AffixTable[1][1] == 10 then
+		elseif self.CurrentWeek_AffixTable[1][1] == 10 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungFortLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungFortScore
 		end
@@ -1414,6 +1326,7 @@ function AMT:AMT_DataUpdate()
 		if not dungeonLine then
 			dungLines[i] =
 				MythicRunsGraph_Container:CreateFontString("AMT_Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+			dungLines[i]:SetFont(AMT.AntTrail_Font, 14)
 		else
 			dungLines[i] = dungeonLine
 		end

@@ -31,9 +31,9 @@ end)
 local AMT_TabButton = CreateFrame("Button", "AMT_Tab", PVEFrame, "PanelTabButtonTemplate", (PVEFrame.numTabs + 1))
 if AMT.ElvUIEnabled then
 	AMT.S:HandleTab(AMT_TabButton)
-	AMT_TabButton:SetText("Keystone Tracker")
+	AMT_TabButton:SetText("Mythic Tracker")
 else
-	AMT_TabButton:SetText("Advanced Keystone Tracker")
+	AMT_TabButton:SetText("Mythic Tracker")
 end
 PanelTemplates_DeselectTab(AMT_TabButton) --Force newly created button to be deselected
 
@@ -83,7 +83,7 @@ end)
 -- ================================
 AMT_Window:SetScript("OnShow", function()
 	AMT:Pull_VaultRequirements()
-	AMT:RaidTest()
+	AMT:AMT_UpdateRaidProg()
 	AMT:AMT_UpdateAffixInformation()
 	AMT:Update_PlayerDungeonInfo()
 	AMT:AMT_Update_PlayerMplus_Score()
