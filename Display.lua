@@ -10,7 +10,7 @@ function AMT:AMT_Creation()
 	-- ==============================
 	-- === AMT Window Tabs Set-up ===
 	-- ==============================
-	self.Update_PVEFrame_Panels()
+	AMT:Update_PVEFrame_Panels()
 	local VisiblePanels = {}
 	-- Filter out visible panels
 	for i = 1, #self.PVEFrame_Panels do
@@ -86,68 +86,46 @@ function AMT:AMT_Creation()
 	-- =================================
 	local AMT_Window_X_Offset = 4
 	local AMT_Window_Y_Offset = 22
-	-- MARK: Create Weekly Best M+ Container
-	local WeeklyBest_Compartment
-	if not _G["AMT_WeeklyBest_Compartment"] then
-		WeeklyBest_Compartment = CreateFrame("Frame", "AMT_WeeklyBest_Compartment", AMT_Window)
-		WeeklyBest_Compartment:SetSize(180, 68)
-		WeeklyBest_Compartment:SetPoint("TOPLEFT", AMT_Window, "TOPLEFT", AMT_Window_X_Offset, -AMT_Window_Y_Offset)
-		WeeklyBest_Compartment.tex = WeeklyBest_Compartment:CreateTexture()
-		WeeklyBest_Compartment.tex:SetAllPoints(WeeklyBest_Compartment)
-		WeeklyBest_Compartment.tex:SetColorTexture(unpack(self.BackgroundClear))
-		--Create the Compartment Title
-		local WeeklyBest_Label = WeeklyBest_Compartment:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-		WeeklyBest_Label:SetPoint("TOP", 0, -2) -- Set the position of the text
-		WeeklyBest_Label:SetText("Weekly Best") -- Set the text content
-		WeeklyBest_Label:SetFont(self.AMT_Font, 20)
-		WeeklyBest_Label:SetTextColor(1, 1, 1, 1.0)
-		--Generates the background where the weekly best key # is going to be displayed
-		local WeeklyBest_Bg = CreateFrame("Frame", "AMT_WeeklyBest_Bg", WeeklyBest_Compartment)
-		WeeklyBest_Bg:SetSize(112, 40)
-		WeeklyBest_Bg:SetPoint("TOP", WeeklyBest_Label, "BOTTOM", 0, -4)
-		WeeklyBest_Bg.tex = WeeklyBest_Bg:CreateTexture()
-		WeeklyBest_Bg.tex:SetAllPoints(WeeklyBest_Bg)
-		WeeklyBest_Bg.tex:SetColorTexture(0.0, 0.0, 0.0, 0.6)
-		local WeeklyBest_Keylevel =
-			WeeklyBest_Bg:CreateFontString("AMT_WeeklyBest_Keylevel", "OVERLAY", "MovieSubtitleFont")
-		WeeklyBest_Keylevel:SetText("-")
-	end
 	-- MARK: Create Current Keystone Compartment
 	local CurrentKeystone_Compartment
 	if not _G["AMT_CurrentKeystone_Compartment"] then
 		CurrentKeystone_Compartment = CreateFrame("Frame", "AMT_CurrentKeystone_Compartment", AMT_Window)
-		CurrentKeystone_Compartment:SetSize(180, 164)
-		CurrentKeystone_Compartment:SetPoint("BOTTOMLEFT", AMT_Window, "BOTTOMLEFT", AMT_Window_X_Offset, 0)
+		CurrentKeystone_Compartment:SetSize(180, 100)
+		CurrentKeystone_Compartment:SetPoint(
+			"TOPLEFT",
+			AMT_Window,
+			"TOPLEFT",
+			AMT_Window_X_Offset,
+			-AMT_Window_Y_Offset
+		)
 		CurrentKeystone_Compartment.tex = CurrentKeystone_Compartment:CreateTexture()
 		CurrentKeystone_Compartment.tex:SetAllPoints(CurrentKeystone_Compartment)
 		CurrentKeystone_Compartment.tex:SetColorTexture(unpack(self.BackgroundClear))
-		-- Create the Rune Art that'll house the Keystone Icon
-		local RuneArt = CreateFrame("Frame", "AMT_RuneTexture", CurrentKeystone_Compartment)
-		RuneArt:SetPoint("BOTTOM", CurrentKeystone_Compartment, "BOTTOM", 0, 5)
-		RuneArt:SetSize(155, 155)
-		RuneArt.tex = RuneArt:CreateTexture()
-		RuneArt.tex:SetAllPoints(RuneArt)
-		RuneArt.tex:SetAtlas("Artifacts-CrestRune-Gold", false)
+
 		--Create the frame which will contain the icon texture of the Keystone
-		local KeystoneItem_Icon = CreateFrame("Frame", "AMT_KeystoneItem_Icon", RuneArt)
-		KeystoneItem_Icon:SetPoint("CENTER")
+		local KeystoneItem_Icon = CreateFrame("Frame", "AMT_KeystoneItem_Icon", CurrentKeystone_Compartment)
+		KeystoneItem_Icon:SetPoint("TOP", 0, -30)
 		KeystoneItem_Icon.tex = KeystoneItem_Icon:CreateTexture()
+		-- KeystoneItem_Icon.tex:SetTexCoord(0.02, 0.98, 0.02, 0.98)
 		KeystoneItem_Icon.tex:SetAllPoints(KeystoneItem_Icon)
 		--Create the Glow Texture that will exist around the Keystone Icon
-		local KeystoneItem_Glow = CreateFrame("Frame", "AMT_KeystoneItem_Glow", RuneArt)
-		KeystoneItem_Glow:SetPoint("CENTER")
-		KeystoneItem_Glow:SetSize(80, 80)
+		local KeystoneItem_Glow = CreateFrame("Frame", "AMT_KeystoneItem_Glow", CurrentKeystone_Compartment)
+		KeystoneItem_Glow:SetPoint("TOP", 0, -12)
+		KeystoneItem_Glow:SetSize(96, 96)
 		KeystoneItem_Glow:SetFrameLevel(5)
 		KeystoneItem_Glow.tex = KeystoneItem_Glow:CreateTexture()
-		KeystoneItem_Glow.tex:SetSize(65, 65)
+		KeystoneItem_Glow.tex:SetSize(78, 78)
 		KeystoneItem_Glow.tex:SetAllPoints(KeystoneItem_Glow)
 		--Create the label for Keystone's Dungeon Name Background
-		local Keystone_DungName_Bg = CreateFrame("Frame", "AMT_Keystone_DungName_Bg", RuneArt)
-		Keystone_DungName_Bg:SetPoint("TOP", KeystoneItem_Icon, "TOP", 0, 36)
-		Keystone_DungName_Bg:SetSize(76, 22)
+		local Keystone_DungName_Bg = CreateFrame("Frame", "AMT_Keystone_DungName_Bg", CurrentKeystone_Compartment)
+		Keystone_DungName_Bg:SetPoint("BOTTOM", KeystoneItem_Icon, "TOP", 0, 6)
+		Keystone_DungName_Bg:SetSize(120, 22) --76
 		Keystone_DungName_Bg.tex = Keystone_DungName_Bg:CreateTexture(nil, "ARTWORK")
+		-- Keystone_DungName_Bg.tex:SetAtlas("AftLevelup-ToastBG")
+		Keystone_DungName_Bg.tex:SetAtlas("minortalents-descriptionshadow")
+		Keystone_DungName_Bg.tex:SetSize(1, 1)
 		Keystone_DungName_Bg.tex:SetAllPoints(Keystone_DungName_Bg)
-		Keystone_DungName_Bg.tex:SetColorTexture(0, 0, 0, 0.75)
+		-- Keystone_DungName_Bg.tex:SetColorTexture(0, 0, 0, 0.75)
 		--Create the label for Keystone's Dungeon Name Label
 		local Keystone_DungName =
 			Keystone_DungName_Bg:CreateFontString("AMT_Keystone_DungName", "OVERLAY", "MovieSubtitleFont")
@@ -155,9 +133,9 @@ function AMT:AMT_Creation()
 		Keystone_DungName:SetFont(self.AMT_Font, 14)
 		Keystone_DungName:SetText("Key Missing")
 
-		--Create the Great Vault Button
-		local GreatVault_Button = CreateFrame("Button", "AMT_GreatVault_Button", RuneArt)
-		GreatVault_Button:SetPoint("BOTTOM", KeystoneItem_Icon, "BOTTOM", 0, -37)
+		-- MARK: Create the Great Vault Button
+		local GreatVault_Button = CreateFrame("Button", "AMT_GreatVault_Button", AMT_Window)
+		GreatVault_Button:SetPoint("TOP", KeystoneItem_Icon, "BOTTOM", 0, -200)
 		GreatVault_Button:SetSize(74, 22)
 		GreatVault_Button:SetText("Open Vault")
 		GreatVault_Button_bg = GreatVault_Button:CreateTexture(nil, "ARTWORK")
@@ -232,10 +210,10 @@ function AMT:AMT_Creation()
 			180,
 			AMT_Window:GetHeight()
 				- AMT_Window_Y_Offset
-				- WeeklyBest_Compartment:GetHeight()
+				- CurrentKeystone_Compartment:GetHeight()
 				- CurrentKeystone_Compartment:GetHeight()
 		)
-		Lockouts_Comparment:SetPoint("TOP", WeeklyBest_Compartment, "BOTTOM", 0, 0)
+		Lockouts_Comparment:SetPoint("TOP", CurrentKeystone_Compartment, "BOTTOM", 0, 0)
 		Lockouts_Comparment.tex = Lockouts_Comparment:CreateTexture()
 		Lockouts_Comparment.tex:SetAllPoints(Lockouts_Comparment)
 		Lockouts_Comparment.tex:SetColorTexture(unpack(self.BackgroundClear))
@@ -434,51 +412,154 @@ function AMT:AMT_Creation()
 		end)
 
 		--Create the M+ Boxes
+		local Mplus_Box = {}
 		local Mplus_BoxSpacing = 3
 		local Mplus_BoxMargin = (
 			Mplus_Mainframe:GetWidth()
 			- ((self.Vault_BoxSize * self.Vault_DungeonReq) + (Mplus_BoxSpacing * (self.Vault_DungeonReq - 1)))
 		) / 2
 		for i = 1, self.Vault_DungeonReq do
-			Mplus_Box = CreateFrame("Frame", "AMT_Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
-			Mplus_Box:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
-			Mplus_Box.tex = Mplus_Box:CreateTexture()
-			Mplus_Box.tex:SetAllPoints(Mplus_Box)
-			Mplus_Box.tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+			Mplus_Box[i] = CreateFrame("Frame", "AMT_Mplus_Box" .. i, Mplus_MainFrame_BoxFrame)
+			Mplus_Box[i]:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
+			Mplus_Box[i].tex = Mplus_Box[i]:CreateTexture()
+			Mplus_Box[i].tex:SetAllPoints(Mplus_Box[i])
+			Mplus_Box[i].tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
 
 			if i == 1 then
-				Mplus_Box:SetPoint("LEFT", Mplus_MainFrame_BoxFrame, "LEFT", Mplus_BoxMargin, 0)
+				Mplus_Box[i]:SetPoint("LEFT", Mplus_MainFrame_BoxFrame, "LEFT", Mplus_BoxMargin, 0)
 			else
 				local previousBox = _G["AMT_Mplus_Box" .. (i - 1)]
-				Mplus_Box:SetPoint("LEFT", previousBox, "RIGHT", Mplus_BoxSpacing, 0)
+				Mplus_Box[i]:SetPoint("LEFT", previousBox, "RIGHT", Mplus_BoxSpacing, 0)
 			end
+		end
+	end
+	-- MARK: Create World Container
+	--Create the World Activities Header Container
+	local World_Goals_Header = CreateFrame("Frame", "AMT_World_Goals_Header", Lockouts_Comparment)
+	World_Goals_Header:SetSize(180, 18)
+	World_Goals_Header:SetPoint("TOP", _G["AMT_Mplus_Mainframe"], "BOTTOM", 0, 0)
+	World_Goals_Header.tex = World_Goals_Header:CreateTexture()
+	World_Goals_Header.tex:SetAllPoints(World_Goals_Header)
+	World_Goals_Header.tex:SetColorTexture(unpack(self.BackgroundClear))
+
+	--Create the World Activities Section Label
+	local WeeklyWorld_Label = World_Goals_Header:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+	WeeklyWorld_Label:SetPoint("TOP", World_Goals_Header, "TOP", 0, 0)
+	WeeklyWorld_Label:SetText("World")
+	WeeklyWorld_Label:SetFont(self.AMT_Font, 14)
+
+	--Create the World Activities Main Frame that will house the label and the boxes
+	local World_Mainframe = CreateFrame("Frame", "AMT_World_Mainframe", Lockouts_Comparment)
+	World_Mainframe:SetSize(180, 22)
+	World_Mainframe:SetPoint("TOPLEFT", World_Goals_Header, "BOTTOMLEFT", 0, 2)
+	World_Mainframe.tex = World_Mainframe:CreateTexture()
+	World_Mainframe.tex:SetAllPoints(World_Mainframe)
+	World_Mainframe.tex:SetColorTexture(unpack(self.BackgroundClear))
+
+	--Create the World Activities Boxes Container
+	local World_Mainframe_BoxFrame = CreateFrame("Frame", "AMT_World_Mainframe_BoxFrame", World_Mainframe)
+	World_Mainframe_BoxFrame:SetSize(180, 22)
+	World_Mainframe_BoxFrame:SetPoint("CENTER", World_Mainframe, "CENTER", 0, 0)
+	World_Mainframe_BoxFrame.tex = World_Mainframe_BoxFrame:CreateTexture()
+	World_Mainframe_BoxFrame.tex:SetAllPoints(World_Mainframe_BoxFrame)
+	World_Mainframe_BoxFrame.tex:SetColorTexture(unpack(self.BackgroundClear))
+
+	--Set up the Tooltip info for World Activities
+	World_Mainframe:SetScript("OnEnter", function()
+		GameTooltip:ClearAllPoints()
+		GameTooltip:ClearLines()
+		GameTooltip:SetOwner(World_Mainframe, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Delves and World Activities", 1, 1, 1, 1, true)
+		if self.KeysDone[1] ~= 0 then
+			GameTooltip:AddLine(
+				format("Number of Delves and World Activities done this week: |cffffffff%s|r", #self.KeysDone)
+			)
+		else
+			GameTooltip:AddLine(format("Number of Delves and World Activities done this week: |cffffffff%s|r", 0))
+		end
+		if self.KeysDone[1] ~= 0 then
+			GameTooltip:AddLine(" ")
+			GameTooltip:AddLine("Top 8 Runs This Week")
+			for i = 1, 8 do
+				if self.KeysDone[i] and (i == 1 or i == 4 or i == 8) then
+					GameTooltip:AddLine("|cff00ff12" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
+				elseif self.KeysDone[i] then
+					GameTooltip:AddLine("|cffffffff" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
+				end
+			end
+		end
+		World_Mainframe.tex:SetColorTexture(unpack(self.BackgroundHover))
+		GameTooltip:Show()
+	end)
+	World_Mainframe:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+		World_Mainframe.tex:SetColorTexture(unpack(self.BackgroundClear))
+	end)
+
+	--Create the M+ Boxes
+	local World_Box = {}
+	local World_BoxSpacing = 3
+	local World_BoxSize = self.Vault_BoxSize * 0.75
+	local World_BoxMargin = (
+		World_Mainframe:GetWidth()
+		- ((World_BoxSize * self.Vault_WorldReq) + (World_BoxSpacing * (self.Vault_WorldReq - 1)))
+	) / 2
+	for i = 1, self.Vault_WorldReq do
+		World_Box[i] = CreateFrame("Frame", "AMT_World_Box" .. i, World_Mainframe_BoxFrame)
+		World_Box[i]:SetSize(World_BoxSize, self.Vault_BoxSize)
+		World_Box[i].tex = World_Box[i]:CreateTexture()
+		World_Box[i].tex:SetAllPoints(World_Box[i])
+		World_Box[i].tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
+
+		if i == 1 then
+			World_Box[i]:SetPoint("LEFT", World_Mainframe_BoxFrame, "LEFT", World_BoxMargin, 0)
+		else
+			local previousBox = _G["AMT_World_Box" .. (i - 1)]
+			World_Box[i]:SetPoint("LEFT", previousBox, "RIGHT", World_BoxSpacing, 0)
 		end
 	end
 
 	-- MARK: Create Dungeons Icon Container
 	local DungeonIcons_Container
 	if not _G["AMT_DungeonIcons_Container"] then
+		local Container_Margin = AMT_Window_X_Offset - 2
 		DungeonIcons_Container = CreateFrame("Frame", "AMT_DungeonIcons_Container", AMT_Window)
-		DungeonIcons_Container:SetSize(
-			AMT_Window:GetWidth() - AMT_Window_X_Offset - CurrentKeystone_Compartment:GetWidth(),
-			90
-		)
-		DungeonIcons_Container:SetPoint("BOTTOMLEFT", CurrentKeystone_Compartment, "BOTTOMRIGHT", -1, 1)
+		if self.ElvUIEnabled then
+			DungeonIcons_Container:SetSize(AMT_Window:GetWidth() - Container_Margin * 5, 80)
+		else
+			DungeonIcons_Container:SetSize(AMT_Window:GetWidth() - Container_Margin * 4, 80)
+		end
+		DungeonIcons_Container:SetPoint("BOTTOMLEFT", AMT_Window, "BOTTOMLEFT", AMT_Window_X_Offset + 2, 4)
 		DungeonIcons_Container.tex = DungeonIcons_Container:CreateTexture()
 		DungeonIcons_Container.tex:SetAllPoints(DungeonIcons_Container)
-		DungeonIcons_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
+		DungeonIcons_Container.tex:SetColorTexture(unpack(self.BackgroundHover))
 
 		-- Create the icon for each dungeon
 		local DungIcon = {}
 		for i = 1, #self.Current_SeasonalDung_Info do
-			local dungIconHeight = DungeonIcons_Container:GetHeight()
-			local dungIconWidth = DungeonIcons_Container:GetWidth() / 8
+			local DungIconWidth = DungeonIcons_Container:GetWidth() / 8
+			local DungIconHeight = DungeonIcons_Container:GetHeight()
+			local DungIconAspectRatio = DungIconWidth / DungIconHeight
+
+			local DungIconSize = math.max(DungIconHeight, DungIconWidth)
+			local DungIconMargin = (DungIconSize - math.min(DungIconHeight, DungIconWidth)) / 2
+			local DungIconCrop = DungIconMargin / DungIconSize
 			DungIcon[i] =
 				CreateFrame("Button", "AMT_DungeonIcon_" .. i, DungeonIcons_Container, "InsecureActionButtonTemplate")
-			DungIcon[i]:SetSize(dungIconWidth, dungIconHeight)
-			DungIcon.tex = DungIcon[i]:CreateTexture()
-			DungIcon.tex:SetAllPoints(DungIcon[i])
+			DungIcon[i]:SetSize(DungIconWidth, DungIconHeight)
+
+			DungIcon.tex = DungIcon[i]:CreateTexture(nil, "BACKGROUND")
 			DungIcon.tex:SetTexture(self.Current_SeasonalDung_Info[i].dungIcon)
+			if DungIconAspectRatio > 1 then
+				DungIcon.tex:SetTexCoord(0, 1, DungIconCrop, 1 - DungIconCrop)
+			elseif DungIconAspectRatio < 1 then
+				DungIcon.tex:SetTexCoord(DungIconCrop, 1 - DungIconCrop, 0, 1)
+			end
+
+			DungIcon.tex:SetSize(DungIconSize, DungIconSize)
+
+			DungIcon.tex:ClearAllPoints()
+			DungIcon.tex:SetAllPoints(DungIcon[i])
 
 			if i == 1 then
 				DungIcon[i]:SetPoint("BOTTOMLEFT", DungeonIcons_Container, "BOTTOMLEFT", 0, 0)
@@ -499,7 +580,7 @@ function AMT:AMT_Creation()
 				end
 			end
 			local DungIconName_Label = DungIcon[i]:CreateFontString(nil, "OVERLAY", "GameFontHighlightOutline22")
-			DungIconName_Label:SetPoint("TOP", _G["AMT_DungeonIcon_" .. i], "TOP", 0, 10)
+			DungIconName_Label:SetPoint("TOP", _G["AMT_DungeonIcon_" .. i], "TOP", 0, 0)
 			DungIconName_Label:SetFont(self.AMT_Font, 20, "OUTLINE")
 			DungIconName_Label:SetTextColor(1, 1, 1)
 			DungIconName_Label:SetText(DungIcon_Abbr)
@@ -530,11 +611,10 @@ function AMT:AMT_Creation()
 				C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(self.Current_SeasonalDung_Info[i].mapID)
 			local dungSpellID
 			local dungSpellName
-
 			for _, dungeons in ipairs(self.SeasonalDungeons) do
 				if dungeons.mapID == self.Current_SeasonalDung_Info[i].mapID then
 					dungSpellID = dungeons.spellID
-					dungSpellName = GetSpellInfo(dungSpellID)
+					dungSpellName = C_Spell.GetSpellName(dungSpellID)
 				end
 			end
 
@@ -597,17 +677,22 @@ function AMT:AMT_Creation()
 					end
 				end
 				if IsSpellKnown(dungSpellID, false) then
-					local start, duration = GetSpellCooldown(dungSpellID)
+					local spellCooldownInfo = C_Spell.GetSpellCooldown(dungSpellID)
 
 					GameTooltip:AddLine(" ")
 					GameTooltip:AddLine(dungSpellName or TELEPORT_TO_DUNGEON)
 
-					if not start or not duration then
+					if not spellCooldownInfo.startTime or not spellCooldownInfo.duration then
 						GameTooltip:AddLine(SPELL_FAILED_NOT_KNOWN, 1, 0, 0)
-					elseif duration == 0 then
+					elseif spellCooldownInfo.duration == 0 then
 						GameTooltip:AddLine(READY, 0, 1, 0)
 					else
-						GameTooltip:AddLine(SecondsToTime(ceil(start + duration - GetTime())), 1, 0, 0)
+						GameTooltip:AddLine(
+							SecondsToTime(ceil(spellCooldownInfo.startTime + spellCooldownInfo.duration - GetTime())),
+							1,
+							0,
+							0
+						)
 					end
 				else
 					GameTooltip:AddLine(" ")
@@ -638,7 +723,7 @@ function AMT:AMT_Creation()
 		-- Create this week's Label
 		local CurrentAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_CurrentAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
-		CurrentAffixes_Label:SetPoint("TOPLEFT", 35, -2) -- Set the position of the text
+		CurrentAffixes_Label:SetPoint("TOPLEFT", 20, -2) -- Set the position of the text
 		CurrentAffixes_Label:SetText("This Week") -- Set the text content
 		CurrentAffixes_Label:SetFont(self.AMT_Font, 20)
 		CurrentAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -655,7 +740,7 @@ function AMT:AMT_Creation()
 		-- Create next week's Label
 		local NextWeekAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_NextWeekAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
-		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 35, -4) -- Set the position of the text
+		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 20, -4) -- Set the position of the text
 		NextWeekAffixes_Label:SetText("Next Week") -- Set the text content
 		NextWeekAffixes_Label:SetFont(self.AMT_Font, 20)
 		NextWeekAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -673,9 +758,6 @@ function AMT:AMT_Creation()
 			0,
 			-NextWeekAffixes_Label_y - NextWeekAffixes_Label:GetHeight() - 6
 		)
-		NextWeekAffixes_Container:SetBackdrop(BackdropInfo)
-		NextWeekAffixes_Container:SetBackdropBorderColor(1, 0, 1, 0.0)
-		NextWeekAffixes_Container:SetBackdropColor(1, 0, 1, 0.0)
 
 		-- Create the icons for the current affixes
 		for i = 1, #self.GetCurrentAffixesTable do
@@ -683,12 +765,13 @@ function AMT:AMT_Creation()
 				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
 				local AffixIcon = {}
 				local iconSize = 40
-				local iconPadding = 5
+				local iconPadding = 20
 				AffixIcon[i] = CreateFrame("Frame", "AMT_CurrentAffixIcon" .. i, CurrentAffixes_Container)
 				AffixIcon[i]:SetSize(iconSize, iconSize)
 				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
 				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
 				AffixIcon[i].tex:SetTexture(filedataid)
+				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 				if i == 1 then
 					AffixIcon[i]:SetPoint(
 						"LEFT",
@@ -723,12 +806,13 @@ function AMT:AMT_Creation()
 				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
 				local AffixIcon = {}
 				local iconSize = 40
-				local iconPadding = 5
+				local iconPadding = 20
 				AffixIcon[i] = CreateFrame("Frame", "AMT_NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
 				AffixIcon[i]:SetSize(iconSize, iconSize)
 				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
 				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
 				AffixIcon[i].tex:SetTexture(filedataid)
+				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 				if i == 1 then
 					AffixIcon[i]:SetPoint(
 						"LEFT",
@@ -910,6 +994,22 @@ function AMT:AMT_Creation()
 		MythicScore_Container.tex:SetAllPoints(MythicScore_Container)
 		MythicScore_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
 
+		--Create the Dragon Borders
+		local MythicScore_LeftDragon = CreateFrame("Frame", "MythicScore_LeftDragon", MythicScore_Container)
+		MythicScore_LeftDragon:SetPoint("RIGHT", MythicScore_Container, "LEFT", 20, 10)
+		MythicScore_LeftDragon:SetSize(80, 37)
+		MythicScore_LeftDragon.tex = MythicScore_LeftDragon:CreateTexture()
+		MythicScore_LeftDragon.tex:SetAllPoints(MythicScore_LeftDragon)
+		MythicScore_LeftDragon.tex:SetAtlas("Dragonflight-DragonHeadLeft", false)
+
+		local MythicScore_RightDragon = CreateFrame("Frame", "MythicScore_LeftDragon", MythicScore_Container)
+		MythicScore_RightDragon:SetPoint("LEFT", MythicScore_Container, "RIGHT", -20, 10)
+		MythicScore_RightDragon:SetSize(80, 37)
+		MythicScore_RightDragon.tex = MythicScore_RightDragon:CreateTexture()
+		MythicScore_RightDragon.tex:SetAllPoints(MythicScore_RightDragon)
+		MythicScore_RightDragon.tex:SetAtlas("Dragonflight-DragonHeadLeft", false)
+		MythicScore_RightDragon.tex:SetTexCoord(1, 0, 0, 1)
+
 		-- Create label
 		local MythicScore_Title_Label = MythicScore_Container:CreateFontString(nil, "OVERLAY", "GameFontWhite")
 		MythicScore_Title_Label:SetPoint("TOP", 0, -4)
@@ -982,23 +1082,26 @@ function AMT:AMT_Creation()
 			graphline[i] = MythicRunsGraph_Container:CreateLine("AMT_GraphLine" .. i)
 			graphline[i]:SetThickness(2)
 			graphline[i]:SetColorTexture(0.4, 0.4, 0.4, 1.000)
+			local Starting_XPos = 60
+			local YPos_Start = -16
+			local YPos_End = 34
 			if i == 1 then
 				-- x = 44
-				local xOffset = 44
+				local xOffset = Starting_XPos
 				graphline[i]:SetColorTexture(1, 1, 1, 0)
-				graphline[i]:SetStartPoint("TOPLEFT", xOffset, -30)
-				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+				graphline[i]:SetStartPoint("TOPLEFT", xOffset, YPos_Start)
+				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, YPos_End)
 			elseif i == 2 then
 				-- x = 186
-				local xOffset = 44 + 142
-				graphline[i]:SetStartPoint("TOPLEFT", xOffset, -30)
-				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+				local xOffset = Starting_XPos + 142
+				graphline[i]:SetStartPoint("TOPLEFT", xOffset, YPos_Start)
+				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, YPos_End)
 			elseif i > 2 then
 				-- 3 // x = 336
 				-- 4 // x = 486
-				local xOffset = 44 + 142 + 150 * (i - 2)
-				graphline[i]:SetStartPoint("TOPLEFT", xOffset, -30)
-				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, 20)
+				local xOffset = Starting_XPos + 142 + 150 * (i - 2)
+				graphline[i]:SetStartPoint("TOPLEFT", xOffset, YPos_Start)
+				graphline[i]:SetEndPoint("BOTTOMLEFT", xOffset, YPos_End)
 			end
 		end
 		-- Create the Line Labels
@@ -1021,7 +1124,7 @@ function AMT:AMT_Creation()
 				end
 			end
 			local yMargin = 12 -- Margin we set at top and bottom
-			local yOffset = 24 -- Margin between each dungeon name
+			local yOffset = 26 -- Margin between each dungeon name
 			graphDung_label[i] = MythicRunsGraph_Container:CreateFontString(
 				"AMT_GraphDung_Label" .. i,
 				"BACKGROUND",
@@ -1038,36 +1141,100 @@ function AMT:AMT_Creation()
 			end
 		end
 	end
+	-- MARK: Create Crests Tracker Container
+	local CrestsTracker_Container
+	if not _G["AMT_CrestsTracker_Container"] then
+		CrestsTracker_Container = CreateFrame("Frame", "AMT_CrestsTracker_Container", AMT_Window)
+		CrestsTracker_Container:SetPoint("BOTTOM", MythicRunsGraph_Container, "BOTTOM")
+		CrestsTracker_Container:SetSize(MythicRunsGraph_Container:GetWidth(), 30)
+		CrestsTracker_Container.tex = CrestsTracker_Container:CreateTexture()
+		CrestsTracker_Container.tex:SetAllPoints(CrestsTracker_Container)
+		CrestsTracker_Container.tex:SetColorTexture(unpack(self.BackgroundClear))
+		-- Create each of the Crest Tracker Progress Bars
+		local ProgBar_Width = 120
+		local ProgBar_Height = 14
+
+		for i = 1, #self.CrestNames do
+			local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
+			local CurrencyDescription = CurrencyInfo.description
+			local CurrentAmount = CurrencyInfo.quantity
+			local CurrencyCapacity
+			if CurrencyInfo.maxQuantity ~= 0 then
+				CurrencyCapacity = CurrencyInfo.maxQuantity
+			else
+				CurrencyCapacity = 999
+			end
+			local NumOfRunsNeeded = math.ceil((CurrencyCapacity - CurrentAmount) / 12)
+
+			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
+				self.CrestNames[i].name,
+				AMT.Clean_StatusBar,
+				self.CrestNames[i].color,
+				CrestsTracker_Container,
+				ProgBar_Width,
+				ProgBar_Height
+			)
+			if i == 1 then
+				ProgBar_Frame:SetPoint("BOTTOMLEFT", CrestsTracker_Container, "BOTTOMLEFT", 20, 0)
+			else
+				local previousFrame = _G[self.CrestNames[i - 1].name .. "_Frame"]
+				ProgBar_Frame:SetPoint("LEFT", previousFrame, "RIGHT", 20, 0)
+			end
+			ProgBar_Text:SetText(self.CrestNames[i].name)
+			ProgBar_Text:SetFont(self.AMT_Font, 12)
+			ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
+			ProgBar:SetMinMaxValues(0, 1)
+			ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
+			ProgBar:SetStatusBarColor(unpack(self.CrestNames[i].color))
+			print(ProgBar:GetValue())
+
+			-- Establish the Hover Properties
+			ProgBar_Frame:SetScript("OnEnter", function()
+				GameTooltip:ClearAllPoints()
+				GameTooltip:ClearLines()
+				GameTooltip:SetOwner(ProgBar_Text, "ANCHOR_RIGHT")
+				GameTooltip:SetText(
+					CreateTextureMarkup(self.CrestNames[i].textureID, 64, 64, 16, 16, 0.07, 0.93, 0.07, 0.93)
+						.. " "
+						.. self.CrestNames[i].displayName,
+					self.CrestNames[i].color[1],
+					self.CrestNames[i].color[2],
+					self.CrestNames[i].color[3],
+					self.CrestNames[i].color[4],
+					true
+				)
+				GameTooltip:AddLine(CurrencyDescription, 1.000, 0.824, 0.000, true)
+				GameTooltip:AddLine(" ")
+				GameTooltip:AddLine("Total Maximum: " .. self.Whitetext .. CurrentAmount .. "/" .. CurrencyCapacity)
+				GameTooltip:AddLine("You need to time " .. self.Whitetext .. NumOfRunsNeeded .. "|r M+ keys to cap.")
+				GameTooltip:Show()
+				-- ProgBar:SetStatusBarColor(
+				-- 	self.CrestNames[i].color[1] + 0.1,
+				-- 	self.CrestNames[i].color[2] + 0.1,
+				-- 	self.CrestNames[i].color[3] + 0.1,
+				-- 	self.CrestNames[i].color[4]
+				-- )
+				ProgBar:SetMinMaxValues(0, 1)
+				ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
+				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.25)
+			end)
+			ProgBar_Frame:SetScript("OnLeave", function()
+				GameTooltip:Hide()
+				ProgBar:SetStatusBarColor(
+					self.CrestNames[i].color[1],
+					self.CrestNames[i].color[2],
+					self.CrestNames[i].color[3],
+					self.CrestNames[i].color[4]
+				)
+				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
+			end)
+		end
+	end
 	self.AMT_CreationComplete = true
 	AMT:AMT_DataUpdate()
 end
 
 function AMT:AMT_DataUpdate()
-	-- ====================================
-	-- === MARK: Update Weekly Best Key ===
-	-- ====================================
-	local WeeklyBest_Text = _G["AMT_WeeklyBest_Keylevel"]
-	local WeeklyBest_Bg = _G["AMT_WeeklyBest_Bg"]
-	local WeeklyBest_Key = 0
-	local WeeklyBest_Color
-	if self.KeysDone[1] ~= 0 then
-		WeeklyBest_Key = self.KeysDone[1].level
-		WeeklyBest_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(self.KeysDone[1].level)
-	else
-		WeeklyBest_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(2)
-	end
-	if WeeklyBest_Key == 0 then
-		WeeklyBest_Text:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 3)
-		WeeklyBest_Text:SetTextColor(0.804, 0.804, 0.804, 1.0)
-		WeeklyBest_Text:SetFont(self.AMT_Font, 38)
-		WeeklyBest_Text:SetText("-")
-	else
-		WeeklyBest_Text:SetPoint("CENTER", WeeklyBest_Bg, "CENTER", 0, 0)
-		WeeklyBest_Text:SetText(WeeklyBest_Color:WrapTextInColorCode(WeeklyBest_Key))
-		WeeklyBest_Text:SetFont(self.AMT_Font, 42)
-		WeeklyBest_Text:SetTextColor(1, 1, 1, 1.0)
-	end
-
 	-- ========================================
 	-- === MARK: Update Raid Vault Progress ===
 	-- ========================================
@@ -1132,6 +1299,8 @@ function AMT:AMT_DataUpdate()
 	local KeystoneItem_Icon = _G["AMT_KeystoneItem_Icon"]
 	local KeystoneItem_Glow = _G["AMT_KeystoneItem_Glow"]
 	local Keystone_DungName = _G["AMT_Keystone_DungName"]
+	Keystone_DungName_Bg = _G["AMT_Keystone_DungName_Bg"]
+	CurrentKeystone_Compartment = _G["AMT_CurrentKeystone_Compartment"]
 	local weekly_modifier = {}
 	local keystone_ID, keystone_name, keystone_icontex, keystone_level, keystone_abbr, keystone_dungname, keystone_mod, vaultReward, dungeonReward
 	local keystone_mod_tt, keystone_info_tt, keystone_dungeonmodifiers_tt, keystone_rewards_tt, noKeystone_tt
@@ -1154,7 +1323,7 @@ function AMT:AMT_DataUpdate()
 		Keystone_DungName:SetFont(self.AMT_Font, 14)
 		--Set the icon textures
 		KeystoneItem_Icon.tex:SetTexture(keystone_icontex)
-		KeystoneItem_Icon:SetSize(52, 52)
+		KeystoneItem_Icon:SetSize(62, 62)
 		KeystoneItem_Icon.tex:SetDesaturated(false)
 		--Since Keystone was detected we now create a glow around the icon.
 		KeystoneItem_Glow.tex:SetAtlas("BattleBar-Button-Highlight")
@@ -1205,15 +1374,14 @@ function AMT:AMT_DataUpdate()
 			Keystone_DungName:SetText("Pending Vault")
 			Keystone_DungName:SetFont(self.AMT_Font, 12)
 			KeystoneItem_Icon.tex:SetAtlas("CovenantChoice-Celebration-Content-Soulbind")
-			KeystoneItem_Icon:SetSize(58, 58)
+			KeystoneItem_Icon:SetSize(64, 64)
 			KeystoneItem_Icon.tex:SetDesaturated(false)
 		else
-			Keystone_DungName:SetText("No Key") --MARK: FIX
+			Keystone_DungName:SetText("No Key") -- No Key
 			Keystone_DungName:SetFont(self.AMT_Font, 14)
 			--If a Keystone level is not detected, we'll set the texture of the keystone to a default texture and a glow
-			KeystoneItem_Icon.tex:SetTexture(4352494)
-			KeystoneItem_Icon.tex:SetDesaturated(true)
-			KeystoneItem_Icon:SetSize(52, 52)
+			KeystoneItem_Icon.tex:SetTexture(self.Keystone_Icon)
+			KeystoneItem_Icon:SetSize(60, 60)
 			KeystoneItem_Glow.tex:SetAtlas("BattleBar-Button-Highlight")
 		end
 	end
@@ -1333,18 +1501,44 @@ function AMT:AMT_DataUpdate()
 
 		local dungLine = dungLines[i]
 
-		--If highest key done is same as the current weekly best color the line gold
-		if self.BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
-			dungLine:SetTextColor(1.000, 0.824, 0.000, 1.000)
-		else
-			--Otherwise color it white
-			dungLine:SetTextColor(1, 1, 1, 1.0)
-		end
 		--If the key actually exists/was done, set the ant trail
 		if self.BestKeys_per_Dungeon[i].HighestKey > 0 then
 			dungLine:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
 			dungLine:SetText(self.BestKeys_per_Dungeon[i].DungBullets .. self.BestKeys_per_Dungeon[i].HighestKey)
+			--If highest key done is same as the current weekly best color the line gold
+			if self.BestKeys_per_Dungeon[i].HighestKey == self.KeysDone[1].level then
+				dungLine:SetTextColor(1.000, 0.824, 0.000, 1.000)
+			else
+				--Otherwise color it white
+				dungLine:SetTextColor(1, 1, 1, 1.0)
+			end
 		end
+	end
+
+	-- ==================================
+	-- === MARK: Update Crest Tracker ===
+	-- ==================================
+
+	for i = 1, #self.CrestNames do
+		local name = self.CrestNames[i].name
+		local ProgBar = _G[name .. "_StatusBar"]
+		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
+		local CurrentAmount = CurrencyInfo.quantity
+		local CurrencyCapacity
+		if CurrencyInfo.maxQuantity ~= 0 then
+			CurrencyCapacity = CurrencyInfo.maxQuantity
+		else
+			CurrencyCapacity = 999
+		end
+
+		ProgBar:SetStatusBarColor(
+			self.CrestNames[i].color[1],
+			self.CrestNames[i].color[2],
+			self.CrestNames[i].color[3],
+			self.CrestNames[i].color[4]
+		)
+		ProgBar:SetMinMaxValues(0, 1)
+		ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
 	end
 
 	-- ====================================
@@ -1352,4 +1546,6 @@ function AMT:AMT_DataUpdate()
 	-- ====================================
 	-- Pull the group's keystone information
 	AMT:AMT_PartyKeystoneRefresh()
+
+	AMT:Update_CrestTracker_Info()
 end

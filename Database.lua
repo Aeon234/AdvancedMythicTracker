@@ -46,14 +46,13 @@ AMT.Raid_Progress = {}
 AMT.AMT_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/Expressway.TTF"
 AMT.AntTrail_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/AntTrail_Font.TTF"
 AMT.Clean_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/AMT_Clean"
-AMT.Atrocity_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Atrocity"
-AMT.Minimalist_StatusBar = "Interface/AddOns/AdvancedMythicTracker/Media/StatusBar/Minimalist"
+AMT.Keystone_Icon = "Interface/AddOns/AdvancedMythicTracker/Media/Icons/Keystone_Hourglass"
 AMT.Tab = "          "
 AMT.Whitetext = "|cffffffff"
 AMT.BackgroundClear = { 1, 1, 1, 0.0 } --Clear Background
 AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
 AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
-AMT.Uncommon_Color = { 0.118, 1.000, 0.000, 1.000 }
+AMT.Uncommon_Color = { 0.118, 0.900, 0.000, 1.000 }
 AMT.Rare_Color = { 0.000, 0.569, 0.949, 1.000 }
 AMT.Epic_Color = { 0.639, 0.208, 0.933, 1.000 }
 AMT.Legendary_Color = { 1.000, 0.502, 0.000, 1.000 }
@@ -294,4 +293,36 @@ AMT.Weekly_KillCount = {
 	{ name = "Heroic", abbr = "H", kills = 0 },
 	{ name = "Normal", abbr = "N", kills = 0 },
 	{ name = "Looking For Raid", abbr = "LFR", kills = 0 },
+}
+-- While the names for the time being are kept as DF names, the ids are for War Within.
+-- Might want to update it to TWW names if community doesn't just default to the original names
+AMT.CrestNames = {
+	{
+		name = "Whelpling",
+		color = AMT.Uncommon_Color,
+		currencyID = 2806,
+		displayName = "Whelpling's Awakened Crest",
+		textureID = 5646099,
+	}, --Weathered Harbinger Crest
+	{
+		name = "Drake",
+		color = AMT.Rare_Color,
+		currencyID = 2807,
+		displayName = "Drake's Awakened Crest",
+		textureID = 5646097,
+	}, --Carved Harbinger Crest
+	{
+		name = "Wyrm",
+		color = AMT.Epic_Color,
+		currencyID = 2809,
+		displayName = "Wyrm's Awakened Crest",
+		textureID = 5646101,
+	}, --Runed Harbinger Crest
+	{
+		name = "Aspect",
+		color = AMT.Legendary_Color,
+		currencyID = 2812,
+		displayName = "Aspect's Awakened Crest",
+		textureID = 5646095,
+	}, --Gilded Harbinger Crest
 }

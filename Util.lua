@@ -75,14 +75,14 @@ end
 -- =========================
 -- === Utility Functions ===
 -- =========================
-function AMT.Update_PVEFrame_Panels()
+function AMT:Update_PVEFrame_Panels()
 	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
-		for i = 1, #AMT.PVEFrame_Panels do
+		for i = 1, #self.PVEFrame_Panels do
 			if
-				AMT.PVEFrame_Panels[i].text == "Mythic+ Dungeons"
-				or AMT.PVEFrame_Panels[i].text == "Advanced Mythic Tracker"
+				self.PVEFrame_Panels[i].text == "Mythic+ Dungeons"
+				or self.PVEFrame_Panels[i].text == "Advanced Mythic Tracker"
 			then
-				AMT.PVEFrame_Panels[i].isVisible = true
+				self.PVEFrame_Panels[i].isVisible = true
 			end
 		end
 	end
@@ -173,6 +173,50 @@ function AMT:AMT_PartyKeystoneRefreshRequest()
 		end)
 	else
 		print("|cff18a8ffAMT|r: Must be in a group with multiple keystones to refresh")
+	end
+end
+
+--Update Party Keystones for Ready Check/Pull Timer
+function AMT:AMT_KeystoneRefresh()
+	wipe(self.GroupKeystone_Info or {})
+	if self.DetailsEnabled and not UnitInRaid("player") then
+		for i = 1, 5 do
+			local unitID = i == 1 and "player" or "party" .. i - 1
+			local data = self.OpenRaidLib.GetKeystoneInfo(unitID)
+			local mapID = data and data.mythicPlusMapID
+			for _, dungeon in ipairs(self.SeasonalDungeons) do
+				if dungeon.mapID == mapID then
+					Keyname_abbr = dungeon.abbr
+					if mapID and Keyname_abbr then
+						local level = data.level
+						local playerClass = UnitClassBase(unitID)
+						local playerName = UnitName(unitID)
+						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
+						local name = dungeon.name
+						local instanceID = dungeon.instanceID
+
+						tinsert(self.GroupKeystone_Info, {
+							level = level,
+							mapID = tonumber(mapID),
+							instanceID = instanceID,
+							abbr = Keyname_abbr,
+							name = name,
+							player = AMT_ClassColorString(playerName, playerClass),
+							playerName = tostring(playerName),
+							playerClass = playerClass,
+							icon = texture,
+						})
+					end
+				end
+			end
+		end
+
+		--Sort the keys found from highest to lowest
+		if #self.GroupKeystone_Info > 1 then
+			table.sort(self.GroupKeystone_Info, function(a, b)
+				return b.level < a.level
+			end)
+		end
 	end
 end
 
@@ -527,6 +571,7 @@ end
 function AMT:AMT_UpdateMythicGraph()
 	local dungLines = {}
 	for i = 1, #self.BestKeys_per_Dungeon do
+		local MythicRunsGraph_Container = _G["AMT_MythicRunsGraph_Container"]
 		local graphlabel = _G["GraphDung_Label" .. i]
 		local dungeonLine = _G["Dung_AntTrail" .. i]
 		if not dungeonLine then
@@ -539,7 +584,7 @@ function AMT:AMT_UpdateMythicGraph()
 		local dungLine = dungLines[i]
 
 		--If highest key done is same as the current weekly best color the line gold
-		if self.BestKeys_per_Dungeon[i].HighestKey == WeeklyBest_Key then
+		if self.BestKeys_per_Dungeon[i].HighestKey == self.KeysDone[1].level then
 			dungLine:SetTextColor(1.000, 0.824, 0.000, 1.000)
 		else
 			--Otherwise color it white
@@ -550,6 +595,22 @@ function AMT:AMT_UpdateMythicGraph()
 			dungLine:SetPoint("LEFT", graphlabel, "RIGHT", 6, -1)
 			dungLine:SetText(self.BestKeys_per_Dungeon[i].DungBullets .. self.BestKeys_per_Dungeon[i].HighestKey)
 		end
+	end
+end
+
+function AMT:Update_CrestTracker_Info()
+	for i = 1, #self.CrestNames do
+		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
+		local CurrentAmount = CurrencyInfo.quantity
+		local CurrencyCapacity
+		if CurrencyInfo.maxQuantity ~= 0 then
+			CurrencyCapacity = CurrencyInfo.maxQuantity
+		else
+			CurrencyCapacity = 999
+		end
+		local ProgBar = _G[self.CrestNames[i].name .. "_StatusBar"]
+		ProgBar:SetMinMaxValues(0, CurrencyCapacity)
+		ProgBar:SetValue(CurrentAmount)
 	end
 end
 
@@ -576,6 +637,12 @@ end
 function AMT_StripColorText(coloredString)
 	local color, text = coloredString:match("|c(%x%x%x%x%x%x%x%x)(.-)|r")
 	return text
+end
+
+function AMT_CreateBackground(frame, backgroundColor)
+	local background = frame:CreateTexture()
+	background:SetAllPoints(frame)
+	background:SetColorTexture(unpack(backgroundColor))
 end
 
 function AMT_CreateBorderButton(
@@ -659,6 +726,34 @@ function AMT_CreateBorderButton(
 	end)
 
 	return button
+end
+
+function AMT:CreateProgressBar(name, texture, color, parent, width, height)
+	local StatusBar_Container = CreateFrame("Frame", name .. "_Frame", parent)
+	StatusBar_Container:SetSize(width, height)
+	StatusBar_Container:SetPoint("CENTER")
+
+	local StatusBar_ProgressBar = CreateFrame("StatusBar", name .. "_StatusBar", StatusBar_Container)
+	StatusBar_ProgressBar:SetSize(width, height)
+	StatusBar_ProgressBar:SetAllPoints(StatusBar_Container)
+	StatusBar_ProgressBar:SetStatusBarTexture(texture)
+	StatusBar_ProgressBar:GetStatusBarTexture():SetHorizTile(false)
+	StatusBar_ProgressBar:SetMinMaxValues(0, 100)
+	StatusBar_ProgressBar:SetStatusBarColor(unpack(color))
+
+	local StatusBar_Bg = StatusBar_ProgressBar:CreateTexture(nil, "BACKGROUND")
+	StatusBar_Bg:SetAtlas("widgetstatusbar-bgcenter")
+	StatusBar_Bg:SetAllPoints(StatusBar_ProgressBar)
+	StatusBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
+
+	local StatusBar_Text = StatusBar_ProgressBar:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
+	StatusBar_Text:SetPoint("BOTTOM", StatusBar_ProgressBar, "TOP", 0, 3)
+
+	-- hooksecurefunc(StatusBar_ProgressBar, "SetValue", function(self, value)
+	-- 	text:SetText(text .. "%")
+	-- end)
+
+	return StatusBar_Container, StatusBar_ProgressBar, StatusBar_Text, StatusBar_Bg
 end
 
 -- ========================
