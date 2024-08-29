@@ -1,29 +1,23 @@
 local addonName, AMT = ...
+local API = AMT.API
+
+local TEXT_WIDTH = 200
+local DEFAULT_POSITION_Y = 400
 
 local WorldChange_EventListenerFrame = CreateFrame("Frame")
 local PartyKeystone_EventListenerFrame = CreateFrame("Frame")
 
 -- Create a font string to display the message
 local GroupKeysFrame = CreateFrame("Frame", nil, UIParent)
-GroupKeysFrame:SetSize(360, 100)
-GroupKeysFrame:SetPoint("CENTER", UIParent, "CENTER", 0, 400)
+GroupKeysFrame:SetSize(380, 250)
 GroupKeysFrame.tex = GroupKeysFrame:CreateTexture()
 GroupKeysFrame.tex:SetAllPoints(GroupKeysFrame)
--- GroupKeysFrame.tex:SetColorTexture(unpack(AMT.BackgroundHover))
 GroupKeysFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
 GroupKeysFrame:Hide()
 
 local Initiated_Text = GroupKeysFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-Initiated_Text:SetPoint("CENTER", GroupKeysFrame, "CENTER")
-Initiated_Text:SetText(
-	"Ready Check Initiated"
-	-- .. "\n\n"
-	-- .. "WWWWWWWWWWWW"
-	-- .. "\n\n"
-	-- .. CreateAtlasMarkup("GM-icon-role-healer")
-	-- .. CreateAtlasMarkup("GM-icon-role-tank")
-	-- .. CreateAtlasMarkup("GM-icon-role-dps")
-)
+Initiated_Text:SetPoint("TOP", GroupKeysFrame, "TOP", 0, -10)
+Initiated_Text:SetText("Ready Check Initiated")
 Initiated_Text:SetFont(AMT.AMT_Font, 36)
 
 --Create the label for Keystone's Dungeon Name Background
@@ -38,6 +32,14 @@ Initiated_Text_Divider.tex:SetAllPoints(Initiated_Text_Divider)
 local PartyKeystones_NameFrame = {}
 local PartyKeystones_KeyLevelFrame = {}
 
+local GroupKeystones_Debug = {
+	{ playerRoleArt = "GM-icon-role-tank", player = " |c00C69B6DAeonwar|r", level = "32" },
+	{ playerRoleArt = "GM-icon-role-healer", player = " |c00F58CBAAeonheals|r", level = "17" },
+	{ playerRoleArt = "GM-icon-role-dps", player = " |c0069CCF0Aeonmagus|r", level = "14" },
+	{ playerRoleArt = "GM-icon-role-dps", player = " |c00C41F3BAeondeath|r", level = "7" },
+	{ playerRoleArt = "GM-icon-role-dps", player = " |c009482C9Aeonlock|r", level = "2" },
+}
+
 -- Create the Frames which will store the player name on the left and key level on the right
 for i = 1, 5 do
 	PartyKeystones_NameFrame[i] = CreateFrame("Frame", nil, GroupKeysFrame)
@@ -49,7 +51,13 @@ for i = 1, 5 do
 	PartyKeystones_NameFrame[i].tex:SetAllPoints(PartyKeystones_NameFrame[i])
 	PartyKeystones_NameFrame[i].tex:SetColorTexture(unpack(AMT.BackgroundClear))
 	if i == 1 then
-		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", GroupKeysFrame, "BOTTOMLEFT", 0, 10)
+		PartyKeystones_NameFrame[i]:SetPoint(
+			"TOPLEFT",
+			GroupKeysFrame,
+			"TOPLEFT",
+			10,
+			-Initiated_Text:GetStringHeight() - 20
+		)
 	else
 		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", PartyKeystones_NameFrame[i - 1], "BOTTOMLEFT")
 	end
@@ -63,7 +71,13 @@ for i = 1, 5 do
 	PartyKeystones_KeyLevelFrame[i].tex:SetAllPoints(PartyKeystones_KeyLevelFrame[i])
 	PartyKeystones_KeyLevelFrame[i].tex:SetColorTexture(unpack(AMT.BackgroundClear))
 	if i == 1 then
-		PartyKeystones_KeyLevelFrame[i]:SetPoint("TOPRIGHT", GroupKeysFrame, "BOTTOMRIGHT", 0, 10)
+		PartyKeystones_KeyLevelFrame[i]:SetPoint(
+			"TOPRIGHT",
+			GroupKeysFrame,
+			"TOPRIGHT",
+			-14,
+			-Initiated_Text:GetStringHeight() - 20
+		)
 	else
 		PartyKeystones_KeyLevelFrame[i]:SetPoint("TOPRIGHT", PartyKeystones_KeyLevelFrame[i - 1], "BOTTOMRIGHT")
 	end
@@ -74,7 +88,8 @@ for i = 1, 5 do
 		"GameFontNormalLarge"
 	)
 	PlayerName:SetPoint("LEFT", PartyKeystones_NameFrame[i], "LEFT")
-	PlayerName:SetText("Temp Name")
+	PlayerName:SetText(CreateAtlasMarkup(GroupKeystones_Debug[i].playerRoleArt) .. GroupKeystones_Debug[i].player)
+	-- PlayerName:SetText("Temp Name")
 	PlayerName:SetFont(AMT.AMT_Font, 28)
 
 	local KeyLevel = PartyKeystones_KeyLevelFrame[i]:CreateFontString(
@@ -83,19 +98,9 @@ for i = 1, 5 do
 		"GameFontNormalLarge"
 	)
 	KeyLevel:SetPoint("RIGHT", PartyKeystones_KeyLevelFrame[i], "RIGHT")
-	KeyLevel:SetText("+ 32")
+	KeyLevel:SetText("+" .. GroupKeystones_Debug[i].level)
 	KeyLevel:SetFont(AMT.AMT_Font, 28)
 end
-
--- local testnames = { "Darkdrpepper", "Mysophobia", "Stygiophobia", "Bigdumblock", "Wwwwwwwwwwww" }
--- --Set the Player Name and Key Level Text
--- for i = 1, 5 do
--- 	local PlayerName = _G["AMT_PartyKeystone_NameText" .. i]
--- 	PlayerName:SetText(CreateAtlasMarkup("GM-icon-role-healer") .. testnames[i])
-
--- 	local KeyLevel = _G["AMT_PartyKeystone_KeyLevelText" .. i]
--- 	KeyLevel:SetText("+32")
--- end
 
 local PartyKeystones_Text = {}
 
@@ -148,7 +153,6 @@ local function ShowRelevantKeysMessage()
 				local playerName, _ = UnitName(SelectedPlayer[i])
 				local playerRole = UnitGroupRolesAssigned(SelectedPlayer[i])
 				if playerName == player.playerName then
-					-- print(playerName, playerRole)
 					player.playerRole = playerRole
 				end
 			end
@@ -158,34 +162,12 @@ local function ShowRelevantKeysMessage()
 	for _, player in ipairs(RelevantKeystones) do
 		if player.playerRole == "TANK" then
 			player.playerRoleArt = "GM-icon-role-tank"
-			-- print(player.player .. " assigned " .. player.playerRoleArt .. " as " .. player.playerRole)
 		elseif player.playerRole == "HEALER" then
 			player.playerRoleArt = "GM-icon-role-healer"
-			-- print(player.player .. " assigned " .. player.playerRoleArt .. " as " .. player.playerRole)
 		elseif player.playerRole == "DAMAGER" then
 			player.playerRoleArt = "GM-icon-role-dps"
-			-- print(player.player .. " assigned " .. player.playerRoleArt .. " as " .. player.playerRole)
 		end
 	end
-
-	-- for i = 1, #RelevantKeystones do
-	-- 	PartyKeystones_Text[i] = GroupKeysFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
-	-- 	PartyKeystones_Text[i]:SetFont(AMT.AMT_Font, 32)
-	-- 	PartyKeystones_Text[i]:SetText(
-	-- 		CreateAtlasMarkup("Adventure-heal-indicator")
-	-- 			.. CreateAtlasMarkup("GM-icon-role-healer")
-	-- 			.. CreateAtlasMarkup("GM-icon-role-tank")
-	-- 			.. CreateAtlasMarkup("GM-icon-role-dps")
-	-- 			.. RelevantKeystones[i].player
-	-- 			.. "'s +"
-	-- 			.. RelevantKeystones[i].level
-	-- 	)
-	-- 	if i == 1 then
-	-- 		PartyKeystones_Text[i]:SetPoint("CENTER", Initiated_Text, "CENTER", 0, -60)
-	-- 	else
-	-- 		PartyKeystones_Text[i]:SetPoint("CENTER", Initiated_Text, "CENTER", 0, -100 - 40 * i - 1)
-	-- 	end
-	-- end
 
 	--Set the Player Name and Key Level Text
 	for i = 1, 5 do
@@ -204,7 +186,9 @@ local function ShowRelevantKeysMessage()
 		GroupKeysFrame:Show()
 		C_Timer.After(20, function()
 			GroupKeysFrame:Hide()
-			print("Hiding Message")
+			if AMT.DebugMode then
+				print("Hiding Message")
+			end
 		end)
 	end
 end
@@ -214,7 +198,9 @@ local function AMT_PartyKeystoneEventHandler(self, event, ...)
 	local inInstance, instanceType = IsInInstance()
 	if inInstance and IsInGroup() and not IsInRaid() then
 		ShowRelevantKeysMessage()
-		print("Showing Message")
+		if AMT.DebugMode then
+			print("Showing Message")
+		end
 	end
 end
 
@@ -224,20 +210,244 @@ local function AMT_WorldEventHandler(self, event, ...)
 
 	local ReadyCheck_Registered = PartyKeystone_EventListenerFrame:RegisterEvent("READY_CHECK")
 	if AMT.DetailsEnabled then
-		-- print("|cffffd100----------AMT Debugging----------|r")
-		-- print("|cff18a8ffAMT: |rDetails Enabled and registering READY_CHECK")
-		-- print("|cffffd100----------------------------------------|r")
-
 		PartyKeystone_EventListenerFrame:RegisterEvent("READY_CHECK")
 		PartyKeystone_EventListenerFrame:SetScript("OnEvent", AMT_PartyKeystoneEventHandler)
+		if AMT.DebugMode then
+			print("|cffffd100----------AMT Debugging----------|r")
+			print("|cff18a8ffAMT: |rDetails Enabled and registering READY_CHECK")
+			print("|cffffd100----------------------------------------|r")
+		end
 	else
 		WorldChange_EventListenerFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		-- print("|cffffd100----------AMT Debugging----------|r")
-		-- print("|cff18a8ffAMT: |rUnregistering PLAYER_ENTERING_WORLD")
-		-- print("|cffffd100----------------------------------------|r")
+		if AMT.DebugMode then
+			print("|cffffd100----------AMT Debugging----------|r")
+			print("|cff18a8ffAMT: |rUnregistering PLAYER_ENTERING_WORLD")
+			print("|cffffd100----------------------------------------|r")
+		end
 	end
 end
 
 --Register Main Event to listen to loading into another zone/instance
-WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
+if AMT.DefaultValues["ShowRelevantKeys"] then
+	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
+end
+
+function GroupKeysFrame:OnDragStart()
+	self:SetMovable(true)
+	self:SetDontSavePosition(true)
+	self:SetClampedToScreen(true)
+	self:StartMoving()
+end
+
+function GroupKeysFrame:OnDragStop()
+	self:StopMovingOrSizing()
+
+	local centerX = self:GetCenter()
+	local uiCenter = UIParent:GetCenter()
+	local left = self:GetLeft()
+	local top = self:GetTop()
+
+	left = Round(left)
+	top = Round(top)
+
+	self:ClearAllPoints()
+
+	--Convert anchor and save position
+	if math.abs(uiCenter - centerX) <= 48 then
+		--Snap to centeral line
+		self:SetPoint("TOP", UIParent, "BOTTOM", 0, top)
+		AMT_DB.GroupKeysFrame_PositionX = -1
+	else
+		self:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
+		AMT_DB.GroupKeysFrame_PositionX = left
+	end
+	AMT_DB.GroupKeysFrame_PositionY = top
+
+	if self.OptionFrame then
+		local button = self.OptionFrame:FindWidget("ResetButton")
+		if button then
+			button:Enable()
+		end
+	end
+end
+
+function GroupKeysFrame:IsFocused()
+	return (self:IsShown() and self:IsMouseOver())
+		or (self.OptionFrame and self.OptionFrame:IsShown() and self.OptionFrame:IsMouseOver())
+end
+
+function GroupKeysFrame:LoadPosition()
+	self:ClearAllPoints()
+	if AMT_DB.GroupKeysFrame_PositionX and AMT_DB.GroupKeysFrame_PositionY then
+		if AMT_DB.GroupKeysFrame_PositionX > 0 then
+			self:SetPoint(
+				"TOPLEFT",
+				UIParent,
+				"BOTTOMLEFT",
+				AMT_DB.GroupKeysFrame_PositionX,
+				AMT_DB.GroupKeysFrame_PositionY
+			)
+		else
+			self:SetPoint("TOP", UIParent, "BOTTOM", 0, AMT_DB.GroupKeysFrame_PositionY)
+		end
+	else
+		self:SetPoint("CENTER", UIParent, "CENTER", 0, DEFAULT_POSITION_Y)
+	end
+end
+
+local function Options_ResetPosition_ShouldEnable(self)
+	if AMT_DB.GroupKeysFrame_PositionX and AMT_DB.GroupKeysFrame_PositionY then
+		return true
+	else
+		return false
+	end
+end
+
+local function Options_ResetPosition_OnClick(self)
+	self:Disable()
+	AMT_DB.GroupKeysFrame_PositionX = nil
+	AMT_DB.GroupKeysFrame_PositionY = nil
+	GroupKeysFrame:LoadPosition()
+end
+
+function GroupKeysFrame:ShowExampleText()
+	for i = 1, 5 do
+		local PlayerName = _G["AMT_PartyKeystone_NameText" .. i]
+		PlayerName:SetText(CreateAtlasMarkup(GroupKeystones_Debug[i].playerRoleArt) .. GroupKeystones_Debug[i].player)
+
+		local KeyLevel = _G["AMT_PartyKeystone_KeyLevelText" .. i]
+		KeyLevel:SetText("+" .. GroupKeystones_Debug[i].level)
+	end
+	GroupKeysFrame:Show()
+end
+
+---- Edit Mode
+function GroupKeysFrame:EnterEditMode()
+	if not self.enabled then
+		return
+	end
+
+	-- self:Init()
+
+	if not self.Selection then
+		local uiName = "Relevant Mythic+ Keystones"
+		local hideLabel = true
+		GroupKeysFrame:LoadPosition()
+		GroupKeysFrame:Show()
+		self.Selection = AMT.CreateEditModeSelection(self, uiName, hideLabel)
+	end
+
+	self.isEditing = true
+	self:SetScript("OnUpdate", nil)
+	-- FadeFrame(self, 0, 1)
+	self.Selection:ShowHighlighted()
+
+	self:ShowExampleText()
+end
+
+function GroupKeysFrame:ExitEditMode()
+	if self.Selection then
+		self.Selection:Hide()
+	end
+	self:ShowOptions(false)
+	self.isEditing = false
+	self:CloseImmediately()
+	GroupKeysFrame:Hide()
+end
+
+local OPTIONS_SCHEMATIC = {
+	title = "AMT: Relevant Keystones",
+	widgets = {
+		{ type = "Divider" },
+		{
+			type = "UIPanelButton",
+			label = "Reset To Default Position",
+			onClickFunc = Options_ResetPosition_OnClick,
+			stateCheckFunc = Options_ResetPosition_ShouldEnable,
+			widgetKey = "ResetButton",
+		},
+	},
+}
+
+function GroupKeysFrame:CreateOptions()
+	self.OptionFrame = AMT.SetupSettingsDialog(self, OPTIONS_SCHEMATIC)
+end
+
+function GroupKeysFrame:CloseImmediately()
+	if self.voHandle then
+		StopSound(self.voHandle)
+	end
+	-- FadeFrame(self, 0, 0)
+	self.lastName = nil
+end
+
+function GroupKeysFrame:ShowOptions(state)
+	if state then
+		self:CreateOptions()
+		self.OptionFrame:Show()
+		if self.OptionFrame.requireResetPosition then
+			self.OptionFrame.requireResetPosition = false
+			self.OptionFrame:ClearAllPoints()
+			self.OptionFrame:SetPoint("LEFT", UIParent, "CENTER", TEXT_WIDTH * 0.5, 0)
+		end
+	else
+		if self.OptionFrame then
+			self.OptionFrame:Hide()
+		end
+		if not API.IsInEditMode() then
+			self:CloseImmediately()
+		end
+	end
+end
+
+function GroupKeysFrame:EnableShowKeys()
+	if self.enabled then
+		return
+	end
+	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
+
+	self.enabled = true
+end
+
+function GroupKeysFrame:DisableShowKeys()
+	if self.enabled then
+		WorldChange_EventListenerFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	end
+	self.enabled = false
+end
+
+do
+	local function EnableModule(state)
+		if state then
+			GroupKeysFrame:EnableShowKeys()
+			AMT.DefaultValues["ShowRelevantKeys"] = not AMT.DefaultValues["ShowRelevantKeys"]
+		else
+			GroupKeysFrame:DisableShowKeys()
+		end
+	end
+
+	local function OptionToggle_OnClick(self, button)
+		if GroupKeysFrame.OptionFrame and GroupKeysFrame.OptionFrame:IsShown() then
+			GroupKeysFrame:ShowOptions(false)
+			GroupKeysFrame:ExitEditMode()
+		else
+			GroupKeysFrame:EnterEditMode()
+			GroupKeysFrame:ShowOptions(true)
+		end
+	end
+
+	local moduleData = {
+		name = "Show Relevant Mythic+ Keys",
+		dbKey = "ShowRelevantKeys",
+		description = "When a ready check is initated while inside of a dungeon, if you or party members have an eligible Mythic+ Keystone the list of these players and key levels will be displayed on screen",
+		toggleFunc = EnableModule,
+		categoryID = 2,
+		uiOrder = 1,
+		optionToggleFunc = OptionToggle_OnClick,
+		-- moduleAddedTime = 1719566000,
+	}
+
+	AMT.Config:AddModule(moduleData)
+end

@@ -1,6 +1,64 @@
 local addonName, AMT = ...
 
 -- ============================
+-- === Default Variables ===
+-- ============================
+AMT.DefaultValues = {
+	ShowRelevantKeys = true, -- Shows relevant M+ keys in the group when ready check is initiated
+	GroupKeysFrame_PositionX = nil,
+	GroupKeysFrame_PositionY = nil,
+}
+AMT.API = {} --Custom APIs used by this addon
+
+do
+	local tocVersion = select(4, GetBuildInfo())
+	tocVersion = tonumber(tocVersion or 0)
+
+	AMT.IsGame_10_2_0 = tocVersion >= 100200
+	AMT.IsGame_11_0_0 = tocVersion >= 110000
+	AMT.IsGame_11_0_2 = tocVersion >= 110002
+end
+
+-- ===============================
+-- === Initialize AMT Database ===
+-- ===============================
+AMT.dbLoaded = false
+function AMT:LoadDatabase()
+	AMT_DB = AMT_DB or {}
+	self.db = AMT_DB
+
+	for dbKey, value in pairs(self.DefaultValues) do
+		if self.db[dbKey] == nil then
+			self.db[dbKey] = value
+		end
+	end
+
+	local function GetDBValue(dbKey)
+		return self.db[dbKey]
+	end
+	self.GetDBValue = GetDBValue
+
+	local function SetDBValue(dbKey, value)
+		self.db[dbKey] = value
+	end
+	self.SetDBValue = SetDBValue
+
+	DefaultValues = nil
+	self.dbLoaded = true
+end
+
+local ADDON_LOADED = CreateFrame("Frame")
+ADDON_LOADED:RegisterEvent("ADDON_LOADED")
+
+ADDON_LOADED:SetScript("OnEvent", function(self, event, ...)
+	local name = ...
+	if name == addonName then
+		self:UnregisterEvent(event)
+		AMT:LoadDatabase()
+	end
+end)
+
+-- ============================
 -- === Initialize Variables ===
 -- ============================
 AMT.AMT_CreationComplete = false
@@ -298,31 +356,31 @@ AMT.Weekly_KillCount = {
 -- Might want to update it to TWW names if community doesn't just default to the original names
 AMT.CrestNames = {
 	{
-		name = "Whelpling",
+		name = "Weathered",
 		color = AMT.Uncommon_Color,
-		currencyID = 2806,
-		displayName = "Whelpling's Awakened Crest",
-		textureID = 5646099,
-	}, --Weathered Harbinger Crest
+		currencyID = 2914,
+		displayName = "Weathered Harbinger Crest",
+		textureID = 5872034,
+	},
 	{
-		name = "Drake",
+		name = "Carved",
 		color = AMT.Rare_Color,
-		currencyID = 2807,
-		displayName = "Drake's Awakened Crest",
-		textureID = 5646097,
-	}, --Carved Harbinger Crest
+		currencyID = 2915,
+		displayName = "Carved Harbinger Crest",
+		textureID = 5872028,
+	},
 	{
-		name = "Wyrm",
+		name = "Runed",
 		color = AMT.Epic_Color,
-		currencyID = 2809,
-		displayName = "Wyrm's Awakened Crest",
-		textureID = 5646101,
-	}, --Runed Harbinger Crest
+		currencyID = 2916,
+		displayName = "Runed Harbinger Crest",
+		textureID = 5872032,
+	},
 	{
-		name = "Aspect",
+		name = "Gilded",
 		color = AMT.Legendary_Color,
-		currencyID = 2812,
-		displayName = "Aspect's Awakened Crest",
-		textureID = 5646095,
-	}, --Gilded Harbinger Crest
+		currencyID = 2917,
+		displayName = "Gilded Harbinger Crest",
+		textureID = 5872030,
+	},
 }

@@ -1,6 +1,6 @@
 <Bindings>
   <Binding name="AMT" category="|cff18a8ffAdvanced Mythic Tracker|r">
-    if (InCombatLockdown()) or (UnitLevel("player") ~= GetMaxLevelForPlayerExpansion()) then return end
+    if (InCombatLockdown()) or (UnitLevel("player") ~= GetMaxLevelForPlayerExpansion()) or not C_MythicPlus.IsMythicPlusActive() or PlayerGetTimerunningSeasonID() then return end
     if AMT_Window:IsVisible()then
       AMT_Window:Hide()
     elseif not AMT_Window:IsVisible() and PVEFrame:IsVisible() then

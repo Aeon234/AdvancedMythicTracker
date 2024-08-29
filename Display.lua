@@ -1186,7 +1186,6 @@ function AMT:AMT_Creation()
 			ProgBar:SetMinMaxValues(0, 1)
 			ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
 			ProgBar:SetStatusBarColor(unpack(self.CrestNames[i].color))
-			print(ProgBar:GetValue())
 
 			-- Establish the Hover Properties
 			ProgBar_Frame:SetScript("OnEnter", function()
@@ -1372,7 +1371,7 @@ function AMT:AMT_DataUpdate()
 		--If Great Vault Rewards are uncollected create the
 		if C_WeeklyRewards.HasAvailableRewards() then
 			Keystone_DungName:SetText("Pending Vault")
-			Keystone_DungName:SetFont(self.AMT_Font, 12)
+			Keystone_DungName:SetFont(self.AMT_Font, 14)
 			KeystoneItem_Icon.tex:SetAtlas("CovenantChoice-Celebration-Content-Soulbind")
 			KeystoneItem_Icon:SetSize(64, 64)
 			KeystoneItem_Icon.tex:SetDesaturated(false)

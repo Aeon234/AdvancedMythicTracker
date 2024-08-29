@@ -76,7 +76,7 @@ end
 -- === Utility Functions ===
 -- =========================
 function AMT:Update_PVEFrame_Panels()
-	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
+	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() and not PlayerGetTimerunningSeasonID() then
 		for i = 1, #self.PVEFrame_Panels do
 			if
 				self.PVEFrame_Panels[i].text == "Mythic+ Dungeons"

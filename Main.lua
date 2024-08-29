@@ -56,7 +56,7 @@ end)
 -- ===============================
 PVEFrame:HookScript("OnShow", function()
 	AMT:Check_PVEFrame_TabNums()
-	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() then
+	if UnitLevel("player") >= GetMaxLevelForPlayerExpansion() and not PlayerGetTimerunningSeasonID() then
 		if AMT.ElvUIEnabled then
 			AMT_TabButton:SetPoint("LEFT", PVEFrame.Tabs[PVEFrame_TabNums], "RIGHT", -5, 0)
 		else
@@ -69,6 +69,13 @@ PVEFrame:HookScript("OnShow", function()
 		local PVEFrame_Tab = _G["PVEFrameTab" .. i]
 		PVEFrame_Tab:HookScript("OnClick", function(self, button)
 			PanelTemplates_DeselectTab(AMT_TabButton)
+			if not C_MythicPlus.IsMythicPlusActive() then
+				AMT_TabButton:Disable()
+				AMT_TabButton:SetText("|cff808080Mythic Tracker")
+			else
+				AMT_TabButton:SetText("Mythic Tracker")
+				AMT_TabButton:Enable()
+			end
 		end)
 	end
 	local selected = PanelTemplates_GetSelectedTab(PVEFrame)
@@ -76,6 +83,12 @@ PVEFrame:HookScript("OnShow", function()
 		PanelTemplates_DeselectTab(AMT_TabButton)
 	end
 	AMT_Window:Hide()
+	if not C_MythicPlus.IsMythicPlusActive() then
+		AMT_TabButton:Disable()
+		AMT_TabButton:SetText("|cff808080Mythic Tracker")
+	else
+		AMT_TabButton:Enable()
+	end
 end)
 
 -- ================================
@@ -92,4 +105,5 @@ AMT_Window:SetScript("OnShow", function()
 	else
 		AMT:AMT_Creation()
 	end
+	PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
 end)
