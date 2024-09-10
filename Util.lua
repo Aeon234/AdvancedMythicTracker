@@ -1,36 +1,17 @@
 local addonName, AMT = ...
 
--- =========================
--- === Set Slash Command ===
--- =========================
-local function AMT_DebugCommands(msg)
-	if msg == "debug" then
-		AMT.DebugMode = not AMT.DebugMode
-		if AMT.DebugMode then
-			print("|cff18a8ffAMT|r Debug Mode: |cff19ff19Activated|r")
-		else
-			print("|cff18a8ffAMT|r Debug Mode: |c3fff2114Disabled|r")
-		end
-	elseif AMT.DebugMode and msg:match("^add") then
-		local command, dungeon, keylevel = msg:match("^(%S*)%s*(%S*)%s*(%S*)$")
-		if command == "add" then
-			if dungeon and keylevel then
-				print("running updatehighestkey")
-				-- Update the highest key for the specified dungeon
-				AMT:UpdateHighestKey(dungeon, keylevel)
-			else
-				print("Usage: /amt add <dungeon_abbr> <key_level>")
-			end
-		end
+--Debugging Prints
+function AMT:PrintDebug(str)
+	if not self.db.DebugMode then
+		return
 	end
+	print("|cff18a8ffAMT|r Debug Mode: " .. str)
 end
-SLASH_AMT1 = "/amt"
-SlashCmdList["AMT"] = AMT_DebugCommands
 
 -- Function to update the highest key for a dungeon
 function AMT:UpdateHighestKey(dungeonAbbr, keylevel)
 	for _, dungeon in ipairs(self.BestKeys_per_Dungeon) do
-		print("Checking dungeon:", dungeon.dungAbbr) -- Debug print
+		AMT:PrintDebug("Checking dungeon: " .. dungeon.dungAbbr) -- Debug print
 		if dungeon.dungAbbr == dungeonAbbr then
 			dungeon.HighestKey = tonumber(keylevel)
 			local KeyBullets = ""
@@ -39,12 +20,12 @@ function AMT:UpdateHighestKey(dungeonAbbr, keylevel)
 				KeyBullets = KeyBullets .. BulletTemplate
 			end
 			dungeon.DungBullets = KeyBullets
-			print("Updated " .. dungeon.dungAbbr .. " with key level " .. keylevel)
+			AMT:PrintDebug("Updated " .. dungeon.dungAbbr .. " with key level " .. keylevel)
 			AMT:AMT_UpdateMythicGraph()
 			return
 		end
 	end
-	print("Dungeon abbreviation not found: " .. dungeonAbbr)
+	AMT:PrintDebug("Dungeon abbreviation not found: " .. dungeonAbbr)
 end
 
 --Get Dungeon Abbreviations from MapIDs
@@ -130,21 +111,25 @@ end
 --Get Next Affix Rotation
 function AMT:AMT_UpdateAffixInformation()
 	wipe(self.CurrentWeek_AffixTable or {})
+	local currentRotation
 	self.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
-	if #self.CurrentWeek_AffixTable == 0 then
+	Amtesttable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
+	if #self.CurrentWeek_AffixTable == 0 and #self.GetCurrentAffixesTable ~= 0 then
 		table.insert(
 			self.CurrentWeek_AffixTable,
 			{ self.GetCurrentAffixesTable[1].id, self.GetCurrentAffixesTable[2].id, self.GetCurrentAffixesTable[3].id }
 		)
+		currentRotation = self.CurrentWeek_AffixTable[1]
 	end
-	local currentRotation = self.CurrentWeek_AffixTable[1]
 	local nextRotationIndex = nil
 
 	-- Find the index of the current rotation in AffixRotation
-	for i, rotationInfo in ipairs(self.AffixRotation) do
-		if AMT:CompareArrays(rotationInfo.rotation, currentRotation) then
-			nextRotationIndex = i + 1
-			break
+	if currentRotation then
+		for i, rotationInfo in ipairs(self.AffixRotation) do
+			if AMT:CompareArrays(rotationInfo.rotation, currentRotation) then
+				nextRotationIndex = i + 1
+				break
+			end
 		end
 	end
 
@@ -312,8 +297,11 @@ end
 function AMT:Pull_VaultRequirements()
 	local Mplus_VaultReqs = C_WeeklyRewards.GetActivities(1)
 	local Raid_VaultReqs = C_WeeklyRewards.GetActivities(3)
+	local World_VaultReqs = C_WeeklyRewards.GetActivities(6)
+	Amttestactivity = C_WeeklyRewards.GetActivities(6)
 	wipe(self.Mplus_VaultUnlocks or {})
 	wipe(self.Raid_VaultUnlocks or {})
+	wipe(self.World_VaultUnlocks or {})
 
 	for i = 1, #Mplus_VaultReqs do
 		tinsert(self.Mplus_VaultUnlocks, Mplus_VaultReqs[i].threshold)
@@ -321,9 +309,13 @@ function AMT:Pull_VaultRequirements()
 	for i = 1, #Raid_VaultReqs do
 		tinsert(self.Raid_VaultUnlocks, Raid_VaultReqs[i].threshold)
 	end
+	for i = 1, #World_VaultReqs do
+		tinsert(self.World_VaultUnlocks, World_VaultReqs[i].threshold)
+	end
 
 	AMT.Vault_DungeonReq = math.max(unpack(self.Mplus_VaultUnlocks))
 	AMT.Vault_RaidReq = math.max(unpack(self.Raid_VaultUnlocks))
+	AMT.Vault_WorldReq = math.max(unpack(self.World_VaultUnlocks))
 end
 
 function AMT:AMT_UpdateRaidProg()
@@ -878,8 +870,6 @@ function AMT:Filter_LockedBosses(seasonalRaids, difficulty)
 end
 
 function AMT:Check_BossLockout(table, bossName)
-	-- print("checking boss - " .. bossName)
-	-- print(#table)
 	for _, tblBossName in ipairs(table) do
 		local tableName = tblBossName or ""
 		if string.lower(tableName) == string.lower(bossName) then
@@ -887,4 +877,19 @@ function AMT:Check_BossLockout(table, bossName)
 		end
 	end
 	return false
+end
+
+-- Check if we're in a mythic plus key
+function AMT:ChallengeModeCheck()
+	local _, _, difficulty, _, _, _, _, currentZoneID = GetInstanceInfo()
+
+	self:PrintDebug("Checking for challenge mode, difficulty: " .. difficulty .. ", Zone ID: " .. currentZoneID)
+
+	local inChallenge = difficulty == 8 and C_ChallengeMode.GetActiveChallengeMapID() ~= nil
+
+	if inChallenge then
+		return true
+	else
+		return false
+	end
 end

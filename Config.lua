@@ -594,7 +594,7 @@ function Config:AddModule(moduleData)
 	if not moduleData.categoryID then
 		moduleData.categoryID = 0
 		moduleData.uiOrder = 0
-		print("AMT Debug:", moduleData.name, "No Category")
+		AMT:PrintDebug(moduleData.name, "No Category")
 	end
 
 	table.insert(self.modules, moduleData)
@@ -637,15 +637,15 @@ end
 -- =========================
 -- === Set Slash Command ===
 -- =========================
-local function AMT_DebugCommands(msg)
+function AMT_DebugCommands(msg)
 	if msg == "debug" then
-		AMT.DebugMode = not AMT.DebugMode
-		if AMT.DebugMode then
-			print("|cff18a8ffAMT|r Debug Mode: |cff19ff19Activated|r")
+		AMT.db.DebugMode = not AMT.db.DebugMode
+		if AMT.db.DebugMode then
+			AMT:PrintDebug("|cff19ff19Activated|r")
 		else
 			print("|cff18a8ffAMT|r Debug Mode: |c3fff2114Disabled|r")
 		end
-	elseif AMT.DebugMode and msg:match("^add") then
+	elseif AMT.db.DebugMode and msg:match("^add") then
 		local command, dungeon, keylevel = msg:match("^(%S*)%s*(%S*)%s*(%S*)$")
 		if command == "add" then
 			if dungeon and keylevel then

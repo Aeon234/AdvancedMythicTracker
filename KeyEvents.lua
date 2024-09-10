@@ -186,9 +186,7 @@ local function ShowRelevantKeysMessage()
 		GroupKeysFrame:Show()
 		C_Timer.After(20, function()
 			GroupKeysFrame:Hide()
-			if AMT.DebugMode then
-				print("Hiding Message")
-			end
+			AMT:PrintDebug("Hiding Message")
 		end)
 	end
 end
@@ -198,9 +196,7 @@ local function AMT_PartyKeystoneEventHandler(self, event, ...)
 	local inInstance, instanceType = IsInInstance()
 	if inInstance and IsInGroup() and not IsInRaid() then
 		ShowRelevantKeysMessage()
-		if AMT.DebugMode then
-			print("Showing Message")
-		end
+		AMT:PrintDebug("Showing Message")
 	end
 end
 
@@ -212,18 +208,10 @@ local function AMT_WorldEventHandler(self, event, ...)
 	if AMT.DetailsEnabled then
 		PartyKeystone_EventListenerFrame:RegisterEvent("READY_CHECK")
 		PartyKeystone_EventListenerFrame:SetScript("OnEvent", AMT_PartyKeystoneEventHandler)
-		if AMT.DebugMode then
-			print("|cffffd100----------AMT Debugging----------|r")
-			print("|cff18a8ffAMT: |rDetails Enabled and registering READY_CHECK")
-			print("|cffffd100----------------------------------------|r")
-		end
+		AMT:PrintDebug("Registering READY_CHECK for KeyEvents")
 	else
 		WorldChange_EventListenerFrame:UnregisterEvent("PLAYER_ENTERING_WORLD")
-		if AMT.DebugMode then
-			print("|cffffd100----------AMT Debugging----------|r")
-			print("|cff18a8ffAMT: |rUnregistering PLAYER_ENTERING_WORLD")
-			print("|cffffd100----------------------------------------|r")
-		end
+		AMT:PrintDebug("Unregistering Events due to Details! being disabled")
 	end
 end
 

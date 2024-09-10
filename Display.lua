@@ -499,14 +499,13 @@ function AMT:AMT_Creation()
 	--Create the M+ Boxes
 	local World_Box = {}
 	local World_BoxSpacing = 3
-	local World_BoxSize = self.Vault_BoxSize * 0.75
 	local World_BoxMargin = (
 		World_Mainframe:GetWidth()
-		- ((World_BoxSize * self.Vault_WorldReq) + (World_BoxSpacing * (self.Vault_WorldReq - 1)))
+		- ((self.Vault_BoxSize * self.Vault_WorldReq) + (World_BoxSpacing * (self.Vault_WorldReq - 1)))
 	) / 2
 	for i = 1, self.Vault_WorldReq do
 		World_Box[i] = CreateFrame("Frame", "AMT_World_Box" .. i, World_Mainframe_BoxFrame)
-		World_Box[i]:SetSize(World_BoxSize, self.Vault_BoxSize)
+		World_Box[i]:SetSize(self.Vault_BoxSize, self.Vault_BoxSize)
 		World_Box[i].tex = World_Box[i]:CreateTexture()
 		World_Box[i].tex:SetAllPoints(World_Box[i])
 		World_Box[i].tex:SetColorTexture(1.0, 1.0, 1.0, 0.5)
@@ -1164,7 +1163,7 @@ function AMT:AMT_Creation()
 			else
 				CurrencyCapacity = 999
 			end
-			local NumOfRunsNeeded = math.ceil((CurrencyCapacity - CurrentAmount) / 12)
+			local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrentAmount) / 12))
 
 			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
 				self.CrestNames[i].name,
@@ -1283,6 +1282,20 @@ function AMT:AMT_DataUpdate()
 	-- =========================================
 	-- === MARK: Update World Vault Progress ===
 	-- =========================================
+	local World_VaultProg = C_WeeklyRewards.GetActivities(6)
+	for i = 1, World_VaultProg[#World_VaultProg].progress do
+		if i <= self.Vault_WorldReq then
+			if
+				i == self.World_VaultUnlocks[1]
+				or i == self.World_VaultUnlocks[2]
+				or i == self.World_VaultUnlocks[3]
+			then
+				_G["AMT_World_Box" .. i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
+			else
+				_G["AMT_World_Box" .. i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+			end
+		end
+	end
 
 	-- =====================================
 	-- === MARK: Update M+ Score Display ===
@@ -1459,10 +1472,10 @@ function AMT:AMT_DataUpdate()
 		local Dung_WeekScore_Color
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		if self.CurrentWeek_AffixTable[1][1] == 9 then
+		if #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][1] == 9 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungTyrLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungTyrScore
-		elseif self.CurrentWeek_AffixTable[1][1] == 10 then
+		elseif #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][1] == 10 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungFortLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungFortScore
 		end

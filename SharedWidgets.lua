@@ -78,7 +78,7 @@ do -- Checkbox
 		else
 			newState = not self:GetChecked()
 			self:SetChecked(newState)
-			print("AMT: DB Key not assigned")
+			AMT:PrintDebug("AMT: DB Key not assigned")
 		end
 
 		if self.onClickFunc then

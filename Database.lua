@@ -85,9 +85,10 @@ end
 AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
 AMT.Vault_DungeonReq = 8 -- Number of Dungeon completions required for max rewards
-AMT.Vault_WorldReq = 12 -- Number of Delves or World Activities required for max rewards
+AMT.Vault_WorldReq = 8 -- Number of Delves or World Activities required for max rewards
 AMT.Mplus_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for M+
 AMT.Raid_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for Raid
+AMT.World_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for World
 AMT.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 AMT.CurrentWeek_AffixTable = {} --Cleaned Affix Table
 AMT.NextWeek_AffixTable = {} --Next Week's Affix Table
@@ -142,6 +143,11 @@ AMT.PVEFrame_Panels = {
 		isVisible = false,
 	},
 	{
+		text = "Delves",
+		frameName = "DelvesDashboardFrame",
+		isVisible = true,
+	},
+	{
 		text = "Advanced Mythic Tracker",
 		frameName = "AMT_Window",
 		isVisible = false,
@@ -152,66 +158,66 @@ AMT.PVEFrame_Panels = {
 AMT.RewardsTable = {
 	{
 		Key = 2,
-		EndofDungeon = "496",
-		DungeonUpgradeTrack = "Champion 2/8",
-		GreatVault = "509",
-		VaultUpgradeTrack = "Hero 2/6",
+		EndofDungeon = "597",
+		DungeonUpgradeTrack = "Champion 1/8",
+		GreatVault = "606",
+		VaultUpgradeTrack = "Champion 4/8",
 	},
 	{
 		Key = 3,
-		EndofDungeon = "499",
-		DungeonUpgradeTrack = "Champion 3/8",
-		GreatVault = "509",
-		VaultUpgradeTrack = "Hero 2/6",
+		EndofDungeon = "597",
+		DungeonUpgradeTrack = "Champion 1/8",
+		GreatVault = "610",
+		VaultUpgradeTrack = "Hero 1/6",
 	},
 	{
 		Key = 4,
-		EndofDungeon = "499",
-		DungeonUpgradeTrack = "Champion 3/8",
-		GreatVault = "512",
-		VaultUpgradeTrack = "Hero 3/6",
+		EndofDungeon = "600",
+		DungeonUpgradeTrack = "Champion 2/8",
+		GreatVault = "610",
+		VaultUpgradeTrack = "Hero 1/6",
 	},
 	{
 		Key = 5,
-		EndofDungeon = "502",
-		DungeonUpgradeTrack = "Champion 4/8",
-		GreatVault = "512",
-		VaultUpgradeTrack = "Hero 3/6",
+		EndofDungeon = "603",
+		DungeonUpgradeTrack = "Champion 3/8",
+		GreatVault = "613",
+		VaultUpgradeTrack = "Hero 2/6",
 	},
 	{
 		Key = 6,
-		EndofDungeon = "502",
+		EndofDungeon = "606",
 		DungeonUpgradeTrack = "Champion 4/8",
-		GreatVault = "515",
-		VaultUpgradeTrack = "Hero 4/6",
+		GreatVault = "613",
+		VaultUpgradeTrack = "Hero 2/6",
 	},
 	{
 		Key = 7,
-		EndofDungeon = "506",
+		EndofDungeon = "610",
 		DungeonUpgradeTrack = "Hero 1/6",
-		GreatVault = "515",
-		VaultUpgradeTrack = "Hero 4/6",
+		GreatVault = "616",
+		VaultUpgradeTrack = "Hero 3/6",
 	},
 	{
 		Key = 8,
-		EndofDungeon = "506",
+		EndofDungeon = "610",
 		DungeonUpgradeTrack = "Hero 1/6",
-		GreatVault = "519",
-		VaultUpgradeTrack = "Myth 1/4",
+		GreatVault = "619",
+		VaultUpgradeTrack = "Hero 4/6",
 	},
 	{
 		Key = 9,
-		EndofDungeon = "509",
+		EndofDungeon = "613",
 		DungeonUpgradeTrack = "Hero 2/6",
-		GreatVault = "519",
-		VaultUpgradeTrack = "Myth 1/4",
+		GreatVault = "619",
+		VaultUpgradeTrack = "Hero 4/6",
 	},
 	{
 		Key = 10,
-		EndofDungeon = "509",
-		DungeonUpgradeTrack = "Hero 2/6",
-		GreatVault = "522",
-		VaultUpgradeTrack = "Myth 2/4",
+		EndofDungeon = "613",
+		DungeonUpgradeTrack = "Hero 4/6",
+		GreatVault = "623",
+		VaultUpgradeTrack = "Myth 1/6",
 	},
 }
 -- Dungeon info by expansion
@@ -345,6 +351,17 @@ AMT.AffixRotation = {
 	{ rotation = { 9, 134, 11 } },
 	{ rotation = { 10, 3, 123 } },
 }
+-- TWW Season 1 Affixes
+-- AMT.AffixRotation = {
+-- 	{ rotation = { 148, 9, 152, 10 } },
+-- 	{ rotation = { 148, 10, 152, 9 } },
+-- 	{ rotation = { 158, 9, 152, 10 } },
+-- 	{ rotation = { 158, 10, 152, 9 } },
+-- 	{ rotation = { 159, 9, 152, 10 } },
+-- 	{ rotation = { 159, 10, 152, 9 } },
+-- 	{ rotation = { 160, 9, 152, 10 } },
+-- 	{ rotation = { 160, 10, 152, 9 } },
+-- }
 
 AMT.Weekly_KillCount = {
 	{ name = "Mythic", abbr = "M", kills = 0 },
