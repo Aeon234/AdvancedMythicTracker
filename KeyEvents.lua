@@ -216,7 +216,7 @@ local function AMT_WorldEventHandler(self, event, ...)
 end
 
 --Register Main Event to listen to loading into another zone/instance
-if AMT.DefaultValues["ShowRelevantKeys"] then
+if AMT.DefaultValues["ShowRelevantKeys"] and AMT.dbLoaded then
 	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
 end
@@ -307,6 +307,7 @@ function GroupKeysFrame:ShowExampleText()
 		local KeyLevel = _G["AMT_PartyKeystone_KeyLevelText" .. i]
 		KeyLevel:SetText("+" .. GroupKeystones_Debug[i].level)
 	end
+	GroupKeysFrame:LoadPosition()
 	GroupKeysFrame:Show()
 end
 
@@ -317,20 +318,20 @@ function GroupKeysFrame:EnterEditMode()
 	end
 
 	-- self:Init()
+	GroupKeysFrame:LoadPosition()
+	GroupKeysFrame:Show()
 
 	if not self.Selection then
 		local uiName = "Relevant Mythic+ Keystones"
 		local hideLabel = true
-		GroupKeysFrame:LoadPosition()
-		GroupKeysFrame:Show()
 		self.Selection = AMT.CreateEditModeSelection(self, uiName, hideLabel)
+		print("setting self.selection")
 	end
 
 	self.isEditing = true
 	self:SetScript("OnUpdate", nil)
 	-- FadeFrame(self, 0, 1)
 	self.Selection:ShowHighlighted()
-
 	self:ShowExampleText()
 end
 
@@ -341,11 +342,11 @@ function GroupKeysFrame:ExitEditMode()
 	self:ShowOptions(false)
 	self.isEditing = false
 	self:CloseImmediately()
-	GroupKeysFrame:Hide()
+	-- GroupKeysFrame:Hide()
 end
 
 local OPTIONS_SCHEMATIC = {
-	title = "AMT: Relevant Keystones",
+	title = "Relevant Mythic+ Keystones",
 	widgets = {
 		{ type = "Divider" },
 		{
@@ -368,6 +369,7 @@ function GroupKeysFrame:CloseImmediately()
 	end
 	-- FadeFrame(self, 0, 0)
 	self.lastName = nil
+	self:Hide()
 end
 
 function GroupKeysFrame:ShowOptions(state)
@@ -411,8 +413,10 @@ do
 		if state then
 			GroupKeysFrame:EnableShowKeys()
 			AMT.DefaultValues["ShowRelevantKeys"] = not AMT.DefaultValues["ShowRelevantKeys"]
+			AMT:PrintDebug("ShowRelevantKeys = " .. tostring(AMT.db["ShowRelevantKeys"]))
 		else
 			GroupKeysFrame:DisableShowKeys()
+			AMT:PrintDebug("ShowRelevantKeys = " .. tostring(AMT.db["ShowRelevantKeys"]))
 		end
 	end
 

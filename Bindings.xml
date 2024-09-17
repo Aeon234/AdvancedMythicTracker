@@ -14,4 +14,8 @@
       AMT_Window:Show()
     end
   </Binding>
+  <Binding name="CLICK WorldMarker_Placer:LeftButton" category="|cff18a8ffAdvanced Mythic Tracker|r">
+  </Binding>
+  <Binding name="CLICK WorldMarker_Remover:LeftButton" category="|cff18a8ffAdvanced Mythic Tracker|r">
+  </Binding>
 </Bindings>

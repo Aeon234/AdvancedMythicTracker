@@ -7,6 +7,8 @@ AMT.DefaultValues = {
 	ShowRelevantKeys = true, -- Shows relevant M+ keys in the group when ready check is initiated
 	GroupKeysFrame_PositionX = nil,
 	GroupKeysFrame_PositionY = nil,
+	WorldMarkerCycler = true,
+	Cycler_Star = true,
 }
 AMT.API = {} --Custom APIs used by this addon
 
@@ -120,6 +122,8 @@ AMT.Legendary_Color = { 1.000, 0.502, 0.000, 1.000 }
 -- === Shortcuts and Keybinds ===
 -- ==============================
 _G["BINDING_NAME_AMT"] = "Toggle AMT Window" -- Keybind option name
+_G["BINDING_NAME_CLICK WorldMarker_Placer:LeftButton"] = "World Marker Cycler" -- Keybind for Cycling through World Markers
+_G["BINDING_NAME_CLICK WorldMarker_Remover:LeftButton"] = "World Marker Erase" -- Keybind for Cycling through World Markers
 
 -- ===================
 -- === Data Tables ===
@@ -400,4 +404,15 @@ AMT.CrestNames = {
 		displayName = "Gilded Harbinger Crest",
 		textureID = 5872030,
 	},
+}
+
+AMT.WorldMarkers = {
+	{ id = 1, icon = "Star", textAtlas = 8, wmID = 5 },
+	{ id = 2, icon = "Circle", textAtlas = 7, wmID = 6 },
+	{ id = 3, icon = "Diamond", textAtlas = 6, wmID = 3 },
+	{ id = 4, icon = "Triangle", textAtlas = 5, wmID = 2 },
+	{ id = 5, icon = "Moon", textAtlas = 4, wmID = 7 },
+	{ id = 6, icon = "Square", textAtlas = 3, wmID = 1 },
+	{ id = 7, icon = "X", textAtlas = 2, wmID = 4 },
+	{ id = 8, icon = "Skull", textAtlas = 1, wmID = 8 },
 }

@@ -360,7 +360,7 @@ local function CreateUI()
 	API.DisableSharpening(dividerMiddle)
 
 	local SelectionTexture = ScrollChild:CreateTexture(nil, "ARTWORK")
-	SelectionTexture:SetSize(LEFT_SECTOR_WIDTH - PADDING, BUTTON_HEIGHT)
+	SelectionTexture:SetSize(LEFT_SECTOR_WIDTH - PADDING + 16, BUTTON_HEIGHT)
 	SelectionTexture:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Art/Config/SelectionTexture")
 	SelectionTexture:SetVertexColor(1, 1, 1, 0.1)
 	SelectionTexture:SetBlendMode("ADD")

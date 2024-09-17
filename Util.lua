@@ -5,7 +5,7 @@ function AMT:PrintDebug(str)
 	if not self.db.DebugMode then
 		return
 	end
-	print("|cff18a8ffAMT|r Debug Mode: " .. str)
+	print("|cff18a8ffAMT|r Debug: " .. str)
 end
 
 -- Function to update the highest key for a dungeon

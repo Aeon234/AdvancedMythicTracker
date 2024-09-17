@@ -759,87 +759,87 @@ function AMT:AMT_Creation()
 		)
 
 		-- Create the icons for the current affixes
-		for i = 1, #self.GetCurrentAffixesTable do
-			for _, affixID in ipairs(self.CurrentWeek_AffixTable) do
-				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
-				local AffixIcon = {}
-				local iconSize = 40
-				local iconPadding = 20
-				AffixIcon[i] = CreateFrame("Frame", "AMT_CurrentAffixIcon" .. i, CurrentAffixes_Container)
-				AffixIcon[i]:SetSize(iconSize, iconSize)
-				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
-				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
-				AffixIcon[i].tex:SetTexture(filedataid)
-				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-				if i == 1 then
-					AffixIcon[i]:SetPoint(
-						"LEFT",
-						CurrentAffixes_Container,
-						"LEFT",
-						(
-							AffixIcon[i]:GetParent():GetWidth()
-							- (iconSize * #self.GetCurrentAffixesTable)
-							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
-						) / 2,
-						0
-					)
-				else
-					AffixIcon[i]:SetPoint("LEFT", _G["AMT_CurrentAffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
-				end
-				AffixIcon[i]:SetScript("OnEnter", function()
-					GameTooltip:ClearAllPoints()
-					GameTooltip:ClearLines()
-					GameTooltip:SetOwner(_G["AMT_CurrentAffixIcon" .. i], "ANCHOR_RIGHT")
-					GameTooltip:SetText(name, 1, 1, 1, 1, true)
-					GameTooltip:AddLine(description, nil, nil, nil, true)
-					GameTooltip:Show()
-				end)
-				AffixIcon[i]:SetScript("OnLeave", function()
-					GameTooltip:Hide()
-				end)
-			end
-		end
-		-- Create next week's affix icons
-		for i = 1, #self.GetCurrentAffixesTable do
-			for _, affixID in ipairs(NextWeek_AffixTable) do
-				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
-				local AffixIcon = {}
-				local iconSize = 40
-				local iconPadding = 20
-				AffixIcon[i] = CreateFrame("Frame", "AMT_NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
-				AffixIcon[i]:SetSize(iconSize, iconSize)
-				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
-				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
-				AffixIcon[i].tex:SetTexture(filedataid)
-				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-				if i == 1 then
-					AffixIcon[i]:SetPoint(
-						"LEFT",
-						NextWeekAffixes_Container,
-						"LEFT",
-						(
-							AffixIcon[i]:GetParent():GetWidth()
-							- (iconSize * #self.GetCurrentAffixesTable)
-							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
-						) / 2,
-						0
-					)
-				else
-					AffixIcon[i]:SetPoint("LEFT", _G["AMT_NexWeek_AffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
-				end
-				AffixIcon[i]:SetScript("OnEnter", function()
-					GameTooltip:ClearAllPoints()
-					GameTooltip:ClearLines()
-					GameTooltip:SetOwner(_G["AMT_NexWeek_AffixIcon" .. i], "ANCHOR_RIGHT")
-					GameTooltip:SetText(name, 1, 1, 1, 1, true)
-					GameTooltip:AddLine(description, nil, nil, nil, true)
-					GameTooltip:Show()
-				end)
-				AffixIcon[i]:SetScript("OnLeave", function()
-					GameTooltip:Hide()
-				end)
-			end
-		end
+		-- 	for i = 1, #self.GetCurrentAffixesTable do
+		-- 		for _, affixID in ipairs(self.CurrentWeek_AffixTable) do
+		-- 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
+		-- 			local AffixIcon = {}
+		-- 			local iconSize = 40
+		-- 			local iconPadding = 20
+		-- 			AffixIcon[i] = CreateFrame("Frame", "AMT_CurrentAffixIcon" .. i, CurrentAffixes_Container)
+		-- 			AffixIcon[i]:SetSize(iconSize, iconSize)
+		-- 			AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
+		-- 			AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
+		-- 			AffixIcon[i].tex:SetTexture(filedataid)
+		-- 			AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+		-- 			if i == 1 then
+		-- 				AffixIcon[i]:SetPoint(
+		-- 					"LEFT",
+		-- 					CurrentAffixes_Container,
+		-- 					"LEFT",
+		-- 					(
+		-- 						AffixIcon[i]:GetParent():GetWidth()
+		-- 						- (iconSize * #self.GetCurrentAffixesTable)
+		-- 						- (iconPadding * (#self.GetCurrentAffixesTable - 1))
+		-- 					) / 2,
+		-- 					0
+		-- 				)
+		-- 			else
+		-- 				AffixIcon[i]:SetPoint("LEFT", _G["AMT_CurrentAffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
+		-- 			end
+		-- 			AffixIcon[i]:SetScript("OnEnter", function()
+		-- 				GameTooltip:ClearAllPoints()
+		-- 				GameTooltip:ClearLines()
+		-- 				GameTooltip:SetOwner(_G["AMT_CurrentAffixIcon" .. i], "ANCHOR_RIGHT")
+		-- 				GameTooltip:SetText(name, 1, 1, 1, 1, true)
+		-- 				GameTooltip:AddLine(description, nil, nil, nil, true)
+		-- 				GameTooltip:Show()
+		-- 			end)
+		-- 			AffixIcon[i]:SetScript("OnLeave", function()
+		-- 				GameTooltip:Hide()
+		-- 			end)
+		-- 		end
+		-- 	end
+		-- 	-- Create next week's affix icons
+		-- 	for i = 1, #self.GetCurrentAffixesTable do
+		-- 		for _, affixID in ipairs(NextWeek_AffixTable) do
+		-- 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
+		-- 			local AffixIcon = {}
+		-- 			local iconSize = 40
+		-- 			local iconPadding = 20
+		-- 			AffixIcon[i] = CreateFrame("Frame", "AMT_NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
+		-- 			AffixIcon[i]:SetSize(iconSize, iconSize)
+		-- 			AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
+		-- 			AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
+		-- 			AffixIcon[i].tex:SetTexture(filedataid)
+		-- 			AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+		-- 			if i == 1 then
+		-- 				AffixIcon[i]:SetPoint(
+		-- 					"LEFT",
+		-- 					NextWeekAffixes_Container,
+		-- 					"LEFT",
+		-- 					(
+		-- 						AffixIcon[i]:GetParent():GetWidth()
+		-- 						- (iconSize * #self.GetCurrentAffixesTable)
+		-- 						- (iconPadding * (#self.GetCurrentAffixesTable - 1))
+		-- 					) / 2,
+		-- 					0
+		-- 				)
+		-- 			else
+		-- 				AffixIcon[i]:SetPoint("LEFT", _G["AMT_NexWeek_AffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
+		-- 			end
+		-- 			AffixIcon[i]:SetScript("OnEnter", function()
+		-- 				GameTooltip:ClearAllPoints()
+		-- 				GameTooltip:ClearLines()
+		-- 				GameTooltip:SetOwner(_G["AMT_NexWeek_AffixIcon" .. i], "ANCHOR_RIGHT")
+		-- 				GameTooltip:SetText(name, 1, 1, 1, 1, true)
+		-- 				GameTooltip:AddLine(description, nil, nil, nil, true)
+		-- 				GameTooltip:Show()
+		-- 			end)
+		-- 			AffixIcon[i]:SetScript("OnLeave", function()
+		-- 				GameTooltip:Hide()
+		-- 			end)
+		-- 		end
+		-- 	end
 	end
 	-- MARK: Create Party Keystone Container
 	local PartyKeystone_Container
