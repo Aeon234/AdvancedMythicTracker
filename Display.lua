@@ -472,22 +472,22 @@ function AMT:AMT_Creation()
 		GameTooltip:SetText("Delves and World Activities", 1, 1, 1, 1, true)
 		if self.KeysDone[1] ~= 0 then
 			GameTooltip:AddLine(
-				format("Number of Delves and World Activities done this week: |cffffffff%s|r", #self.KeysDone)
+				format("Number of Delves and World Activities done this week: |cffffffff%s|r", self.World_VaultTracker)
 			)
 		else
 			GameTooltip:AddLine(format("Number of Delves and World Activities done this week: |cffffffff%s|r", 0))
 		end
-		if self.KeysDone[1] ~= 0 then
-			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Top 8 Runs This Week")
-			for i = 1, 8 do
-				if self.KeysDone[i] and (i == 1 or i == 4 or i == 8) then
-					GameTooltip:AddLine("|cff00ff12" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
-				elseif self.KeysDone[i] then
-					GameTooltip:AddLine("|cffffffff" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
-				end
-			end
-		end
+		-- if self.KeysDone[1] ~= 0 then
+		-- 	GameTooltip:AddLine(" ")
+		-- 	GameTooltip:AddLine("Top 8 Runs This Week")
+		-- 	for i = 1, 8 do
+		-- 		if self.KeysDone[i] and (i == 1 or i == 4 or i == 8) then
+		-- 			GameTooltip:AddLine("|cff00ff12" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
+		-- 		elseif self.KeysDone[i] then
+		-- 			GameTooltip:AddLine("|cffffffff" .. self.KeysDone[i].level .. " - " .. self.KeysDone[i].keyname)
+		-- 		end
+		-- 	end
+		-- end
 		World_Mainframe.tex:SetColorTexture(unpack(self.BackgroundHover))
 		GameTooltip:Show()
 	end)
@@ -496,7 +496,7 @@ function AMT:AMT_Creation()
 		World_Mainframe.tex:SetColorTexture(unpack(self.BackgroundClear))
 	end)
 
-	--Create the M+ Boxes
+	--Create the World Boxes
 	local World_Box = {}
 	local World_BoxSpacing = 3
 	local World_BoxMargin = (
@@ -722,7 +722,7 @@ function AMT:AMT_Creation()
 		-- Create this week's Label
 		local CurrentAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_CurrentAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
-		CurrentAffixes_Label:SetPoint("TOPLEFT", 20, -2) -- Set the position of the text
+		CurrentAffixes_Label:SetPoint("TOPLEFT", 2, -2) -- Set the position of the text
 		CurrentAffixes_Label:SetText("This Week") -- Set the text content
 		CurrentAffixes_Label:SetFont(self.AMT_Font, 20)
 		CurrentAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -739,7 +739,7 @@ function AMT:AMT_Creation()
 		-- Create next week's Label
 		local NextWeekAffixes_Label =
 			Affixes_Compartment:CreateFontString("AMT_NextWeekAffixes_Label", "OVERLAY", "GameFontHighlightOutline22")
-		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 20, -4) -- Set the position of the text
+		NextWeekAffixes_Label:SetPoint("TOPLEFT", CurrentAffixes_Container, "BOTTOMLEFT", 2, -4) -- Set the position of the text
 		NextWeekAffixes_Label:SetText("Next Week") -- Set the text content
 		NextWeekAffixes_Label:SetFont(self.AMT_Font, 20)
 		NextWeekAffixes_Label:SetTextColor(1, 1, 1, 1.0)
@@ -759,87 +759,87 @@ function AMT:AMT_Creation()
 		)
 
 		-- Create the icons for the current affixes
-		-- 	for i = 1, #self.GetCurrentAffixesTable do
-		-- 		for _, affixID in ipairs(self.CurrentWeek_AffixTable) do
-		-- 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
-		-- 			local AffixIcon = {}
-		-- 			local iconSize = 40
-		-- 			local iconPadding = 20
-		-- 			AffixIcon[i] = CreateFrame("Frame", "AMT_CurrentAffixIcon" .. i, CurrentAffixes_Container)
-		-- 			AffixIcon[i]:SetSize(iconSize, iconSize)
-		-- 			AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
-		-- 			AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
-		-- 			AffixIcon[i].tex:SetTexture(filedataid)
-		-- 			AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-		-- 			if i == 1 then
-		-- 				AffixIcon[i]:SetPoint(
-		-- 					"LEFT",
-		-- 					CurrentAffixes_Container,
-		-- 					"LEFT",
-		-- 					(
-		-- 						AffixIcon[i]:GetParent():GetWidth()
-		-- 						- (iconSize * #self.GetCurrentAffixesTable)
-		-- 						- (iconPadding * (#self.GetCurrentAffixesTable - 1))
-		-- 					) / 2,
-		-- 					0
-		-- 				)
-		-- 			else
-		-- 				AffixIcon[i]:SetPoint("LEFT", _G["AMT_CurrentAffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
-		-- 			end
-		-- 			AffixIcon[i]:SetScript("OnEnter", function()
-		-- 				GameTooltip:ClearAllPoints()
-		-- 				GameTooltip:ClearLines()
-		-- 				GameTooltip:SetOwner(_G["AMT_CurrentAffixIcon" .. i], "ANCHOR_RIGHT")
-		-- 				GameTooltip:SetText(name, 1, 1, 1, 1, true)
-		-- 				GameTooltip:AddLine(description, nil, nil, nil, true)
-		-- 				GameTooltip:Show()
-		-- 			end)
-		-- 			AffixIcon[i]:SetScript("OnLeave", function()
-		-- 				GameTooltip:Hide()
-		-- 			end)
-		-- 		end
-		-- 	end
-		-- 	-- Create next week's affix icons
-		-- 	for i = 1, #self.GetCurrentAffixesTable do
-		-- 		for _, affixID in ipairs(NextWeek_AffixTable) do
-		-- 			local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
-		-- 			local AffixIcon = {}
-		-- 			local iconSize = 40
-		-- 			local iconPadding = 20
-		-- 			AffixIcon[i] = CreateFrame("Frame", "AMT_NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
-		-- 			AffixIcon[i]:SetSize(iconSize, iconSize)
-		-- 			AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
-		-- 			AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
-		-- 			AffixIcon[i].tex:SetTexture(filedataid)
-		-- 			AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-		-- 			if i == 1 then
-		-- 				AffixIcon[i]:SetPoint(
-		-- 					"LEFT",
-		-- 					NextWeekAffixes_Container,
-		-- 					"LEFT",
-		-- 					(
-		-- 						AffixIcon[i]:GetParent():GetWidth()
-		-- 						- (iconSize * #self.GetCurrentAffixesTable)
-		-- 						- (iconPadding * (#self.GetCurrentAffixesTable - 1))
-		-- 					) / 2,
-		-- 					0
-		-- 				)
-		-- 			else
-		-- 				AffixIcon[i]:SetPoint("LEFT", _G["AMT_NexWeek_AffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
-		-- 			end
-		-- 			AffixIcon[i]:SetScript("OnEnter", function()
-		-- 				GameTooltip:ClearAllPoints()
-		-- 				GameTooltip:ClearLines()
-		-- 				GameTooltip:SetOwner(_G["AMT_NexWeek_AffixIcon" .. i], "ANCHOR_RIGHT")
-		-- 				GameTooltip:SetText(name, 1, 1, 1, 1, true)
-		-- 				GameTooltip:AddLine(description, nil, nil, nil, true)
-		-- 				GameTooltip:Show()
-		-- 			end)
-		-- 			AffixIcon[i]:SetScript("OnLeave", function()
-		-- 				GameTooltip:Hide()
-		-- 			end)
-		-- 		end
-		-- 	end
+		for i = 1, #self.GetCurrentAffixesTable do
+			for _, affixID in ipairs(self.CurrentWeek_AffixTable) do
+				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
+				local AffixIcon = {}
+				local iconSize = 34
+				local iconPadding = 4
+				AffixIcon[i] = CreateFrame("Frame", "AMT_CurrentAffixIcon" .. i, CurrentAffixes_Container)
+				AffixIcon[i]:SetSize(iconSize, iconSize)
+				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
+				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
+				AffixIcon[i].tex:SetTexture(filedataid)
+				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+				if i == 1 then
+					AffixIcon[i]:SetPoint(
+						"LEFT",
+						CurrentAffixes_Container,
+						"LEFT",
+						(
+							AffixIcon[i]:GetParent():GetWidth()
+							- (iconSize * #self.GetCurrentAffixesTable)
+							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
+						) / 2,
+						0
+					)
+				else
+					AffixIcon[i]:SetPoint("LEFT", _G["AMT_CurrentAffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
+				end
+				AffixIcon[i]:SetScript("OnEnter", function()
+					GameTooltip:ClearAllPoints()
+					GameTooltip:ClearLines()
+					GameTooltip:SetOwner(_G["AMT_CurrentAffixIcon" .. i], "ANCHOR_RIGHT")
+					GameTooltip:SetText(name, 1, 1, 1, 1, true)
+					GameTooltip:AddLine(description, nil, nil, nil, true)
+					GameTooltip:Show()
+				end)
+				AffixIcon[i]:SetScript("OnLeave", function()
+					GameTooltip:Hide()
+				end)
+			end
+		end
+		-- Create next week's affix icons
+		for i = 1, #self.GetCurrentAffixesTable do
+			for _, affixID in ipairs(NextWeek_AffixTable) do
+				local name, description, filedataid = C_ChallengeMode.GetAffixInfo(affixID[i])
+				local AffixIcon = {}
+				local iconSize = 34
+				local iconPadding = 4
+				AffixIcon[i] = CreateFrame("Frame", "AMT_NexWeek_AffixIcon" .. i, NextWeekAffixes_Container)
+				AffixIcon[i]:SetSize(iconSize, iconSize)
+				AffixIcon[i].tex = AffixIcon[i]:CreateTexture()
+				AffixIcon[i].tex:SetAllPoints(AffixIcon[i])
+				AffixIcon[i].tex:SetTexture(filedataid)
+				AffixIcon[i].tex:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+				if i == 1 then
+					AffixIcon[i]:SetPoint(
+						"LEFT",
+						NextWeekAffixes_Container,
+						"LEFT",
+						(
+							AffixIcon[i]:GetParent():GetWidth()
+							- (iconSize * #self.GetCurrentAffixesTable)
+							- (iconPadding * (#self.GetCurrentAffixesTable - 1))
+						) / 2,
+						0
+					)
+				else
+					AffixIcon[i]:SetPoint("LEFT", _G["AMT_NexWeek_AffixIcon" .. i - 1], "RIGHT", iconPadding, 0)
+				end
+				AffixIcon[i]:SetScript("OnEnter", function()
+					GameTooltip:ClearAllPoints()
+					GameTooltip:ClearLines()
+					GameTooltip:SetOwner(_G["AMT_NexWeek_AffixIcon" .. i], "ANCHOR_RIGHT")
+					GameTooltip:SetText(name, 1, 1, 1, 1, true)
+					GameTooltip:AddLine(description, nil, nil, nil, true)
+					GameTooltip:Show()
+				end)
+				AffixIcon[i]:SetScript("OnLeave", function()
+					GameTooltip:Hide()
+				end)
+			end
+		end
 	end
 	-- MARK: Create Party Keystone Container
 	local PartyKeystone_Container
@@ -1236,6 +1236,8 @@ function AMT:AMT_DataUpdate()
 	-- ========================================
 	-- === MARK: Update Raid Vault Progress ===
 	-- ========================================
+	local PreviousRaidDifficulty_Kills
+	local VaultUnlock_CurrentMax = 0 --store the highest # of bosses killed in all previous categories analyzed so we can see if current difficulty unlocks new rewards in Vault
 	for i = 1, #self.Weekly_KillCount do
 		local RaidBosses_Killed
 		if self.Weekly_KillCount[i].kills <= self.Vault_RaidReq then
@@ -1243,13 +1245,25 @@ function AMT:AMT_DataUpdate()
 		elseif self.Weekly_KillCount[i].kills > self.Vault_RaidReq then
 			RaidBosses_Killed = self.Vault_RaidReq
 		end
+		PreviousRaidDifficulty_Kills = RaidBosses_Killed or 0
 		local difficulty = self.Weekly_KillCount[i].abbr
 		for j = 1, RaidBosses_Killed do
-			if j == self.Raid_VaultUnlocks[1] or j == self.Raid_VaultUnlocks[2] or j == self.Raid_VaultUnlocks[3] then
+			if
+				(j == self.Raid_VaultUnlocks[1] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[1])
+				or (j == self.Raid_VaultUnlocks[2] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[2])
+				or (j == self.Raid_VaultUnlocks[3] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[3])
+			then
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
 			else
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
 			end
+		end
+		if RaidBosses_Killed <= self.Raid_VaultUnlocks[3] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
+			VaultUnlock_CurrentMax = RaidBosses_Killed
+		elseif RaidBosses_Killed <= self.Raid_VaultUnlocks[2] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
+			VaultUnlock_CurrentMax = RaidBosses_Killed
+		elseif RaidBosses_Killed <= self.Raid_VaultUnlocks[1] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
+			VaultUnlock_CurrentMax = RaidBosses_Killed
 		end
 	end
 	-- =======================================
@@ -1283,6 +1297,7 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update World Vault Progress ===
 	-- =========================================
 	local World_VaultProg = C_WeeklyRewards.GetActivities(6)
+	Amttestdata = C_WeeklyRewards.GetActivities(6)
 	for i = 1, World_VaultProg[#World_VaultProg].progress do
 		if i <= self.Vault_WorldReq then
 			if
@@ -1343,9 +1358,11 @@ function AMT:AMT_DataUpdate()
 		keystone_mod = C_ChallengeMode.GetPowerLevelDamageHealthMod(keystone_level)
 		--Get current affixes and assign the appropriate modifiers for Tyr/Fort.
 		local affix = self.CurrentWeek_AffixTable[1]
-		if affix and affix[1] == 9 then
+		if affix and keystone_level >= 10 then
+			weekly_modifier = self.Keystone_Modifiers[3].values
+		elseif affix and affix[2] == 9 then
 			weekly_modifier = self.Keystone_Modifiers[1].values
-		elseif affix and affix[1] == 10 then
+		elseif affix and affix[2] == 10 then
 			weekly_modifier = self.Keystone_Modifiers[2].values
 		end
 		-- Creating the modifiers portion of the tooltip
@@ -1467,32 +1484,24 @@ function AMT:AMT_DataUpdate()
 	--Update each of the labels with updated information each time AMT Window is opened
 	for i = 1, #self.Current_SeasonalDung_Info do
 		local Dung_WeekLevel = 0
-		local Dung_WeekLevel_Color
 		local Dung_WeekScore = 0
-		local Dung_WeekScore_Color
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		if #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][1] == 9 then
+		if #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 9 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungTyrLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungTyrScore
-		elseif #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][1] == 10 then
+		elseif #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 10 then
 			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungFortLevel
 			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungFortScore
 		end
-		--Grab the color information for the highest key for the modifier
-		Dung_WeekLevel_Color = C_ChallengeMode.GetKeystoneLevelRarityColor(Dung_WeekLevel)
-		--Grab the color information for the highest score for the modifier
-		Dung_WeekScore_Color = CreateColor(
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Dung_WeekScore).r,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Dung_WeekScore).g,
-			C_ChallengeMode.GetKeystoneLevelRarityColor(Dung_WeekScore).b
-		)
+		--Grab the color information for the current dungeon score
+		local DungScore_Color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(Dung_WeekScore)
 		--Set the Highest Key Level Label to be the highest key level number and appropriate color for it.
 		DungWeekLevel_Label:SetText(Dung_WeekLevel)
-		DungWeekLevel_Label:SetTextColor(Dung_WeekLevel_Color.r, Dung_WeekLevel_Color.g, Dung_WeekLevel_Color.b)
+		DungWeekLevel_Label:SetTextColor(DungScore_Color.r, DungScore_Color.g, DungScore_Color.b)
 		--Repeat for the Score
 		DungWeekScore_Label:SetText(Dung_WeekScore)
-		DungWeekScore_Label:SetTextColor(Dung_WeekScore_Color.r, Dung_WeekScore_Color.g, Dung_WeekScore_Color.b)
+		DungWeekScore_Label:SetTextColor(DungScore_Color.r, DungScore_Color.g, DungScore_Color.b)
 	end
 
 	-- ==================================

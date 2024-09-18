@@ -645,6 +645,8 @@ function AMT_DebugCommands(msg)
 		else
 			print("|cff18a8ffAMT|r Debug Mode: |c3fff2114Disabled|r")
 		end
+	elseif msg == "wm" and not InCombatLockdown() then
+		AMT:WorldMarkerCycler_ToggleConfig()
 	elseif AMT.db.DebugMode and msg:match("^add") then
 		local command, dungeon, keylevel = msg:match("^(%S*)%s*(%S*)%s*(%S*)$")
 		if command == "add" then

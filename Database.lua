@@ -8,7 +8,15 @@ AMT.DefaultValues = {
 	GroupKeysFrame_PositionX = nil,
 	GroupKeysFrame_PositionY = nil,
 	WorldMarkerCycler = true,
+	WorldMarkerCycler_Order = { 5, 6, 3, 2, 7, 1, 4, 8 },
 	Cycler_Star = true,
+	Cycler_Circle = true,
+	Cycler_Diamond = true,
+	Cycler_Triangle = true,
+	Cycler_Moon = true,
+	Cycler_Square = true,
+	Cycler_X = true,
+	Cycler_Skull = true,
 }
 AMT.API = {} --Custom APIs used by this addon
 
@@ -91,6 +99,7 @@ AMT.Vault_WorldReq = 8 -- Number of Delves or World Activities required for max 
 AMT.Mplus_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for M+
 AMT.Raid_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for Raid
 AMT.World_VaultUnlocks = {} -- Breakthrough Numbers for each Vault Reward for World
+AMT.World_VaultTracker = 0
 AMT.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 AMT.CurrentWeek_AffixTable = {} --Cleaned Affix Table
 AMT.NextWeek_AffixTable = {} --Next Week's Affix Table
@@ -117,7 +126,6 @@ AMT.Uncommon_Color = { 0.118, 0.900, 0.000, 1.000 }
 AMT.Rare_Color = { 0.000, 0.569, 0.949, 1.000 }
 AMT.Epic_Color = { 0.639, 0.208, 0.933, 1.000 }
 AMT.Legendary_Color = { 1.000, 0.502, 0.000, 1.000 }
-
 -- ==============================
 -- === Shortcuts and Keybinds ===
 -- ==============================
@@ -230,8 +238,8 @@ AMT.SeasonalDungeons = {
 	{ abbr = "SF", name = "Priory of the Sacred Flame", spellID = 445444, mapID = 499 }, -- Priory of the Sacred Flame
 	{ abbr = "ROOK", name = "The Rookery", spellID = 445443, mapID = 500 }, -- The Rookery
 	{ abbr = "SV", name = "The Stonevault", spellID = 445269, mapID = 501 }, -- The Stonevault
-	{ abbr = "CoT", name = "City of Threads", spellID = 445416, mapID = 502 }, -- City of Threads
-	{ abbr = "CoE", name = "Ara-Kara, City of Echoes", spellID = 445417, mapID = 503 }, -- Ara-Kara, City of Echoes
+	{ abbr = "COT", name = "City of Threads", spellID = 445416, mapID = 502 }, -- City of Threads
+	{ abbr = "ARAK", name = "Ara-Kara, City of Echoes", spellID = 445417, mapID = 503 }, -- Ara-Kara, City of Echoes
 	{ abbr = "DC", name = "Darkflame Cleft", spellID = 445441, mapID = 504 }, -- Darkflame Cleft
 	{ abbr = "DAWN", name = "The Dawnbreaker", spellID = 445414, mapID = 505 }, -- The Dawnbreaker
 	{ abbr = "CM", name = "Cinderbrew Meadery", spellID = 445440, mapID = 506 }, -- Cinderbrew Meadery
@@ -246,9 +254,8 @@ AMT.SeasonalDungeons = {
 	{ abbr = "BH", name = "Brackenhide Hollow", spellID = 393267, mapID = 405 }, -- Brackenhide Hollow
 	{ abbr = "FALL", name = "Dawn of the Infinite: Galakrond's Fall", spellID = 424197, mapID = 463 }, -- Dawn of the Infinite: Galakrond's Fall
 	{ abbr = "RISE", name = "Dawn of the Infinite: Murozond's Rise", spellID = 424197, mapID = 464 }, -- Dawn of the Infinite: Murozond's Rise
-
 	--Shadowlands
-	{ abbr = "MOTS", name = "Mist of Tirna Scithe", spellID = 354464, mapID = 375 }, -- Mist of Tirna Scithe
+	{ abbr = "MISTS", name = "Mist of Tirna Scithe", spellID = 354464, mapID = 375 }, -- Mist of Tirna Scithe
 	{ abbr = "NW", name = "Necrotic Wake", spellID = 354462, mapID = 376 }, -- Necrotic Wake
 	{ abbr = "DOS", name = "De Other Side", spellID = 354468, mapID = 377 }, -- De Other Side
 	{ abbr = "HOA", name = "Halls of Atonement", spellID = 354465, mapID = 378 }, -- Halls of Atonement
@@ -258,7 +265,6 @@ AMT.SeasonalDungeons = {
 	{ abbr = "TOP", name = "Theater of Pain", spellID = 354467, mapID = 382 }, -- Theater of Pain
 	{ abbr = "WNDR", name = "Tazavesh, the Veiled Market: Streets of Wonder", spellID = 367416, mapID = 391 }, -- Tazavesh, the Veiled Market: Streets of Wonder
 	{ abbr = "GMBT", name = "Tazavesh, the Veiled Market: So'leah's Gambit", spellID = 367416, mapID = 392 }, -- Tazavesh, the Veiled Market: So'leah's Gambit
-
 	--Battle for Azeroth
 	{ abbr = "AD", name = "Atal'Dazar", spellID = 424187, mapID = 244 }, -- Atal'Dazar
 	{ abbr = "FH", name = "Freehold", spellID = 410071, mapID = 245 }, -- Freehold
@@ -272,7 +278,6 @@ AMT.SeasonalDungeons = {
 	{ abbr = "SIEGE", name = "Siege of Boralus", spellID = 445418, mapID = 353 }, -- Siege of Boralus
 	{ abbr = "JY", name = "Operation: Mechagon: Junkyard", spellID = 373274, mapID = 369 }, -- Operation: Mechagon: Junkyard
 	{ abbr = "WS", name = "Operation: Mechagon: Workshop", spellID = 373274, mapID = 370 }, -- Operation: Mechagon: Workshop
-
 	--Legion
 	{ abbr = "DHT", name = "Darkheart Thicket", spellID = 424163, mapID = 198 }, -- Darkheart Thicket
 	{ abbr = "BRH", name = "Black Rook Hold", spellID = 424153, mapID = 199 }, -- Black Rook Hold
@@ -281,7 +286,6 @@ AMT.SeasonalDungeons = {
 	{ abbr = "COS", name = "Court of Stars", spellID = 393766, mapID = 210 }, -- Court of Stars
 	{ abbr = "LOWER", name = "Return to Karazhan: Lower", spellID = 373262, mapID = 277 }, -- Return to Karazhan: Lower
 	{ abbr = "UPPER", name = "Return to Karazhan: Upper", spellID = 373262, mapID = 234 }, -- Return to Karazhan: Upper
-
 	--Warlords of Draenor
 	{ abbr = "SR", name = "Skyreach", spellID = 159898, mapID = 161 }, -- Skyreach
 	{ abbr = "BSM", name = "Bloodmaul Slag Mines", spellID = 159895, mapID = 163 }, -- Bloodmaul Slag Mines
@@ -291,10 +295,8 @@ AMT.SeasonalDungeons = {
 	{ abbr = "UBRS", name = "Upper Blackrock Spire", spellID = 159902, mapID = 167 }, -- Upper Blackrock Spire
 	{ abbr = "EB", name = "The Everbloom", spellID = 159901, mapID = 168 }, -- The Everbloom
 	{ abbr = "ID", name = "Iron Docks", spellID = 159896, mapID = 169 }, -- Iron Docks
-
 	--Mist of Pandaria
 	{ abbr = "TJS", name = "Temple of the Jade Serpent", spellID = 131204, mapID = 2 }, -- Temple of the Jade Serpent
-
 	--Cataclysm
 	{ abbr = "VP", name = "The Vortex Pinnacle", spellID = 410080, mapID = 438 }, -- The Vortex Pinnacle
 	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456 }, -- Throne of the Tides
@@ -303,6 +305,13 @@ AMT.SeasonalDungeons = {
 
 AMT.Raids = {
 	--The War Within
+	{
+		abbr = "NP",
+		name = "Nerub'ar Palace",
+		journalInstanceID = 1273,
+		instanceID = 2657,
+		numEncounters = 8,
+	},
 
 	--Dragonflight
 	{
@@ -340,32 +349,20 @@ AMT.RaidDifficulty_Levels = {
 AMT.Keystone_Modifiers = {
 	{ mod = "Tyrannical", id = 9, values = { 30, 15, 0, 0 } },
 	{ mod = "Fortified", id = 10, values = { 0, 0, 20, 30 } },
+	{ mod = "Both", id = 99, values = { 30, 15, 20, 30 } },
 }
 
 -- Affix Rotation for the Season
 AMT.AffixRotation = {
-	{ rotation = { 9, 124, 6 } },
-	{ rotation = { 10, 134, 7 } },
-	{ rotation = { 9, 136, 123 } },
-	{ rotation = { 10, 135, 6 } },
-	{ rotation = { 9, 3, 8 } },
-	{ rotation = { 10, 124, 11 } },
-	{ rotation = { 9, 135, 7 } },
-	{ rotation = { 10, 136, 8 } },
-	{ rotation = { 9, 134, 11 } },
-	{ rotation = { 10, 3, 123 } },
+	{ rotation = { 148, 9, 152, 10, 147 } },
+	{ rotation = { 148, 10, 152, 9, 147 } },
+	{ rotation = { 158, 9, 152, 10, 147 } },
+	{ rotation = { 158, 10, 152, 9, 147 } },
+	{ rotation = { 159, 9, 152, 10, 147 } },
+	{ rotation = { 159, 10, 152, 9, 147 } },
+	{ rotation = { 160, 9, 152, 10, 147 } },
+	{ rotation = { 160, 10, 152, 9, 147 } },
 }
--- TWW Season 1 Affixes
--- AMT.AffixRotation = {
--- 	{ rotation = { 148, 9, 152, 10 } },
--- 	{ rotation = { 148, 10, 152, 9 } },
--- 	{ rotation = { 158, 9, 152, 10 } },
--- 	{ rotation = { 158, 10, 152, 9 } },
--- 	{ rotation = { 159, 9, 152, 10 } },
--- 	{ rotation = { 159, 10, 152, 9 } },
--- 	{ rotation = { 160, 9, 152, 10 } },
--- 	{ rotation = { 160, 10, 152, 9 } },
--- }
 
 AMT.Weekly_KillCount = {
 	{ name = "Mythic", abbr = "M", kills = 0 },

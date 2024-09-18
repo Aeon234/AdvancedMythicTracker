@@ -191,7 +191,49 @@ do -- Checkbox
 		return b
 	end
 
+	local function CreateCustomCheckbox(parent, name, size)
+		local b = CreateFrame("Button", name, parent)
+		b:SetSize(size, size)
+
+		b.Label = b:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+		b.Label:SetJustifyH("LEFT")
+		b.Label:SetJustifyV("TOP")
+		b.Label:SetTextColor(1, 0.82, 0) --labelcolor
+		b.Label:SetPoint("LEFT", b, "LEFT", LABEL_OFFSET, 0)
+
+		b.Border = b:CreateTexture(nil, "ARTWORK")
+		b.Border:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Button/Checkbox")
+		b.Border:SetTexCoord(0, 0.5, 0, 0.5)
+		b.Border:SetPoint("CENTER", b, "CENTER", 0, 0)
+		b.Border:SetSize(size / 0.5, size / 0.5)
+		DisableSharpening(b.Border)
+
+		b.CheckedTexture = b:CreateTexture(nil, "OVERLAY")
+		b.CheckedTexture:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Button/Checkbox")
+		b.CheckedTexture:SetTexCoord(0.5, 0.75, 0.5, 0.75)
+		b.CheckedTexture:SetPoint("CENTER", b.Border, "CENTER", 0, 0)
+		b.CheckedTexture:SetSize(size / 1.5, size / 1.5)
+		DisableSharpening(b.CheckedTexture)
+		b.CheckedTexture:Hide()
+
+		b.Highlight = b:CreateTexture(nil, "HIGHLIGHT")
+		b.Highlight:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Button/Checkbox")
+		b.Highlight:SetTexCoord(0, 0.5, 0.5, 1)
+		b.Highlight:SetPoint("CENTER", b.Border, "CENTER", 0, 0)
+		b.Highlight:SetSize(size / 0.5, size / 0.5)
+		--b.Highlight:Hide();
+		DisableSharpening(b.Highlight)
+
+		Mixin(b, CheckboxMixin)
+		b:SetScript("OnClick", CheckboxMixin.OnClick)
+		b:SetScript("OnEnter", CheckboxMixin.OnEnter)
+		b:SetScript("OnLeave", CheckboxMixin.OnLeave)
+
+		return b
+	end
+
 	AMT.CreateCheckbox = CreateCheckbox
+	AMT.CreateCustomCheckbox = CreateCustomCheckbox
 end
 
 do -- Common Frame with Header (and close button)

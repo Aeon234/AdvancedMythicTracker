@@ -113,12 +113,15 @@ function AMT:AMT_UpdateAffixInformation()
 	wipe(self.CurrentWeek_AffixTable or {})
 	local currentRotation
 	self.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
-	Amtesttable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
+	-- Amtesttable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 	if #self.CurrentWeek_AffixTable == 0 and #self.GetCurrentAffixesTable ~= 0 then
-		table.insert(
-			self.CurrentWeek_AffixTable,
-			{ self.GetCurrentAffixesTable[1].id, self.GetCurrentAffixesTable[2].id, self.GetCurrentAffixesTable[3].id }
-		)
+		table.insert(self.CurrentWeek_AffixTable, {
+			self.GetCurrentAffixesTable[1].id,
+			self.GetCurrentAffixesTable[2].id,
+			self.GetCurrentAffixesTable[3].id,
+			self.GetCurrentAffixesTable[4].id,
+			self.GetCurrentAffixesTable[5].id,
+		})
 		currentRotation = self.CurrentWeek_AffixTable[1]
 	end
 	local nextRotationIndex = nil
@@ -212,7 +215,7 @@ function AMT:AMT_PartyKeystoneRefresh()
 		for i = 1, 5 do
 			local unitID = i == 1 and "player" or "party" .. i - 1
 			local data = self.OpenRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.mythicPlusMapID
+			local mapID = data and data.challengeMapID
 			for _, dungeon in ipairs(self.SeasonalDungeons) do
 				if dungeon.mapID == mapID then
 					Keyname_abbr = dungeon.abbr
@@ -298,7 +301,6 @@ function AMT:Pull_VaultRequirements()
 	local Mplus_VaultReqs = C_WeeklyRewards.GetActivities(1)
 	local Raid_VaultReqs = C_WeeklyRewards.GetActivities(3)
 	local World_VaultReqs = C_WeeklyRewards.GetActivities(6)
-	Amttestactivity = C_WeeklyRewards.GetActivities(6)
 	wipe(self.Mplus_VaultUnlocks or {})
 	wipe(self.Raid_VaultUnlocks or {})
 	wipe(self.World_VaultUnlocks or {})
@@ -311,6 +313,9 @@ function AMT:Pull_VaultRequirements()
 	end
 	for i = 1, #World_VaultReqs do
 		tinsert(self.World_VaultUnlocks, World_VaultReqs[i].threshold)
+		if i == #World_VaultReqs then
+			self.World_VaultTracker = World_VaultReqs[i].progress
+		end
 	end
 
 	AMT.Vault_DungeonReq = math.max(unpack(self.Mplus_VaultUnlocks))
@@ -452,14 +457,16 @@ end
 
 --Grab the Keystone color to be used for the Party Keystone Container
 function AMT_getKeystoneLevelColor(level)
-	--Was initially 5,10,15,20. Changed to 2,5,10 to account for DF S4 changes.
-	-- if level < 2 then
-	-- 	return "ffffffff"
-	if level < 2 then
+	-- Was initially 5,10,15,20.
+	-- Changed to 2,5,10 to account for DF S4 changes.
+	-- Changed 4,7,10,12 to accccount for TWW S1 changes.
+	if level < 4 then
+		return "ffffffff"
+	elseif level < 7 then
 		return "ff1eff00"
-	elseif level < 5 then
-		return "ff0070dd"
 	elseif level < 10 then
+		return "ff0070dd"
+	elseif level < 12 then
 		return "ffa335ee"
 	else
 		return "ffff8000"
