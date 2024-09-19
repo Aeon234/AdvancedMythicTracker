@@ -59,12 +59,22 @@ end
 
 local ADDON_LOADED = CreateFrame("Frame")
 ADDON_LOADED:RegisterEvent("ADDON_LOADED")
+ADDON_LOADED:RegisterEvent("PLAYER_ENTERING_WORLD")
 
 ADDON_LOADED:SetScript("OnEvent", function(self, event, ...)
 	local name = ...
 	if name == addonName then
 		self:UnregisterEvent(event)
 		AMT:LoadDatabase()
+		AMT:PrintDebug("Unregistering " .. event)
+	end
+	if event == "PLAYER_ENTERING_WORLD" then
+		if RaiderIO then
+			AMT.RaiderIOEnabled = true
+			AMT:PrintDebug("RaiderIO found")
+		end
+		self:UnregisterEvent(event)
+		AMT:PrintDebug("Unregistering " .. event)
 	end
 end)
 
@@ -88,9 +98,9 @@ if Details then
 	AMT.OpenRaidLib = LibStub("LibOpenRaid-1.0", true) -- Call OpenRaidLib functions
 end
 
-if RaiderIO then
-	AMT.RaiderIOEnabled = true
-end
+-- if RaiderIO then
+-- 	AMT.RaiderIOEnabled = true
+-- end
 
 AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
