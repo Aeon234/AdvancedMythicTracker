@@ -98,10 +98,6 @@ if Details then
 	AMT.OpenRaidLib = LibStub("LibOpenRaid-1.0", true) -- Call OpenRaidLib functions
 end
 
--- if RaiderIO then
--- 	AMT.RaiderIOEnabled = true
--- end
-
 AMT.Vault_BoxSize = 14
 AMT.Vault_RaidReq = 6 -- Number of Raid kills required for max rewards
 AMT.Vault_DungeonReq = 8 -- Number of Dungeon completions required for max rewards
