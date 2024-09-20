@@ -159,11 +159,6 @@ function WorldMarkerCycler:ShowOptions(state)
 end
 
 local function ToggleWorldMarker(self)
-	if self.checked == true then
-		print("turned on")
-	elseif self.checked == false then
-		print("turned off")
-	end
 	local new_WorldMarkerCycler_Order = {}
 	ANTtestorder2 = new_WorldMarkerCycler_Order
 	for i = 1, #AMT.WorldMarkers do

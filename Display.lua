@@ -1156,14 +1156,15 @@ function AMT:AMT_Creation()
 		for i = 1, #self.CrestNames do
 			local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
 			local CurrencyDescription = CurrencyInfo.description
-			local CurrentAmount = CurrencyInfo.quantity
+			local CurrentAmount = CurrencyInfo.quantity or 0
+			local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
 			local CurrencyCapacity
 			if CurrencyInfo.maxQuantity ~= 0 then
 				CurrencyCapacity = CurrencyInfo.maxQuantity
 			else
 				CurrencyCapacity = 999
 			end
-			local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrentAmount) / 12))
+			local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrencyTotalEarned) / 12))
 
 			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
 				self.CrestNames[i].name,
@@ -1183,7 +1184,7 @@ function AMT:AMT_Creation()
 			ProgBar_Text:SetFont(self.AMT_Font, 12)
 			ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
 			ProgBar:SetMinMaxValues(0, 1)
-			ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
+			ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
 			ProgBar:SetStatusBarColor(unpack(self.CrestNames[i].color))
 
 			-- Establish the Hover Properties
@@ -1203,17 +1204,14 @@ function AMT:AMT_Creation()
 				)
 				GameTooltip:AddLine(CurrencyDescription, 1.000, 0.824, 0.000, true)
 				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Total Maximum: " .. self.Whitetext .. CurrentAmount .. "/" .. CurrencyCapacity)
+				GameTooltip:AddLine("Total: " .. self.Whitetext .. CurrentAmount)
+				GameTooltip:AddLine(
+					"Season Maximum: " .. self.Whitetext .. CurrencyTotalEarned .. "/" .. CurrencyCapacity
+				)
 				GameTooltip:AddLine("You need to time " .. self.Whitetext .. NumOfRunsNeeded .. "|r M+ keys to cap.")
 				GameTooltip:Show()
-				-- ProgBar:SetStatusBarColor(
-				-- 	self.CrestNames[i].color[1] + 0.1,
-				-- 	self.CrestNames[i].color[2] + 0.1,
-				-- 	self.CrestNames[i].color[3] + 0.1,
-				-- 	self.CrestNames[i].color[4]
-				-- )
 				ProgBar:SetMinMaxValues(0, 1)
-				ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
+				ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
 				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.25)
 			end)
 			ProgBar_Frame:SetScript("OnLeave", function()
@@ -1236,35 +1234,46 @@ function AMT:AMT_DataUpdate()
 	-- ========================================
 	-- === MARK: Update Raid Vault Progress ===
 	-- ========================================
-	local PreviousRaidDifficulty_Kills
+	local PreviousRaidDifficulty_Kills = 0
 	local VaultUnlock_CurrentMax = 0 --store the highest # of bosses killed in all previous categories analyzed so we can see if current difficulty unlocks new rewards in Vault
+	local LastReward_Unlocked = false
 	for i = 1, #self.Weekly_KillCount do
+		AMT:PrintDebug("---" .. self.Weekly_KillCount[i].abbr .. "---")
 		local RaidBosses_Killed
 		if self.Weekly_KillCount[i].kills <= self.Vault_RaidReq then
 			RaidBosses_Killed = self.Weekly_KillCount[i].kills
 		elseif self.Weekly_KillCount[i].kills > self.Vault_RaidReq then
 			RaidBosses_Killed = self.Vault_RaidReq
 		end
-		PreviousRaidDifficulty_Kills = RaidBosses_Killed or 0
+		AMT:PrintDebug("Raidbosses_Killed=" .. RaidBosses_Killed)
 		local difficulty = self.Weekly_KillCount[i].abbr
 		for j = 1, RaidBosses_Killed do
+			AMT:PrintDebug(j)
 			if
-				(j == self.Raid_VaultUnlocks[1] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[1])
-				or (j == self.Raid_VaultUnlocks[2] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[2])
-				or (j == self.Raid_VaultUnlocks[3] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[3])
+				(j == self.Raid_VaultUnlocks[3] and RaidBosses_Killed == self.Raid_VaultUnlocks[3])
+				and not LastReward_Unlocked
 			then
-				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
+				AMT:PrintDebug("Running first if statement")
+				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
+				LastReward_Unlocked = true
+			elseif
+				(
+					(j == self.Raid_VaultUnlocks[1] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[1])
+					or (j == self.Raid_VaultUnlocks[2] and VaultUnlock_CurrentMax < self.Raid_VaultUnlocks[2])
+				) and not LastReward_Unlocked
+			then
+				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
 			else
-				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0) -- Green
 			end
 		end
-		if RaidBosses_Killed <= self.Raid_VaultUnlocks[3] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
-			VaultUnlock_CurrentMax = RaidBosses_Killed
-		elseif RaidBosses_Killed <= self.Raid_VaultUnlocks[2] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
-			VaultUnlock_CurrentMax = RaidBosses_Killed
-		elseif RaidBosses_Killed <= self.Raid_VaultUnlocks[1] and RaidBosses_Killed > PreviousRaidDifficulty_Kills then
+		if RaidBosses_Killed > PreviousRaidDifficulty_Kills then
 			VaultUnlock_CurrentMax = RaidBosses_Killed
 		end
+		AMT:PrintDebug("VaultUnlock_CurrentMax=" .. VaultUnlock_CurrentMax)
+		PreviousRaidDifficulty_Kills = RaidBosses_Killed
+		AMT:PrintDebug("PreviousRaidDifficulty_Kills=" .. PreviousRaidDifficulty_Kills)
+		AMT:PrintDebug("LastReward_Unlocked=" .. tostring(LastReward_Unlocked))
 	end
 	-- =======================================
 	-- === MARK: Update M+ Vault Progress ===
@@ -1424,7 +1433,7 @@ function AMT:AMT_DataUpdate()
 			.. " • Speaking with Lindormi in Valdrakken"
 	end
 	-- local RIO_PlayerProfile
-	if self.RaiderIOEnabled then
+	if AMT.RaiderIOEnabled then
 		--Grab the timed runs information for the player from the RIO addon
 		RIO_PlayerProfile = RaiderIO.GetProfile("player")
 		if
@@ -1451,7 +1460,7 @@ function AMT:AMT_DataUpdate()
 			GameTooltip:AddLine(keystone_info_tt)
 			GameTooltip:AddLine(keystone_dungeonmodifiers_tt)
 			GameTooltip:AddLine(keystone_rewards_tt)
-			if self.RaiderIOEnabled then
+			if AMT.RaiderIOEnabled then
 				if
 					RIO_PlayerProfile ~= nil
 					and RIO_PlayerProfile.mythicKeystoneProfile ~= nil
@@ -1544,7 +1553,7 @@ function AMT:AMT_DataUpdate()
 		local name = self.CrestNames[i].name
 		local ProgBar = _G[name .. "_StatusBar"]
 		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
-		local CurrentAmount = CurrencyInfo.quantity
+		local CurrencyTotalEarned = CurrencyInfo.totalEarned
 		local CurrencyCapacity
 		if CurrencyInfo.maxQuantity ~= 0 then
 			CurrencyCapacity = CurrencyInfo.maxQuantity
@@ -1559,7 +1568,7 @@ function AMT:AMT_DataUpdate()
 			self.CrestNames[i].color[4]
 		)
 		ProgBar:SetMinMaxValues(0, 1)
-		ProgBar:SetValue(CurrentAmount / CurrencyCapacity)
+		ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
 	end
 
 	-- ====================================

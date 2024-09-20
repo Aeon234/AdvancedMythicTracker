@@ -600,6 +600,7 @@ end
 function AMT:Update_CrestTracker_Info()
 	for i = 1, #self.CrestNames do
 		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
+		local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
 		local CurrentAmount = CurrencyInfo.quantity
 		local CurrencyCapacity
 		if CurrencyInfo.maxQuantity ~= 0 then
@@ -609,7 +610,7 @@ function AMT:Update_CrestTracker_Info()
 		end
 		local ProgBar = _G[self.CrestNames[i].name .. "_StatusBar"]
 		ProgBar:SetMinMaxValues(0, CurrencyCapacity)
-		ProgBar:SetValue(CurrentAmount)
+		ProgBar:SetValue(CurrencyTotalEarned)
 	end
 end
 
