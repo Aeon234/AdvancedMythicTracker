@@ -2,26 +2,18 @@ local addonName, AMT = ...
 local API = AMT.API
 
 local TEXT_WIDTH = 200
-local DEFAULT_POSITION_Y = 300
+local DEFAULT_POSITION_Y = 400
 
 local WorldChange_EventListenerFrame = CreateFrame("Frame")
 local PartyKeystone_EventListenerFrame = CreateFrame("Frame")
 
 -- Create a font string to display the message
-local GroupKeysFrame = CreateFrame("Button", nil, UIParent)
+local GroupKeysFrame = CreateFrame("Frame", nil, UIParent)
 GroupKeysFrame:SetSize(380, 250)
 GroupKeysFrame.tex = GroupKeysFrame:CreateTexture()
 GroupKeysFrame.tex:SetAllPoints(GroupKeysFrame)
 GroupKeysFrame.tex:SetColorTexture(unpack(AMT.BackgroundClear))
 GroupKeysFrame:Hide()
-
--- Register Frame for clicks to hide the frame if needed
-GroupKeysFrame:SetPropagateMouseClicks(true)
-GroupKeysFrame:RegisterForClicks("RightButtonUp")
-GroupKeysFrame:SetScript("OnClick", function(self, button, down)
-	self:Hide()
-	AMT:PrintDebug("Hiding GroupKeysFrame")
-end)
 
 local Initiated_Text = GroupKeysFrame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 Initiated_Text:SetPoint("TOP", GroupKeysFrame, "TOP", 0, -10)
@@ -116,7 +108,7 @@ local PartyKeystones_Text = {}
 local function ShowRelevantKeysMessage()
 	wipe(PartyKeystones_Text or {})
 	AMT:AMT_KeystoneRefresh()
-	local _, _, _, _, _, _, _, CurrentInstanceID, _, _ = GetInstanceInfo()
+	local _, _, _, _, _, _, _, CurrentInstanceID = GetInstanceInfo()
 	local RelevantKeystones = {}
 	wipe(RelevantKeystones or {})
 	--Grab relevant keystones into a separate table
@@ -191,11 +183,10 @@ local function ShowRelevantKeysMessage()
 	end
 
 	if #RelevantKeystones > 0 then
-		GroupKeysFrame:LoadPosition()
 		GroupKeysFrame:Show()
-		C_Timer.After(30, function()
+		C_Timer.After(20, function()
 			GroupKeysFrame:Hide()
-			AMT:PrintDebug("Hiding GroupKeysFrame")
+			AMT:PrintDebug("Hiding Message")
 		end)
 	end
 end
@@ -203,20 +194,19 @@ end
 --If Ready Check is detected while in a group and in a dungeon
 local function AMT_PartyKeystoneEventHandler(self, event, ...)
 	local inInstance, instanceType = IsInInstance()
-	if event == "READY_CHECK" and inInstance and IsInGroup() and not IsInRaid() then
+	if inInstance and IsInGroup() and not IsInRaid() then
 		ShowRelevantKeysMessage()
-		AMT:PrintDebug("Showing GroupKeysFrame")
-	elseif event == "WORLD_STATE_TIMER_START" then
-		GroupKeysFrame:Hide()
-		AMT:PrintDebug("Hiding GroupKeysFrame")
+		AMT:PrintDebug("Showing Message")
 	end
 end
 
 --If loading into new zone
 local function AMT_WorldEventHandler(self, event, ...)
+	-- ShowRelevantKeysMessage()
+
+	local ReadyCheck_Registered = PartyKeystone_EventListenerFrame:RegisterEvent("READY_CHECK")
 	if AMT.DetailsEnabled then
 		PartyKeystone_EventListenerFrame:RegisterEvent("READY_CHECK")
-		PartyKeystone_EventListenerFrame:RegisterEvent("WORLD_STATE_TIMER_START")
 		PartyKeystone_EventListenerFrame:SetScript("OnEvent", AMT_PartyKeystoneEventHandler)
 		AMT:PrintDebug("Registering READY_CHECK for KeyEvents")
 	else
@@ -225,26 +215,11 @@ local function AMT_WorldEventHandler(self, event, ...)
 	end
 end
 
-local ADDON_LOADED = CreateFrame("Frame")
-ADDON_LOADED:RegisterEvent("ADDON_LOADED")
-
-ADDON_LOADED:SetScript("OnEvent", function(self, event, ...)
-	local name = ...
-	if name == addonName and AMT.DefaultValues["ShowRelevantKeys"] and AMT.dbLoaded then
-		WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
-		WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
-		GroupKeysFrame:LoadPosition()
-		self:UnregisterEvent(event)
-		AMT:PrintDebug("Unregistering " .. event .. " for KeyEvents")
-	end
-end)
 --Register Main Event to listen to loading into another zone/instance
--- if AMT.DefaultValues["ShowRelevantKeys"] and AMT.dbLoaded then
--- 	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
--- 	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
--- 	GroupKeysFrame:LoadPosition()
--- 	GroupKeysFrame:ShowExampleText()
--- end
+if AMT.DefaultValues["ShowRelevantKeys"] and AMT.dbLoaded then
+	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
+end
 
 function GroupKeysFrame:OnDragStart()
 	self:SetMovable(true)
@@ -458,11 +433,12 @@ do
 	local moduleData = {
 		name = "Show Relevant Mythic+ Keys",
 		dbKey = "ShowRelevantKeys",
-		description = "When a ready check is initated while inside of a dungeon, if you or party members have an eligible Mythic+ Keystone the list of these players and key levels will be displayed on screen\nRight click the pop-up to hide it.",
+		description = "When a ready check is initated while inside of a dungeon, if you or party members have an eligible Mythic+ Keystone the list of these players and key levels will be displayed on screen",
 		toggleFunc = EnableModule,
 		categoryID = 2,
 		uiOrder = 1,
 		optionToggleFunc = OptionToggle_OnClick,
+		-- moduleAddedTime = 1719566000,
 	}
 
 	AMT.Config:AddModule(moduleData)

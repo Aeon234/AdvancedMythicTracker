@@ -950,7 +950,7 @@ function AMT:AMT_Creation()
 				)
 				PartyKeystone_Lefttext:SetPoint("TOPLEFT", PartyKeystone_Container, "TOPLEFT", 6, yOffset * i)
 				PartyKeystone_Lefttext:SetJustifyH("LEFT")
-				PartyKeystone_Lefttext:SetWidth(92)
+				PartyKeystone_Lefttext:SetWidth(90)
 				PartyKeystone_Lefttext:SetFont(self.AMT_Font, 14)
 				PartyKeystone_Lefttext:SetText("")
 				PartyKeystone_Container.lines[i] = {
