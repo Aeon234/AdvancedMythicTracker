@@ -2,7 +2,7 @@
 ## Title:|cff18a8ffAdvanced Mythic Tracker|r
 ## Notes: Track your |cffffd200Raid|r, |cffffd200Mythic+|r, and |cffffd200World|r activities.
 ## Author: Aeon
-## Version: 1.1.6
+## Version: 1.1.7
 ## SavedVariables: AMT_DB
 ## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\Icons\AMT_Icon
 ## X-Curse-Project-ID: 1037826
