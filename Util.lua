@@ -171,7 +171,7 @@ function AMT:AMT_KeystoneRefresh()
 		for i = 1, 5 do
 			local unitID = i == 1 and "player" or "party" .. i - 1
 			local data = self.OpenRaidLib.GetKeystoneInfo(unitID)
-			local mapID = data and data.challengeMapID
+			local mapID = data and data.mythicPlusMapID
 			for _, dungeon in ipairs(self.SeasonalDungeons) do
 				if dungeon.mapID == mapID then
 					Keyname_abbr = dungeon.abbr
