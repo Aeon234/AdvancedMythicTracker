@@ -238,13 +238,6 @@ ADDON_LOADED:SetScript("OnEvent", function(self, event, ...)
 		AMT:PrintDebug("Unregistering " .. event .. " for KeyEvents")
 	end
 end)
---Register Main Event to listen to loading into another zone/instance
--- if AMT.DefaultValues["ShowRelevantKeys"] and AMT.dbLoaded then
--- 	WorldChange_EventListenerFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
--- 	WorldChange_EventListenerFrame:SetScript("OnEvent", AMT_WorldEventHandler)
--- 	GroupKeysFrame:LoadPosition()
--- 	GroupKeysFrame:ShowExampleText()
--- end
 
 function GroupKeysFrame:OnDragStart()
 	self:SetMovable(true)
