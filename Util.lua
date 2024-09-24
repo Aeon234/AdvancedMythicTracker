@@ -769,6 +769,16 @@ function AMT:Exists_in_Table(table, instanceID)
 	return false
 end
 
+-- Find and return dungeon name and abbreviation from mapID
+function AMT:Find_Dungeon(mapID)
+	for _, dungeon in ipairs(self.SeasonalDungeons) do
+		if dungeon.mapID == mapID then
+			return dungeon.abbr, dungeon.name
+		end
+	end
+	return nil, nil
+end
+
 -- Compare two arrays
 function AMT:CompareArrays(array1, array2)
 	if #array1 ~= #array2 then
