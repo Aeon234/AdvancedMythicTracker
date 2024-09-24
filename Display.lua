@@ -1238,22 +1238,18 @@ function AMT:AMT_DataUpdate()
 	local VaultUnlock_CurrentMax = 0 --store the highest # of bosses killed in all previous categories analyzed so we can see if current difficulty unlocks new rewards in Vault
 	local LastReward_Unlocked = false
 	for i = 1, #self.Weekly_KillCount do
-		AMT:PrintDebug("---" .. self.Weekly_KillCount[i].abbr .. "---")
 		local RaidBosses_Killed
 		if self.Weekly_KillCount[i].kills <= self.Vault_RaidReq then
 			RaidBosses_Killed = self.Weekly_KillCount[i].kills
 		elseif self.Weekly_KillCount[i].kills > self.Vault_RaidReq then
 			RaidBosses_Killed = self.Vault_RaidReq
 		end
-		AMT:PrintDebug("Raidbosses_Killed=" .. RaidBosses_Killed)
 		local difficulty = self.Weekly_KillCount[i].abbr
 		for j = 1, RaidBosses_Killed do
-			AMT:PrintDebug(j)
 			if
 				(j == self.Raid_VaultUnlocks[3] and RaidBosses_Killed == self.Raid_VaultUnlocks[3])
 				and not LastReward_Unlocked
 			then
-				AMT:PrintDebug("Running first if statement")
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
 				LastReward_Unlocked = true
 			elseif
@@ -1270,10 +1266,7 @@ function AMT:AMT_DataUpdate()
 		if RaidBosses_Killed > PreviousRaidDifficulty_Kills then
 			VaultUnlock_CurrentMax = RaidBosses_Killed
 		end
-		AMT:PrintDebug("VaultUnlock_CurrentMax=" .. VaultUnlock_CurrentMax)
 		PreviousRaidDifficulty_Kills = RaidBosses_Killed
-		AMT:PrintDebug("PreviousRaidDifficulty_Kills=" .. PreviousRaidDifficulty_Kills)
-		AMT:PrintDebug("LastReward_Unlocked=" .. tostring(LastReward_Unlocked))
 	end
 	-- =======================================
 	-- === MARK: Update M+ Vault Progress ===
