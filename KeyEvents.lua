@@ -2,7 +2,7 @@ local addonName, AMT = ...
 local API = AMT.API
 
 local TEXT_WIDTH = 200
-local DEFAULT_POSITION_Y = 300
+local DEFAULT_POSITION_Y = 400
 
 local WorldChange_EventListenerFrame = CreateFrame("Frame")
 local PartyKeystone_EventListenerFrame = CreateFrame("Frame")
@@ -51,41 +51,25 @@ local GroupKeystones_Debug = {
 -- Create the Frames which will store the player name on the left and key level on the right
 for i = 1, 5 do
 	PartyKeystones_NameFrame[i] = CreateFrame("Frame", nil, GroupKeysFrame)
-	PartyKeystones_NameFrame[i]:SetSize(
-		Initiated_Text:GetUnboundedStringWidth() / 6 * 5,
-		Initiated_Text:GetStringHeight()
-	)
+	PartyKeystones_NameFrame[i]:SetSize(Initiated_Text:GetUnboundedStringWidth() / 6 * 5, 36)
+	print("textheight = " .. 36)
 	PartyKeystones_NameFrame[i].tex = PartyKeystones_NameFrame[i]:CreateTexture()
 	PartyKeystones_NameFrame[i].tex:SetAllPoints(PartyKeystones_NameFrame[i])
 	PartyKeystones_NameFrame[i].tex:SetColorTexture(unpack(AMT.BackgroundClear))
 	if i == 1 then
-		PartyKeystones_NameFrame[i]:SetPoint(
-			"TOPLEFT",
-			GroupKeysFrame,
-			"TOPLEFT",
-			10,
-			-Initiated_Text:GetStringHeight() - 20
-		)
+		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", GroupKeysFrame, "TOPLEFT", 10, -36 - 20)
+		print("textheight = " .. 36)
 	else
 		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", PartyKeystones_NameFrame[i - 1], "BOTTOMLEFT")
 	end
 
 	PartyKeystones_KeyLevelFrame[i] = CreateFrame("Frame", nil, GroupKeysFrame)
-	PartyKeystones_KeyLevelFrame[i]:SetSize(
-		Initiated_Text:GetUnboundedStringWidth() / 6,
-		Initiated_Text:GetStringHeight()
-	)
+	PartyKeystones_KeyLevelFrame[i]:SetSize(Initiated_Text:GetUnboundedStringWidth() / 6, 36)
 	PartyKeystones_KeyLevelFrame[i].tex = PartyKeystones_KeyLevelFrame[i]:CreateTexture()
 	PartyKeystones_KeyLevelFrame[i].tex:SetAllPoints(PartyKeystones_KeyLevelFrame[i])
 	PartyKeystones_KeyLevelFrame[i].tex:SetColorTexture(unpack(AMT.BackgroundClear))
 	if i == 1 then
-		PartyKeystones_KeyLevelFrame[i]:SetPoint(
-			"TOPRIGHT",
-			GroupKeysFrame,
-			"TOPRIGHT",
-			-14,
-			-Initiated_Text:GetStringHeight() - 20
-		)
+		PartyKeystones_KeyLevelFrame[i]:SetPoint("TOPRIGHT", GroupKeysFrame, "TOPRIGHT", -14, -36 - 20)
 	else
 		PartyKeystones_KeyLevelFrame[i]:SetPoint("TOPRIGHT", PartyKeystones_KeyLevelFrame[i - 1], "BOTTOMRIGHT")
 	end
@@ -193,6 +177,7 @@ local function ShowRelevantKeysMessage()
 	if #RelevantKeystones > 0 then
 		GroupKeysFrame:LoadPosition()
 		GroupKeysFrame:Show()
+		print("textheight = " .. 36)
 		C_Timer.After(30, function()
 			GroupKeysFrame:Hide()
 			AMT:PrintDebug("Hiding GroupKeysFrame")
