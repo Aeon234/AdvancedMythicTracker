@@ -108,32 +108,6 @@ function WorldMarkerCycler:IsFocused()
 		or (self.OptionFrame and self.OptionFrame:IsShown() and self.OptionFrame:IsMouseOver())
 end
 
----- Edit Mode
-function WorldMarkerCycler:EnterEditMode()
-	if not self.enabled then
-		return
-	end
-
-	if not self.Selection then
-		local uiName = "Relevant Mythic+ Keystones"
-		local hideLabel = true
-		self.Selection = AMT.CreateEditModeSelection(self, uiName, hideLabel)
-	end
-
-	self.isEditing = true
-	self:SetScript("OnUpdate", nil)
-	-- FadeFrame(self, 0, 1)
-end
-
-function WorldMarkerCycler:ExitEditMode()
-	if self.Selection then
-		self.Selection:Hide()
-	end
-	self:ShowOptions(false)
-	self.isEditing = false
-	self:CloseImmediately()
-end
-
 function WorldMarkerCycler:ShowOptions(state)
 	if state then
 		self:CreateOptions()
@@ -180,52 +154,8 @@ function WorldMarkerCycler:CreateOptions()
 	-- self.OptionFrame = AMT.SetupSettingsDialog(self, OPTIONS_SCHEMATIC)
 	local f
 	if not _G["AMT_Cycler_OptionsPane"] then
-		f = CreateFrame("Frame", "AMT_Cycler_OptionsPane", UIParent)
-		f:Hide()
-		f:SetSize(440, 150)
-		f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
-		f:SetMovable(true)
-		f:SetClampedToScreen(true)
-		f:RegisterForDrag("LeftButton")
-		f:SetDontSavePosition(true)
-		f:SetFrameStrata("DIALOG")
-		f:SetFrameLevel(200)
-		f:EnableMouse(true)
-		f:SetScript("OnDragStart", function(self, button)
-			self:StartMoving()
-		end)
-		f:SetScript("OnDragStop", function(self, button)
-			self:StopMovingOrSizing()
-		end)
-
-		f.Border = CreateFrame("Frame", nil, f, "DialogBorderTranslucentTemplate")
-		f.CloseButton = CreateFrame("Button", nil, f, "UIPanelCloseButtonNoScripts")
-		f.CloseButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
-		f.CloseButton:SetScript("OnClick", function()
-			f:Hide()
-			f:ClearAllPoints()
-			f.requireResetPosition = true
-			if f.parent then
-				if f.parent.Selection then
-					f.parent.Selection:ShowHighlighted()
-				end
-				if f.parent.ExitEditMode and not API.IsInEditMode() then
-					f.parent:ExitEditMode()
-				end
-				f.parent = nil
-			end
-		end)
-		f.Title = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
-		f.Title:SetPoint("TOP", f, "TOP", 0, -16)
+		f = AMT:CreateOptionsPane("AMT_Cycler_OptionsPane")
 		f.Title:SetText("World Marker Cycler Options")
-
-		f.Divider = f:CreateTexture(nil, "OVERLAY")
-		f.Divider:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/Divider_NineSlice")
-		f.Divider:SetTextureSliceMargins(48, 4, 48, 4)
-		f.Divider:SetTextureSliceMode(0)
-		f.Divider:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -36)
-		f.Divider:SetHeight(8)
-		f.Divider:SetWidth(f:GetWidth() - (20 * 2))
 
 		for i = 1, #AMT.WorldMarkers do
 			if not _G["WMFrame" .. i] then
@@ -255,7 +185,6 @@ function WorldMarkerCycler:CreateOptions()
 				WM_Button.onClickFunc = ToggleWorldMarker
 			end
 		end
-		tinsert(UISpecialFrames, f:GetName())
 	end
 	self.OptionFrame = _G["AMT_Cycler_OptionsPane"]
 end
@@ -270,9 +199,7 @@ end
 function AMT:WorldMarkerCycler_ToggleConfig()
 	if WorldMarkerCycler.OptionFrame and WorldMarkerCycler.OptionFrame:IsShown() then
 		WorldMarkerCycler:ShowOptions(false)
-		WorldMarkerCycler:ExitEditMode()
 	else
-		WorldMarkerCycler:EnterEditMode()
 		WorldMarkerCycler:ShowOptions(true)
 	end
 end
@@ -293,9 +220,7 @@ do
 	local function OptionToggle_OnClick(self, button)
 		if WorldMarkerCycler.OptionFrame and WorldMarkerCycler.OptionFrame:IsShown() then
 			WorldMarkerCycler:ShowOptions(false)
-			WorldMarkerCycler:ExitEditMode()
 		else
-			WorldMarkerCycler:EnterEditMode()
 			WorldMarkerCycler:ShowOptions(true)
 		end
 	end

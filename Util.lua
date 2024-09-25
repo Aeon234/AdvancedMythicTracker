@@ -1,4 +1,5 @@
 local addonName, AMT = ...
+local API = AMT.API
 
 --Debugging Prints
 function AMT:PrintDebug(str)
@@ -732,11 +733,57 @@ function AMT:CreateProgressBar(name, texture, color, parent, width, height)
 	local StatusBar_Text = StatusBar_ProgressBar:CreateFontString(nil, "OVERLAY", "MovieSubtitleFont")
 	StatusBar_Text:SetPoint("BOTTOM", StatusBar_ProgressBar, "TOP", 0, 3)
 
-	-- hooksecurefunc(StatusBar_ProgressBar, "SetValue", function(self, value)
-	-- 	text:SetText(text .. "%")
-	-- end)
-
 	return StatusBar_Container, StatusBar_ProgressBar, StatusBar_Text, StatusBar_Bg
+end
+
+function AMT:CreateOptionsPane(name)
+	local f = CreateFrame("Frame", name, UIParent)
+	f:Hide()
+	f:SetSize(440, 150)
+	f:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+	f:SetMovable(true)
+	f:SetClampedToScreen(true)
+	f:RegisterForDrag("LeftButton")
+	f:SetDontSavePosition(true)
+	f:SetFrameStrata("DIALOG")
+	f:SetFrameLevel(200)
+	f:EnableMouse(true)
+	f:SetScript("OnDragStart", function(self, button)
+		self:StartMoving()
+	end)
+	f:SetScript("OnDragStop", function(self, button)
+		self:StopMovingOrSizing()
+	end)
+
+	f.Border = CreateFrame("Frame", nil, f, "DialogBorderTranslucentTemplate")
+	f.CloseButton = CreateFrame("Button", nil, f, "UIPanelCloseButtonNoScripts")
+	f.CloseButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", 0, 0)
+	f.CloseButton:SetScript("OnClick", function()
+		f:Hide()
+		f:ClearAllPoints()
+		f.requireResetPosition = true
+		if f.parent then
+			if f.parent.Selection then
+				f.parent.Selection:ShowHighlighted()
+			end
+			if f.parent.ExitEditMode and not API.IsInEditMode() then
+				f.parent:ExitEditMode()
+			end
+			f.parent = nil
+		end
+	end)
+	f.Title = f:CreateFontString(nil, "ARTWORK", "GameFontHighlightLarge")
+	f.Title:SetPoint("TOP", f, "TOP", 0, -16)
+
+	f.Divider = f:CreateTexture(nil, "OVERLAY")
+	f.Divider:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/Divider_NineSlice")
+	f.Divider:SetTextureSliceMargins(48, 4, 48, 4)
+	f.Divider:SetTextureSliceMode(0)
+	f.Divider:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -36)
+	f.Divider:SetHeight(8)
+	f.Divider:SetWidth(f:GetWidth() - (20 * 2))
+	tinsert(UISpecialFrames, f:GetName())
+	return f
 end
 
 -- ========================
