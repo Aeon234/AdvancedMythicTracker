@@ -1154,18 +1154,6 @@ function AMT:AMT_Creation()
 		local ProgBar_Height = 14
 
 		for i = 1, #self.Crests do
-			-- local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
-			-- local CurrencyDescription = CurrencyInfo.description
-			-- local CurrentAmount = CurrencyInfo.quantity or 0
-			-- self.Crests.CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
-			-- local CurrencyCapacity
-			-- if CurrencyInfo.maxQuantity ~= 0 then
-			-- 	self.Crests.CurrencyCapacity = CurrencyInfo.maxQuantity
-			-- else
-			-- 	self.Crests.CurrencyCapacity = 999
-			-- end
-			-- local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrencyTotalEarned) / 12))
-
 			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
 				self.Crests[i].name,
 				AMT.Clean_StatusBar,
@@ -1548,27 +1536,6 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update Crest Tracker ===
 	-- ==================================
 
-	-- for i = 1, #self.Crests do
-	-- 	local name = self.Crests[i].name
-	-- 	local ProgBar = _G[name .. "_StatusBar"]
-	-- 	local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
-	-- 	local CurrencyTotalEarned = CurrencyInfo.totalEarned
-	-- 	local CurrencyCapacity
-	-- 	if CurrencyInfo.maxQuantity ~= 0 then
-	-- 		CurrencyCapacity = CurrencyInfo.maxQuantity
-	-- 	else
-	-- 		CurrencyCapacity = 999
-	-- 	end
-
-	-- 	ProgBar:SetStatusBarColor(
-	-- 		self.Crests[i].color[1],
-	-- 		self.Crests[i].color[2],
-	-- 		self.Crests[i].color[3],
-	-- 		self.Crests[i].color[4]
-	-- 	)
-	-- 	ProgBar:SetMinMaxValues(0, 1)
-	-- 	ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
-	-- end
 	AMT:Update_Crests()
 
 	-- ====================================
@@ -1576,8 +1543,6 @@ function AMT:AMT_DataUpdate()
 	-- ====================================
 	-- Pull the group's keystone information
 	AMT:AMT_PartyKeystoneRefresh()
-
-	AMT:Update_CrestTracker_Info()
 end
 
 function AMT:Update_Crests()

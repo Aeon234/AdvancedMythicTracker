@@ -597,23 +597,6 @@ function AMT:AMT_UpdateMythicGraph()
 	end
 end
 
-function AMT:Update_CrestTracker_Info()
-	for i = 1, #self.Crests do
-		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
-		local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
-		local CurrentAmount = CurrencyInfo.quantity
-		local CurrencyCapacity
-		if CurrencyInfo.maxQuantity ~= 0 then
-			CurrencyCapacity = CurrencyInfo.maxQuantity
-		else
-			CurrencyCapacity = 999
-		end
-		local ProgBar = _G[self.Crests[i].name .. "_StatusBar"]
-		ProgBar:SetMinMaxValues(0, CurrencyCapacity)
-		ProgBar:SetValue(CurrencyTotalEarned)
-	end
-end
-
 -- ==============================
 -- === MARK: Helper Functions ===
 -- ==============================
