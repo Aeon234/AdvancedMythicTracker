@@ -7,7 +7,7 @@ AMT.DefaultValues = {
 	ShowRelevantKeys = true, -- Shows relevant M+ keys in the group when ready check is initiated
 	GroupKeysFrame_PositionX = nil,
 	GroupKeysFrame_PositionY = nil,
-	WorldMarkerCycler = true,
+	WorldMarkerCycler = true, -- Enable World Marker Cycler
 	WorldMarkerCycler_Order = { 5, 6, 3, 2, 7, 1, 4, 8 },
 	Cycler_Star = true,
 	Cycler_Circle = true,
@@ -17,6 +17,14 @@ AMT.DefaultValues = {
 	Cycler_Square = true,
 	Cycler_X = true,
 	Cycler_Skull = true,
+	Mplus_AutoResponse = true, -- Enable automatic M+ Auto Response on whispers
+	replyAfterComplete = 2,
+	replyCooldown = 1,
+	replyKeystoneNameType = 1,
+	antiSpam = true,
+	replyInfoFriend = { 1, 2, 3, 4 },
+	replyInfoGuild = { 1, 2, 3, 4 },
+	replyInfoUnknown = { 1, 2, 3, 4 },
 }
 AMT.API = {} --Custom APIs used by this addon
 
@@ -396,7 +404,7 @@ AMT.Weekly_KillCount = {
 }
 -- While the names for the time being are kept as DF names, the ids are for War Within.
 -- Might want to update it to TWW names if community doesn't just default to the original names
-AMT.CrestNames = {
+AMT.Crests = {
 	{
 		name = "Weathered",
 		color = AMT.Uncommon_Color,
@@ -410,6 +418,11 @@ AMT.CrestNames = {
 		currencyID = 2915,
 		displayName = "Carved Harbinger Crest",
 		textureID = 5872028,
+		CurrencyDescription = "",
+		CurrentAmount = 0,
+		CurrencyTotalEarned = 0,
+		CurrencyCapacity = 0,
+		NumOfRunsNeeded = 0,
 	},
 	{
 		name = "Runed",

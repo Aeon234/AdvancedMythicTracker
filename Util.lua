@@ -28,16 +28,6 @@ function AMT:UpdateHighestKey(dungeonAbbr, keylevel)
 	AMT:PrintDebug("Dungeon abbreviation not found: " .. dungeonAbbr)
 end
 
---Get Dungeon Abbreviations from MapIDs
-function AMT:GetAbbrFromChallengeModeID(id)
-	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
-		if dungeon.mapID == id then
-			return dungeon.abbr
-		end
-	end
-	return nil -- Return nil if no matching dungeon is found
-end
-
 --Check Number of Tabs displayed on PVEFrame
 function AMT:Check_PVEFrame_TabNums()
 	for i = 1, PVEFrame.numTabs do
@@ -67,6 +57,16 @@ function AMT:Update_PVEFrame_Panels()
 			end
 		end
 	end
+end
+
+--Get Dungeon Abbreviations from MapIDs
+function AMT:GetAbbrFromChallengeModeID(id)
+	for _, dungeon in ipairs(AMT.SeasonalDungeons) do
+		if dungeon.mapID == id then
+			return dungeon.abbr
+		end
+	end
+	return nil -- Return nil if no matching dungeon is found
 end
 
 --Get End of Dungeon reward for key level
@@ -598,8 +598,8 @@ function AMT:AMT_UpdateMythicGraph()
 end
 
 function AMT:Update_CrestTracker_Info()
-	for i = 1, #self.CrestNames do
-		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
+	for i = 1, #self.Crests do
+		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
 		local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
 		local CurrentAmount = CurrencyInfo.quantity
 		local CurrencyCapacity
@@ -608,15 +608,15 @@ function AMT:Update_CrestTracker_Info()
 		else
 			CurrencyCapacity = 999
 		end
-		local ProgBar = _G[self.CrestNames[i].name .. "_StatusBar"]
+		local ProgBar = _G[self.Crests[i].name .. "_StatusBar"]
 		ProgBar:SetMinMaxValues(0, CurrencyCapacity)
 		ProgBar:SetValue(CurrencyTotalEarned)
 	end
 end
 
--- ========================
--- === Helper Functions ===
--- ========================
+-- ==============================
+-- === MARK: Helper Functions ===
+-- ==============================
 
 -- Convert RGB to Hex
 function AMT_RGBtoHexConversion(r, g, b, header, ending)

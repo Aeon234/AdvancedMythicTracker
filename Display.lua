@@ -1153,23 +1153,23 @@ function AMT:AMT_Creation()
 		local ProgBar_Width = 120
 		local ProgBar_Height = 14
 
-		for i = 1, #self.CrestNames do
-			local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
-			local CurrencyDescription = CurrencyInfo.description
-			local CurrentAmount = CurrencyInfo.quantity or 0
-			local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
-			local CurrencyCapacity
-			if CurrencyInfo.maxQuantity ~= 0 then
-				CurrencyCapacity = CurrencyInfo.maxQuantity
-			else
-				CurrencyCapacity = 999
-			end
-			local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrencyTotalEarned) / 12))
+		for i = 1, #self.Crests do
+			-- local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
+			-- local CurrencyDescription = CurrencyInfo.description
+			-- local CurrentAmount = CurrencyInfo.quantity or 0
+			-- self.Crests.CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
+			-- local CurrencyCapacity
+			-- if CurrencyInfo.maxQuantity ~= 0 then
+			-- 	self.Crests.CurrencyCapacity = CurrencyInfo.maxQuantity
+			-- else
+			-- 	self.Crests.CurrencyCapacity = 999
+			-- end
+			-- local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrencyTotalEarned) / 12))
 
 			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
-				self.CrestNames[i].name,
+				self.Crests[i].name,
 				AMT.Clean_StatusBar,
-				self.CrestNames[i].color,
+				self.Crests[i].color,
 				CrestsTracker_Container,
 				ProgBar_Width,
 				ProgBar_Height
@@ -1177,15 +1177,15 @@ function AMT:AMT_Creation()
 			if i == 1 then
 				ProgBar_Frame:SetPoint("BOTTOMLEFT", CrestsTracker_Container, "BOTTOMLEFT", 20, 0)
 			else
-				local previousFrame = _G[self.CrestNames[i - 1].name .. "_Frame"]
+				local previousFrame = _G[self.Crests[i - 1].name .. "_Frame"]
 				ProgBar_Frame:SetPoint("LEFT", previousFrame, "RIGHT", 20, 0)
 			end
-			ProgBar_Text:SetText(self.CrestNames[i].name)
+			ProgBar_Text:SetText(self.Crests[i].name)
 			ProgBar_Text:SetFont(self.AMT_Font, 12)
 			ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
 			ProgBar:SetMinMaxValues(0, 1)
-			ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
-			ProgBar:SetStatusBarColor(unpack(self.CrestNames[i].color))
+			ProgBar:SetValue(0)
+			ProgBar:SetStatusBarColor(unpack(self.Crests[i].color))
 
 			-- Establish the Hover Properties
 			ProgBar_Frame:SetScript("OnEnter", function()
@@ -1193,34 +1193,40 @@ function AMT:AMT_Creation()
 				GameTooltip:ClearLines()
 				GameTooltip:SetOwner(ProgBar_Text, "ANCHOR_RIGHT")
 				GameTooltip:SetText(
-					CreateTextureMarkup(self.CrestNames[i].textureID, 64, 64, 16, 16, 0.07, 0.93, 0.07, 0.93)
+					CreateTextureMarkup(self.Crests[i].textureID, 64, 64, 16, 16, 0.07, 0.93, 0.07, 0.93)
 						.. " "
-						.. self.CrestNames[i].displayName,
-					self.CrestNames[i].color[1],
-					self.CrestNames[i].color[2],
-					self.CrestNames[i].color[3],
-					self.CrestNames[i].color[4],
+						.. self.Crests[i].displayName,
+					self.Crests[i].color[1],
+					self.Crests[i].color[2],
+					self.Crests[i].color[3],
+					self.Crests[i].color[4],
 					true
 				)
-				GameTooltip:AddLine(CurrencyDescription, 1.000, 0.824, 0.000, true)
+				GameTooltip:AddLine(self.Crests[i].CurrencyDescription, 1.000, 0.824, 0.000, true)
 				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Total: " .. self.Whitetext .. CurrentAmount)
+				GameTooltip:AddLine("Total: " .. self.Whitetext .. self.Crests[i].CurrentAmount)
 				GameTooltip:AddLine(
-					"Season Maximum: " .. self.Whitetext .. CurrencyTotalEarned .. "/" .. CurrencyCapacity
+					"Season Maximum: "
+						.. self.Whitetext
+						.. self.Crests[i].CurrencyTotalEarned
+						.. "/"
+						.. self.Crests[i].CurrencyCapacity
 				)
-				GameTooltip:AddLine("You need to time " .. self.Whitetext .. NumOfRunsNeeded .. "|r M+ keys to cap.")
+				GameTooltip:AddLine(
+					"You need to time " .. self.Whitetext .. self.Crests[i].NumOfRunsNeeded .. "|r M+ keys to cap."
+				)
 				GameTooltip:Show()
 				ProgBar:SetMinMaxValues(0, 1)
-				ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
+				ProgBar:SetValue(self.Crests[i].CurrencyTotalEarned / self.Crests[i].CurrencyCapacity)
 				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.25)
 			end)
 			ProgBar_Frame:SetScript("OnLeave", function()
 				GameTooltip:Hide()
 				ProgBar:SetStatusBarColor(
-					self.CrestNames[i].color[1],
-					self.CrestNames[i].color[2],
-					self.CrestNames[i].color[3],
-					self.CrestNames[i].color[4]
+					self.Crests[i].color[1],
+					self.Crests[i].color[2],
+					self.Crests[i].color[3],
+					self.Crests[i].color[4]
 				)
 				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
 			end)
@@ -1542,27 +1548,28 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update Crest Tracker ===
 	-- ==================================
 
-	for i = 1, #self.CrestNames do
-		local name = self.CrestNames[i].name
-		local ProgBar = _G[name .. "_StatusBar"]
-		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
-		local CurrencyTotalEarned = CurrencyInfo.totalEarned
-		local CurrencyCapacity
-		if CurrencyInfo.maxQuantity ~= 0 then
-			CurrencyCapacity = CurrencyInfo.maxQuantity
-		else
-			CurrencyCapacity = 999
-		end
+	-- for i = 1, #self.Crests do
+	-- 	local name = self.Crests[i].name
+	-- 	local ProgBar = _G[name .. "_StatusBar"]
+	-- 	local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
+	-- 	local CurrencyTotalEarned = CurrencyInfo.totalEarned
+	-- 	local CurrencyCapacity
+	-- 	if CurrencyInfo.maxQuantity ~= 0 then
+	-- 		CurrencyCapacity = CurrencyInfo.maxQuantity
+	-- 	else
+	-- 		CurrencyCapacity = 999
+	-- 	end
 
-		ProgBar:SetStatusBarColor(
-			self.CrestNames[i].color[1],
-			self.CrestNames[i].color[2],
-			self.CrestNames[i].color[3],
-			self.CrestNames[i].color[4]
-		)
-		ProgBar:SetMinMaxValues(0, 1)
-		ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
-	end
+	-- 	ProgBar:SetStatusBarColor(
+	-- 		self.Crests[i].color[1],
+	-- 		self.Crests[i].color[2],
+	-- 		self.Crests[i].color[3],
+	-- 		self.Crests[i].color[4]
+	-- 	)
+	-- 	ProgBar:SetMinMaxValues(0, 1)
+	-- 	ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
+	-- end
+	AMT:Update_Crests()
 
 	-- ====================================
 	-- === MARK: Update Party Keystones ===
@@ -1571,4 +1578,31 @@ function AMT:AMT_DataUpdate()
 	AMT:AMT_PartyKeystoneRefresh()
 
 	AMT:Update_CrestTracker_Info()
+end
+
+function AMT:Update_Crests()
+	for i = 1, #self.Crests do
+		local name = self.Crests[i].name
+		local ProgBar = _G[name .. "_StatusBar"]
+		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
+		self.Crests[i].CurrencyDescription = CurrencyInfo.description
+		self.Crests[i].CurrentAmount = CurrencyInfo.quantity or 0
+		self.Crests[i].CurrencyTotalEarned = CurrencyInfo.totalEarned
+		if CurrencyInfo.maxQuantity ~= 0 then
+			self.Crests[i].CurrencyCapacity = CurrencyInfo.maxQuantity
+		else
+			self.Crests[i].CurrencyCapacity = 999
+		end
+		self.Crests[i].NumOfRunsNeeded =
+			math.max(0, math.ceil((self.Crests[i].CurrencyCapacity - self.Crests[i].CurrencyTotalEarned) / 12))
+
+		-- ProgBar:SetStatusBarColor(
+		-- 	self.Crests[i].color[1],
+		-- 	self.Crests[i].color[2],
+		-- 	self.Crests[i].color[3],
+		-- 	self.Crests[i].color[4]
+		-- )
+		-- ProgBar:SetMinMaxValues(0, 1)
+		ProgBar:SetValue(self.Crests[i].CurrencyTotalEarned / self.Crests[i].CurrencyCapacity)
+	end
 end
