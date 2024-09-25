@@ -475,7 +475,7 @@ end
 
 --Upldate Player M+ information
 function AMT:Update_PlayerDungeonInfo()
-	--Reset the state of the tables - need to check if it's actually resetting the values
+	--Reset the state of the tables
 	wipe(self.KeysDone or {})
 	wipe(self.BestKeys_per_Dungeon or {})
 	wipe(self.Current_SeasonalDung_Info or {})

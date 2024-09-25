@@ -1483,13 +1483,9 @@ function AMT:AMT_DataUpdate()
 		local Dung_WeekScore = 0
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		if #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 9 then
-			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungTyrLevel
-			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungTyrScore
-		elseif #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 10 then
-			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungFortLevel
-			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungFortScore
-		end
+		Dung_WeekLevel =
+			math.max(self.Current_SeasonalDung_Info[i].dungFortLevel, self.Current_SeasonalDung_Info[i].dungTyrLevel)
+		Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungOverallScore
 		--Grab the color information for the current dungeon score
 		local DungScore_Color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(Dung_WeekScore)
 		--Set the Highest Key Level Label to be the highest key level number and appropriate color for it.
@@ -1560,14 +1556,6 @@ function AMT:Update_Crests()
 		end
 		self.Crests[i].NumOfRunsNeeded =
 			math.max(0, math.ceil((self.Crests[i].CurrencyCapacity - self.Crests[i].CurrencyTotalEarned) / 12))
-
-		-- ProgBar:SetStatusBarColor(
-		-- 	self.Crests[i].color[1],
-		-- 	self.Crests[i].color[2],
-		-- 	self.Crests[i].color[3],
-		-- 	self.Crests[i].color[4]
-		-- )
-		-- ProgBar:SetMinMaxValues(0, 1)
 		ProgBar:SetValue(self.Crests[i].CurrencyTotalEarned / self.Crests[i].CurrencyCapacity)
 	end
 end
