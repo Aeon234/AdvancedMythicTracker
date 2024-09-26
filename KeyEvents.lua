@@ -52,13 +52,11 @@ local GroupKeystones_Debug = {
 for i = 1, 5 do
 	PartyKeystones_NameFrame[i] = CreateFrame("Frame", nil, GroupKeysFrame)
 	PartyKeystones_NameFrame[i]:SetSize(Initiated_Text:GetUnboundedStringWidth() / 6 * 5, 36)
-	print("textheight = " .. 36)
 	PartyKeystones_NameFrame[i].tex = PartyKeystones_NameFrame[i]:CreateTexture()
 	PartyKeystones_NameFrame[i].tex:SetAllPoints(PartyKeystones_NameFrame[i])
 	PartyKeystones_NameFrame[i].tex:SetColorTexture(unpack(AMT.BackgroundClear))
 	if i == 1 then
 		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", GroupKeysFrame, "TOPLEFT", 10, -36 - 20)
-		print("textheight = " .. 36)
 	else
 		PartyKeystones_NameFrame[i]:SetPoint("TOPLEFT", PartyKeystones_NameFrame[i - 1], "BOTTOMLEFT")
 	end
@@ -177,7 +175,6 @@ local function ShowRelevantKeysMessage()
 	if #RelevantKeystones > 0 then
 		GroupKeysFrame:LoadPosition()
 		GroupKeysFrame:Show()
-		print("textheight = " .. 36)
 		C_Timer.After(30, function()
 			GroupKeysFrame:Hide()
 			AMT:PrintDebug("Hiding GroupKeysFrame")

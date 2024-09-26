@@ -99,7 +99,6 @@ WorldMarkerCycler:SetScript("OnEvent", function(self, event, ...)
 		self:UnregisterEvent(event)
 		order = AMT_DB.WorldMarkerCycler_Order
 		WorldMarkerCycler:Init()
-		AMTTesttable = order
 	end
 end)
 
@@ -134,7 +133,6 @@ end
 
 local function ToggleWorldMarker(self)
 	local new_WorldMarkerCycler_Order = {}
-	ANTtestorder2 = new_WorldMarkerCycler_Order
 	for i = 1, #AMT.WorldMarkers do
 		local checkbox = _G["AMT_Cycler_" .. AMT.WorldMarkers[i].icon .. "_Button"]
 		for key, value in pairs(AMT_DB) do

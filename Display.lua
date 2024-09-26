@@ -1293,7 +1293,6 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update World Vault Progress ===
 	-- =========================================
 	local World_VaultProg = C_WeeklyRewards.GetActivities(6)
-	Amttestdata = C_WeeklyRewards.GetActivities(6)
 	for i = 1, World_VaultProg[#World_VaultProg].progress do
 		if i <= self.Vault_WorldReq then
 			if

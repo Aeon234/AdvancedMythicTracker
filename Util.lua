@@ -114,7 +114,6 @@ function AMT:AMT_UpdateAffixInformation()
 	wipe(self.CurrentWeek_AffixTable or {})
 	local currentRotation
 	self.GetCurrentAffixesTable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
-	-- Amtesttable = C_MythicPlus.GetCurrentAffixes() or {} --Current Affix Raw Table
 	if #self.CurrentWeek_AffixTable == 0 and #self.GetCurrentAffixesTable ~= 0 then
 		table.insert(self.CurrentWeek_AffixTable, {
 			self.GetCurrentAffixesTable[1].id,
@@ -779,7 +778,7 @@ function AMT:CreateOptionsPane(name)
 	f.Divider:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/Divider_NineSlice")
 	f.Divider:SetTextureSliceMargins(48, 4, 48, 4)
 	f.Divider:SetTextureSliceMode(0)
-	f.Divider:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -36)
+	f.Divider:SetPoint("TOPLEFT", f, "TOPLEFT", 20, -34)
 	f.Divider:SetHeight(8)
 	f.Divider:SetWidth(f:GetWidth() - (20 * 2))
 	tinsert(UISpecialFrames, f:GetName())
