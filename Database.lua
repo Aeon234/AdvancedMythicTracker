@@ -22,9 +22,24 @@ AMT.DefaultValues = {
 	replyCooldown = 1,
 	replyKeystoneNameType = 1,
 	antiSpam = true,
-	replyInfoFriend = { 1, 2, 3, 4 },
-	replyInfoGuild = { 1, 2, 3, 4 },
-	replyInfoUnknown = { 1, 2, 3, 4 },
+	replyInfoFriend = {
+		["Time"] = true,
+		["Trash"] = true,
+		["Boss"] = true,
+		["Deaths"] = true,
+	},
+	replyInfoGuild = {
+		["Time"] = true,
+		["Trash"] = true,
+		["Boss"] = true,
+		["Deaths"] = true,
+	},
+	replyInfoUnknown = {
+		["Time"] = true,
+		["Trash"] = true,
+		["Boss"] = true,
+		["Deaths"] = true,
+	},
 }
 AMT.API = {} --Custom APIs used by this addon
 
@@ -51,13 +66,35 @@ function AMT:LoadDatabase()
 		end
 	end
 
-	local function GetDBValue(dbKey)
-		return self.db[dbKey]
+	local function GetDBValue(dbKeyPath)
+		local keys = { strsplit(".", dbKeyPath) }
+		local value = self.db
+
+		for _, key in ipairs(keys) do
+			value = value[key]
+			if value == nil then
+				return nil
+			end
+		end
+
+		return value
 	end
 	self.GetDBValue = GetDBValue
 
-	local function SetDBValue(dbKey, value)
-		self.db[dbKey] = value
+	local function SetDBValue(dbKeyPath, newValue)
+		local keys = { strsplit(".", dbKeyPath) }
+		local dbRef = self.db
+
+		for i = 1, #keys - 1 do
+			local key = keys[i]
+			dbRef = dbRef[key]
+			if dbRef == nil then
+				return false
+			end
+		end
+
+		dbRef[keys[#keys]] = newValue
+		return true
 	end
 	self.SetDBValue = SetDBValue
 

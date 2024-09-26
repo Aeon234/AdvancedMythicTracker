@@ -16,8 +16,13 @@ Database.lua
 API.lua
 SharedWidgets.lua
 Util.lua
-Main.lua
+
 Config.lua
+
+Main.lua
 Display.lua
+
+#Modules
 KeyEvents.lua
 WorldMarkerCycler.lua
+AutoResponse.lua
