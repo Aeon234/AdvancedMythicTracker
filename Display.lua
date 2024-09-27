@@ -1153,23 +1153,11 @@ function AMT:AMT_Creation()
 		local ProgBar_Width = 120
 		local ProgBar_Height = 14
 
-		for i = 1, #self.CrestNames do
-			local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
-			local CurrencyDescription = CurrencyInfo.description
-			local CurrentAmount = CurrencyInfo.quantity or 0
-			local CurrencyTotalEarned = CurrencyInfo.totalEarned or 0
-			local CurrencyCapacity
-			if CurrencyInfo.maxQuantity ~= 0 then
-				CurrencyCapacity = CurrencyInfo.maxQuantity
-			else
-				CurrencyCapacity = 999
-			end
-			local NumOfRunsNeeded = math.max(0, math.ceil((CurrencyCapacity - CurrencyTotalEarned) / 12))
-
+		for i = 1, #self.Crests do
 			local ProgBar_Frame, ProgBar, ProgBar_Text, ProgBar_Bg = AMT:CreateProgressBar(
-				self.CrestNames[i].name,
+				self.Crests[i].name,
 				AMT.Clean_StatusBar,
-				self.CrestNames[i].color,
+				self.Crests[i].color,
 				CrestsTracker_Container,
 				ProgBar_Width,
 				ProgBar_Height
@@ -1177,15 +1165,15 @@ function AMT:AMT_Creation()
 			if i == 1 then
 				ProgBar_Frame:SetPoint("BOTTOMLEFT", CrestsTracker_Container, "BOTTOMLEFT", 20, 0)
 			else
-				local previousFrame = _G[self.CrestNames[i - 1].name .. "_Frame"]
+				local previousFrame = _G[self.Crests[i - 1].name .. "_Frame"]
 				ProgBar_Frame:SetPoint("LEFT", previousFrame, "RIGHT", 20, 0)
 			end
-			ProgBar_Text:SetText(self.CrestNames[i].name)
+			ProgBar_Text:SetText(self.Crests[i].name)
 			ProgBar_Text:SetFont(self.AMT_Font, 12)
 			ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
 			ProgBar:SetMinMaxValues(0, 1)
-			ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
-			ProgBar:SetStatusBarColor(unpack(self.CrestNames[i].color))
+			ProgBar:SetValue(0)
+			ProgBar:SetStatusBarColor(unpack(self.Crests[i].color))
 
 			-- Establish the Hover Properties
 			ProgBar_Frame:SetScript("OnEnter", function()
@@ -1193,34 +1181,40 @@ function AMT:AMT_Creation()
 				GameTooltip:ClearLines()
 				GameTooltip:SetOwner(ProgBar_Text, "ANCHOR_RIGHT")
 				GameTooltip:SetText(
-					CreateTextureMarkup(self.CrestNames[i].textureID, 64, 64, 16, 16, 0.07, 0.93, 0.07, 0.93)
+					CreateTextureMarkup(self.Crests[i].textureID, 64, 64, 16, 16, 0.07, 0.93, 0.07, 0.93)
 						.. " "
-						.. self.CrestNames[i].displayName,
-					self.CrestNames[i].color[1],
-					self.CrestNames[i].color[2],
-					self.CrestNames[i].color[3],
-					self.CrestNames[i].color[4],
+						.. self.Crests[i].displayName,
+					self.Crests[i].color[1],
+					self.Crests[i].color[2],
+					self.Crests[i].color[3],
+					self.Crests[i].color[4],
 					true
 				)
-				GameTooltip:AddLine(CurrencyDescription, 1.000, 0.824, 0.000, true)
+				GameTooltip:AddLine(self.Crests[i].CurrencyDescription, 1.000, 0.824, 0.000, true)
 				GameTooltip:AddLine(" ")
-				GameTooltip:AddLine("Total: " .. self.Whitetext .. CurrentAmount)
+				GameTooltip:AddLine("Total: " .. self.Whitetext .. self.Crests[i].CurrentAmount)
 				GameTooltip:AddLine(
-					"Season Maximum: " .. self.Whitetext .. CurrencyTotalEarned .. "/" .. CurrencyCapacity
+					"Season Maximum: "
+						.. self.Whitetext
+						.. self.Crests[i].CurrencyTotalEarned
+						.. "/"
+						.. self.Crests[i].CurrencyCapacity
 				)
-				GameTooltip:AddLine("You need to time " .. self.Whitetext .. NumOfRunsNeeded .. "|r M+ keys to cap.")
+				GameTooltip:AddLine(
+					"You need to time " .. self.Whitetext .. self.Crests[i].NumOfRunsNeeded .. "|r M+ keys to cap."
+				)
 				GameTooltip:Show()
 				ProgBar:SetMinMaxValues(0, 1)
-				ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
+				ProgBar:SetValue(self.Crests[i].CurrencyTotalEarned / self.Crests[i].CurrencyCapacity)
 				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.25)
 			end)
 			ProgBar_Frame:SetScript("OnLeave", function()
 				GameTooltip:Hide()
 				ProgBar:SetStatusBarColor(
-					self.CrestNames[i].color[1],
-					self.CrestNames[i].color[2],
-					self.CrestNames[i].color[3],
-					self.CrestNames[i].color[4]
+					self.Crests[i].color[1],
+					self.Crests[i].color[2],
+					self.Crests[i].color[3],
+					self.Crests[i].color[4]
 				)
 				ProgBar_Bg:SetVertexColor(0.25, 0.25, 0.25, 0.5)
 			end)
@@ -1238,22 +1232,18 @@ function AMT:AMT_DataUpdate()
 	local VaultUnlock_CurrentMax = 0 --store the highest # of bosses killed in all previous categories analyzed so we can see if current difficulty unlocks new rewards in Vault
 	local LastReward_Unlocked = false
 	for i = 1, #self.Weekly_KillCount do
-		AMT:PrintDebug("---" .. self.Weekly_KillCount[i].abbr .. "---")
 		local RaidBosses_Killed
 		if self.Weekly_KillCount[i].kills <= self.Vault_RaidReq then
 			RaidBosses_Killed = self.Weekly_KillCount[i].kills
 		elseif self.Weekly_KillCount[i].kills > self.Vault_RaidReq then
 			RaidBosses_Killed = self.Vault_RaidReq
 		end
-		AMT:PrintDebug("Raidbosses_Killed=" .. RaidBosses_Killed)
 		local difficulty = self.Weekly_KillCount[i].abbr
 		for j = 1, RaidBosses_Killed do
-			AMT:PrintDebug(j)
 			if
 				(j == self.Raid_VaultUnlocks[3] and RaidBosses_Killed == self.Raid_VaultUnlocks[3])
 				and not LastReward_Unlocked
 			then
-				AMT:PrintDebug("Running first if statement")
 				_G["AMT_" .. difficulty .. j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
 				LastReward_Unlocked = true
 			elseif
@@ -1270,10 +1260,7 @@ function AMT:AMT_DataUpdate()
 		if RaidBosses_Killed > PreviousRaidDifficulty_Kills then
 			VaultUnlock_CurrentMax = RaidBosses_Killed
 		end
-		AMT:PrintDebug("VaultUnlock_CurrentMax=" .. VaultUnlock_CurrentMax)
 		PreviousRaidDifficulty_Kills = RaidBosses_Killed
-		AMT:PrintDebug("PreviousRaidDifficulty_Kills=" .. PreviousRaidDifficulty_Kills)
-		AMT:PrintDebug("LastReward_Unlocked=" .. tostring(LastReward_Unlocked))
 	end
 	-- =======================================
 	-- === MARK: Update M+ Vault Progress ===
@@ -1306,7 +1293,6 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update World Vault Progress ===
 	-- =========================================
 	local World_VaultProg = C_WeeklyRewards.GetActivities(6)
-	Amttestdata = C_WeeklyRewards.GetActivities(6)
 	for i = 1, World_VaultProg[#World_VaultProg].progress do
 		if i <= self.Vault_WorldReq then
 			if
@@ -1496,13 +1482,9 @@ function AMT:AMT_DataUpdate()
 		local Dung_WeekScore = 0
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		if #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 9 then
-			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungTyrLevel
-			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungTyrScore
-		elseif #self.CurrentWeek_AffixTable > 0 and self.CurrentWeek_AffixTable[1][2] == 10 then
-			Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungFortLevel
-			Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungFortScore
-		end
+		Dung_WeekLevel =
+			math.max(self.Current_SeasonalDung_Info[i].dungFortLevel, self.Current_SeasonalDung_Info[i].dungTyrLevel)
+		Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungOverallScore
 		--Grab the color information for the current dungeon score
 		local DungScore_Color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(Dung_WeekScore)
 		--Set the Highest Key Level Label to be the highest key level number and appropriate color for it.
@@ -1549,33 +1531,30 @@ function AMT:AMT_DataUpdate()
 	-- === MARK: Update Crest Tracker ===
 	-- ==================================
 
-	for i = 1, #self.CrestNames do
-		local name = self.CrestNames[i].name
-		local ProgBar = _G[name .. "_StatusBar"]
-		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.CrestNames[i].currencyID)
-		local CurrencyTotalEarned = CurrencyInfo.totalEarned
-		local CurrencyCapacity
-		if CurrencyInfo.maxQuantity ~= 0 then
-			CurrencyCapacity = CurrencyInfo.maxQuantity
-		else
-			CurrencyCapacity = 999
-		end
-
-		ProgBar:SetStatusBarColor(
-			self.CrestNames[i].color[1],
-			self.CrestNames[i].color[2],
-			self.CrestNames[i].color[3],
-			self.CrestNames[i].color[4]
-		)
-		ProgBar:SetMinMaxValues(0, 1)
-		ProgBar:SetValue(CurrencyTotalEarned / CurrencyCapacity)
-	end
+	AMT:Update_Crests()
 
 	-- ====================================
 	-- === MARK: Update Party Keystones ===
 	-- ====================================
 	-- Pull the group's keystone information
 	AMT:AMT_PartyKeystoneRefresh()
+end
 
-	AMT:Update_CrestTracker_Info()
+function AMT:Update_Crests()
+	for i = 1, #self.Crests do
+		local name = self.Crests[i].name
+		local ProgBar = _G[name .. "_StatusBar"]
+		local CurrencyInfo = C_CurrencyInfo.GetCurrencyInfo(self.Crests[i].currencyID)
+		self.Crests[i].CurrencyDescription = CurrencyInfo.description
+		self.Crests[i].CurrentAmount = CurrencyInfo.quantity or 0
+		self.Crests[i].CurrencyTotalEarned = CurrencyInfo.totalEarned
+		if CurrencyInfo.maxQuantity ~= 0 then
+			self.Crests[i].CurrencyCapacity = CurrencyInfo.maxQuantity
+		else
+			self.Crests[i].CurrencyCapacity = 999
+		end
+		self.Crests[i].NumOfRunsNeeded =
+			math.max(0, math.ceil((self.Crests[i].CurrencyCapacity - self.Crests[i].CurrencyTotalEarned) / 12))
+		ProgBar:SetValue(self.Crests[i].CurrencyTotalEarned / self.Crests[i].CurrencyCapacity)
+	end
 end
