@@ -11,14 +11,13 @@
 
 AMT_Frames.xml
 
-
+#Core
 Core\Database.lua
 Core\API.lua
 Core\SharedWidgets.lua
 Core\Util.lua
 
 Config.lua
-
 Main.lua
 Display.lua
 
