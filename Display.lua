@@ -698,7 +698,6 @@ function AMT:AMT_Creation()
 					GameTooltip:AddLine(dungSpellName or TELEPORT_TO_DUNGEON)
 					GameTooltip:AddLine(SPELL_FAILED_NOT_KNOWN, 1, 0, 0)
 				end
-
 				GameTooltip:Show()
 			end)
 			DungIcon:SetScript("OnLeave", function()
@@ -1478,13 +1477,11 @@ function AMT:AMT_DataUpdate()
 	-- =========================================
 	--Update each of the labels with updated information each time AMT Window is opened
 	for i = 1, #self.Current_SeasonalDung_Info do
-		local Dung_WeekLevel = 0
-		local Dung_WeekScore = 0
 		local DungWeekLevel_Label = _G["AMT_DungWeekLevel_Label" .. i]
 		local DungWeekScore_Label = _G["AMT_DungWeekScore_Label" .. i]
-		Dung_WeekLevel =
-			math.max(self.Current_SeasonalDung_Info[i].dungFortLevel, self.Current_SeasonalDung_Info[i].dungTyrLevel)
-		Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungOverallScore
+
+		Dung_WeekScore = self.Current_SeasonalDung_Info[i].dungeonScore
+		Dung_WeekLevel = self.Current_SeasonalDung_Info[i].dungeonLevel
 		--Grab the color information for the current dungeon score
 		local DungScore_Color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(Dung_WeekScore)
 		--Set the Highest Key Level Label to be the highest key level number and appropriate color for it.
