@@ -512,24 +512,22 @@ function AMT:Update_PlayerDungeonInfo()
 	for i = 1, #currentSeasonMap do
 		local dungeonID = currentSeasonMap[i]
 		local name, _, _, icon = C_ChallengeMode.GetMapUIInfo(dungeonID)
-		local affixScores, bestOverAllScore = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(dungeonID)
 		local intimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(dungeonID)
-		local dungOverallScore = bestOverAllScore ~= nil and bestOverAllScore or 0
-		local TyrDungScore = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].score or 0
-		local FortDungScore = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].score or 0
-		local TyrDungLevel = affixScores ~= nil and affixScores[1] ~= nil and affixScores[1].level or 0
-		local FortDungLevel = affixScores ~= nil and affixScores[2] ~= nil and affixScores[2].level or 0
+		local dungeonScore = math.max(intimeInfo.dungeonScore, overtimeInfo.dungeonScore) or 0
+		local dungeonLevel
+		if intimeInfo.dungeonScore >= overtimeInfo.dungeonScore then
+			dungeonLevel = intimeInfo.level
+		else
+			dungeonLevel = overtimeInfo.level or 0
+		end
 		tinsert(self.Current_SeasonalDung_Info, {
 			mapID = dungeonID,
 			dungName = name,
 			dungIcon = icon,
-			dungOverallScore = dungOverallScore,
-			dungTyrScore = TyrDungScore,
-			dungFortScore = FortDungScore,
-			dungTyrLevel = TyrDungLevel,
-			dungFortLevel = FortDungLevel,
 			intimeInfo = intimeInfo,
 			overtimeInfo = overtimeInfo,
+			dungeonLevel = dungeonLevel,
+			dungeonScore = dungeonScore,
 		})
 		local dungAbbr = ""
 		for _, dungeon in ipairs(self.SeasonalDungeons) do
@@ -544,7 +542,6 @@ function AMT:Update_PlayerDungeonInfo()
 			end
 		end
 	end
-
 	--Update BestKeys_per_Dungeon with the Highest Keys done per dungeon
 	for _, bestKey in ipairs(self.BestKeys_per_Dungeon) do
 		local highestKey = 0

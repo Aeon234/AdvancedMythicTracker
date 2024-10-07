@@ -344,7 +344,7 @@ AMT.SeasonalDungeons = {
 	-- { abbr = "TS", name = "Temple of Sethraliss", spellID = 445418, mapID = 250, instanceID=1877 }, -- Temple of Sethraliss
 	{ abbr = "UNDR", name = "The Underrot", spellID = 410074, mapID = 251, instanceID = 1841 }, -- The Underrot
 	-- { abbr = "SS", name = "Shrine of the Storm", spellID = 445418, mapID = 252, instanceID=1864 }, -- Shrine of the Storm
-	{ abbr = "SIEGE", name = "Siege of Boralus", spellID = 445418, mapID = 353, instanceID = 1822 }, -- Siege of Boralus
+	{ abbr = "SIEGE", name = "Siege of Boralus", spellID = 464256, mapID = 353, instanceID = 1822 }, -- Siege of Boralus
 	{ abbr = "JY", name = "Operation: Mechagon: Junkyard", spellID = 373274, mapID = 369, instanceID = 2097 }, -- Operation: Mechagon: Junkyard
 	{ abbr = "WS", name = "Operation: Mechagon: Workshop", spellID = 373274, mapID = 370, instanceID = 2097 }, -- Operation: Mechagon: Workshop
 	--Legion
