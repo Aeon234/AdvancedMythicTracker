@@ -1326,12 +1326,13 @@ function AMT:AMT_DataUpdate()
 	local weekly_modifier = {}
 	local keystone_ID, keystone_name, keystone_icontex, keystone_level, keystone_abbr, keystone_dungname, keystone_mod, vaultReward, dungeonReward
 	local keystone_mod_tt, keystone_info_tt, keystone_dungeonmodifiers_tt, keystone_rewards_tt, noKeystone_tt
-	local rio_total_tt, rio_20R, rio_15R, rio_10R, rio_5R
+	local rio_total_tt, rio_1R, rio_2R, rio_3R, rio_4R, rio_5R
 	local rio_title_tt = "|cffffffffTimed Runs:"
-	local rio_20L = "   • For +20 "
-	local rio_15L = "   • For +15 - 19 "
-	local rio_10L = "   • For +10 - 14 "
-	local rio_5L = "   • For +5 - 9 "
+	local rio_1L = "   • For +12 "
+	local rio_2L = "   • For +10 - 11 "
+	local rio_3L = "   • For +7 - 9 "
+	local rio_4L = "   • For +4 - 6 "
+	local rio_5L = "   • For +2 - 3 "
 
 	--If a Keystone level is detected create the Icon Texture that belongs to the dungeon.
 	if C_MythicPlus.GetOwnedKeystoneLevel() then
@@ -1419,21 +1420,20 @@ function AMT:AMT_DataUpdate()
 			.. " • Speaking with Lindormi in Valdrakken"
 	end
 	-- local RIO_PlayerProfile
-	if AMT.RaiderIOEnabled then
+	if RaiderIO and RaiderIO.GetProfile("player") then
 		--Grab the timed runs information for the player from the RIO addon
 		RIO_PlayerProfile = RaiderIO.GetProfile("player")
-		if
-			RIO_PlayerProfile ~= nil
-			and RIO_PlayerProfile.mythicKeystoneProfile ~= nil
-			and RIO_PlayerProfile.mythicKeystoneProfile.keystoneFivePlus ~= nil
-		then
+		if RIO_PlayerProfile ~= nil and RIO_PlayerProfile.mythicKeystoneProfile ~= nil then
 			rio_total_tt = "|cff009dd5"
-				.. RIO_PlayerProfile.mythicKeystoneProfile.keystoneTwentyPlus + RIO_PlayerProfile.mythicKeystoneProfile.keystoneFifteenPlus + RIO_PlayerProfile.mythicKeystoneProfile.keystoneTenPlus + RIO_PlayerProfile.mythicKeystoneProfile.keystoneFivePlus
+				.. RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone2 + RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone4 + RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone7 + RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone10 + RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone12 + RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone15
 				.. "+"
-			rio_20R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneTwentyPlus .. "+"
-			rio_15R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneFifteenPlus .. "+"
-			rio_10R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneTenPlus .. "+"
-			rio_5R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneFivePlus .. "+"
+			rio_1R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone12
+					+ RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone15
+				.. "+"
+			rio_2R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone10 .. "+"
+			rio_3R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone7 .. "+"
+			rio_4R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone4 .. "+"
+			rio_5R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone2 .. "+"
 		end
 	end
 	--Set up the tooltip for the Keystone Icon
@@ -1446,16 +1446,13 @@ function AMT:AMT_DataUpdate()
 			GameTooltip:AddLine(keystone_info_tt)
 			GameTooltip:AddLine(keystone_dungeonmodifiers_tt)
 			GameTooltip:AddLine(keystone_rewards_tt)
-			if AMT.RaiderIOEnabled then
-				if
-					RIO_PlayerProfile ~= nil
-					and RIO_PlayerProfile.mythicKeystoneProfile ~= nil
-					and RIO_PlayerProfile.mythicKeystoneProfile.keystoneFivePlus ~= nil
-				then
+			if RaiderIO and RaiderIO.GetProfile("player") then
+				if RIO_PlayerProfile ~= nil and RIO_PlayerProfile.mythicKeystoneProfile ~= nil then
 					GameTooltip:AddDoubleLine(rio_title_tt, rio_total_tt)
-					GameTooltip:AddDoubleLine(rio_20L, rio_20R)
-					GameTooltip:AddDoubleLine(rio_15L, rio_15R)
-					GameTooltip:AddDoubleLine(rio_10L, rio_10R)
+					GameTooltip:AddDoubleLine(rio_1L, rio_1R)
+					GameTooltip:AddDoubleLine(rio_2L, rio_2R)
+					GameTooltip:AddDoubleLine(rio_3L, rio_3R)
+					GameTooltip:AddDoubleLine(rio_4L, rio_4R)
 					GameTooltip:AddDoubleLine(rio_5L, rio_5R)
 				else
 					GameTooltip:AddLine("No timed runs found.")
