@@ -542,7 +542,6 @@ function AMT:Update_PlayerDungeonInfo()
 			end
 		end
 	end
-	AMTTestTable = self.Current_SeasonalDung_Info
 	--Update BestKeys_per_Dungeon with the Highest Keys done per dungeon
 	for _, bestKey in ipairs(self.BestKeys_per_Dungeon) do
 		local highestKey = 0
