@@ -515,16 +515,16 @@ function AMT:Update_PlayerDungeonInfo()
 		local intimeInfo, overtimeInfo = C_MythicPlus.GetSeasonBestForMap(dungeonID)
 		local dungeonScore
 		local dungeonLevel
-		if intimeInfo and overtimeInfo then
-			dungeonScore = math.max(intimeInfo.dungeonScore, overtimeInfo.dungeonScore)
-			if intimeInfo.dungeonScore >= overtimeInfo.dungeonScore then
-				dungeonLevel = intimeInfo.level
-			else
-				dungeonLevel = overtimeInfo.level
-			end
+		local dungeonInfo = (overtimeInfo and (not intimeInfo or overtimeInfo.dungeonScore > intimeInfo.dungeonScore))
+				and overtimeInfo
+			or intimeInfo
+
+		if dungeonInfo then
+			dungeonLevel = dungeonInfo.level
+			dungeonScore = dungeonInfo.dungeonScore
 		else
-			dungeonScore = 0
 			dungeonLevel = 0
+			dungeonScore = 0
 		end
 		tinsert(self.Current_SeasonalDung_Info, {
 			mapID = dungeonID,
