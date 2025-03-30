@@ -1,27 +1,16 @@
-## Interface: 110005
+## Interface: 110100
 ## Title:|cff18a8ffAdvanced Mythic Tracker|r
 ## Notes: Track your |cffffd200Raid|r, |cffffd200Mythic+|r, and |cffffd200World|r activities.
 ## Author: Aeon
-## Version: 1.2.2
+## Version: 2.0.0
 ## SavedVariables: AMT_DB
-## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\Icons\AMT_Icon
+## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\Icons\AMT
 ## X-Curse-Project-ID: 1037826
 ## X-Wago-ID: 
 ## OptionalDeps: ElvUI, Details, RaiderIO
 
 AMT_Frames.xml
 
-#Core
-Core\Database.lua
-Core\API.lua
-Core\SharedWidgets.lua
-Core\Util.lua
-
-Config.lua
-Main.lua
+Database.lua
+Util.lua
 Display.lua
-
-#Modules
-Modules\KeyEvents.lua
-Modules\WorldMarkerCycler.lua
-Modules\AutoResponse.lua
