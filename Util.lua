@@ -4,9 +4,9 @@ local ElvUI = ElvUI
 local Details = Details
 local RaiderIO = RaiderIO
 
--- =========================
--- === Set Slash Command ===
--- =========================
+-- ==================================
+-- === Set Slash Command & Toggle ===
+-- ==================================
 function AMT_DebugCommands(msg)
 	if msg == "debug" then
 		AMT.db.DebugMode = not AMT.db.DebugMode
@@ -33,6 +33,105 @@ function AMT_DebugCommands(msg)
 end
 SLASH_AMT1 = "/amt"
 SlashCmdList["AMT"] = AMT_DebugCommands
+
+function AMTWindow_Toggle()
+	AMT.PVEFrame_Previous = PanelTemplates_GetSelectedTab(PVEFrame) or 1
+	if
+		(InCombatLockdown())
+		or (UnitLevel("player") ~= GetMaxLevelForPlayerExpansion())
+		or not C_MythicPlus.IsMythicPlusActive()
+		or PlayerGetTimerunningSeasonID()
+	then
+		return
+	end
+	if AMT_Window:IsVisible() then
+		AMT_Window:Hide()
+	elseif not AMT_Window:IsVisible() and PVEFrame:IsVisible() then
+		AMT_Window:ClearAllPoints()
+		AMT_Window:SetPoint("TOPLEFT", PVEFrame)
+		PVEFrame_ShowFrame("ChallengesFrame")
+		AMT.DisplayMode = 1
+		AMT_Window:Show()
+		PVEFrame_ShowFrame(AMT.PVEFrame_Panels[AMT.PVEFrame_Previous].frameName)
+		PVEFrame_ToggleFrame()
+	else
+		AMT_Window:ClearAllPoints()
+		AMT_Window:SetPoint("TOPLEFT", PVEFrame)
+		PVEFrame_ToggleFrame()
+		PVEFrame_ShowFrame("ChallengesFrame")
+		AMT.DisplayMode = 1
+		AMT_Window:Show()
+		PVEFrame_ShowFrame(AMT.PVEFrame_Panels[AMT.PVEFrame_Previous].frameName)
+		PVEFrame_ToggleFrame()
+	end
+end
+
+-- ================================
+-- === AMT Window Tab Functions ===
+-- ================================
+AMTTabButtonMixin = {}
+function AMTTabButtonMixin:OnLoad()
+	self.Background:SetTexCoord(0.6025390625, 0.7021484375, 0.0009765625, 0.1181640625)
+	self.Selected:SetTexCoord(0.8056640625, 0.9052734375, 0.0009765625, 0.1181640625)
+	self.Highlight:SetTexCoord(0.7041015625, 0.8037109375, 0.0009765625, 0.1181640625)
+	self.Highlight:SetShown(false)
+end
+
+function AMTTabButtonMixin:OnMouseDown(button)
+	if button == "LeftButton" then
+		self.Icon:SetPoint("CENTER", -1, -1)
+	end
+end
+
+function AMTTabButtonMixin:OnMouseUp(button, upInside)
+	if button == "LeftButton" then
+		self.Icon:SetPoint("CENTER", -2, 0)
+		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
+		if upInside then
+			AMT:SetDisplayMode(self.DisplayMode)
+			AMT:RefreshData()
+		else
+			self:SetChecked(false)
+		end
+	end
+end
+
+function AMTTabButtonMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_RIGHT", -4, -4)
+	GameTooltip:SetText(self.name)
+	self.Highlight:SetShown(true)
+end
+
+function AMTTabButtonMixin:SetChecked(checked)
+	if checked then
+		self.Icon:SetAtlas(self.activeAtlas, TextureKitConstants.UseAtlasSize)
+	else
+		self.Icon:SetAtlas(self.inactiveAtlas, TextureKitConstants.UseAtlasSize)
+	end
+	self.Selected:SetShown(checked)
+end
+
+function AMT:SetDisplayMode(displayMode)
+	if not self.WindowTab and #self.WindowTab == 0 then
+		return
+	end
+
+	for i, frame in ipairs(self.WindowTab) do
+		if not frame.SetChecked then
+			frame.SetChecked = AMTTabButtonMixin.SetChecked
+		end
+
+		frame:SetChecked(frame.DisplayMode == displayMode)
+	end
+
+	if displayMode == 1 then
+		self.Window.Tracker:Show()
+		self.Window.Info:Hide()
+	elseif displayMode == 2 then
+		self.Window.Tracker:Hide()
+		self.Window.Info:Show()
+	end
+end
 
 -- ======================
 -- === Window Refresh ===
@@ -144,8 +243,8 @@ end
 function AMT:Score_Update()
 	local color = C_ChallengeMode.GetDungeonScoreRarityColor(self.Info.MplusSummary.currentSeasonScore or 1)
 	if self.Initialized then
-		self.Window.MplusScore.score:SetText(self.Info.MplusSummary.currentSeasonScore)
-		self.Window.MplusScore.score:SetTextColor(color.r or 1, color.g or 1, color.b or 1, 1.0)
+		self.Window.Tracker.MplusScore.score:SetText(self.Info.MplusSummary.currentSeasonScore)
+		self.Window.Tracker.MplusScore.score:SetTextColor(color.r or 1, color.g or 1, color.b or 1, 1.0)
 	end
 end
 
@@ -167,11 +266,11 @@ function AMT:Keystone_Update()
 		keystone_level = C_MythicPlus.GetOwnedKeystoneLevel()
 		vaultReward, dungeonReward = self:AMT_GetKeystoneRewards(keystone_level)
 
-		self.Window.Keystone.name:SetText("+" .. keystone_level .. " " .. keystone_abbr)
-		self.Window.Keystone.icon:SetSize(62, 62)
-		self.Window.Keystone.icon.tex:SetTexture(keystone_icontex)
-		self.Window.Keystone.icon.tex:SetDesaturated(false)
-		self.Window.Keystone.icon.glow.tex:SetAtlas("BattleBar-Button-Highlight")
+		self.Window.Tracker.Keystone.name:SetText("+" .. keystone_level .. " " .. keystone_abbr)
+		self.Window.Tracker.Keystone.icon:SetSize(62, 62)
+		self.Window.Tracker.Keystone.icon.tex:SetTexture(keystone_icontex)
+		self.Window.Tracker.Keystone.icon.tex:SetDesaturated(false)
+		self.Window.Tracker.Keystone.icon.glow.tex:SetAtlas("BattleBar-Button-Highlight")
 		-- Tooltip
 		keystone_mod = C_ChallengeMode.GetPowerLevelDamageHealthMod(keystone_level)
 		--Get current affixes and assign the appropriate modifiers for Tyr/Fort.
@@ -210,22 +309,22 @@ function AMT:Keystone_Update()
 	else
 		--If Great Vault Rewards are uncollected create the
 		if C_WeeklyRewards.HasAvailableRewards() then
-			self.Window.Keystone.name:SetText("Pending Vault")
+			self.Window.Tracker.Keystone.name:SetText("Pending Vault")
 			noKeystone_tt = "Visit the Great Vault to collect your reward!"
-			self.Window.Keystone.icon:SetSize(64, 64)
-			self.Window.Keystone.icon.tex:SetAtlas("CovenantChoice-Celebration-Content-Soulbind")
-			self.Window.Keystone.icon.tex:SetDesaturated(false)
+			self.Window.Tracker.Keystone.icon:SetSize(64, 64)
+			self.Window.Tracker.Keystone.icon.tex:SetAtlas("CovenantChoice-Celebration-Content-Soulbind")
+			self.Window.Tracker.Keystone.icon.tex:SetDesaturated(false)
 		else
 			--If a Keystone level is not detected
-			self.Window.Keystone.name:SetText("No Key")
+			self.Window.Tracker.Keystone.name:SetText("No Key")
 			noKeystone_tt = "Get your Keystone by"
 				.. "\n|cffffffff"
 				.. " • Completing any Dungeon on Mythic or Mythic Plus Difficulty"
 				.. "\n"
 				.. " • Speaking with Lindormi in Valdrakken"
-			self.Window.Keystone.icon.tex:SetTexture(self.Keystone_Icon)
-			self.Window.Keystone.icon:SetSize(60, 60)
-			self.Window.Keystone.icon.glow.tex:SetAtlas("BattleBar-Button-Highlight")
+			self.Window.Tracker.Keystone.icon.tex:SetTexture(self.Keystone_Icon)
+			self.Window.Tracker.Keystone.icon:SetSize(60, 60)
+			self.Window.Tracker.Keystone.icon.glow.tex:SetAtlas("BattleBar-Button-Highlight")
 		end
 	end
 
@@ -249,7 +348,7 @@ function AMT:Keystone_Update()
 			rio_5R = RIO_PlayerProfile.mythicKeystoneProfile.keystoneMilestone2
 		end
 	end
-	self.Window.Keystone.icon:SetScript("OnEnter", function(self)
+	self.Window.Tracker.Keystone.icon:SetScript("OnEnter", function(self)
 		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 
 		if not C_MythicPlus.GetOwnedKeystoneLevel() then
@@ -290,7 +389,7 @@ function AMT:Keystone_Update()
 		end
 		GameTooltip:Show()
 	end)
-	self.Window.Keystone.icon:SetScript("OnLeave", function()
+	self.Window.Tracker.Keystone.icon:SetScript("OnLeave", function()
 		GameTooltip_SetDefaultAnchor(GameTooltip, UIParent)
 	end)
 end
@@ -426,7 +525,7 @@ function AMT:GET_RaidInfo()
 				if
 					(j == self.RaidUnlocks[3] and RaidBosses_Killed == self.RaidUnlocks[3]) and not LastReward_Unlocked
 				then
-					self.Window.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
+					self.Window.Tracker.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
 					LastReward_Unlocked = true
 				elseif
 					(
@@ -434,9 +533,9 @@ function AMT:GET_RaidInfo()
 						or (j == self.RaidUnlocks[2] and VaultUnlock_CurrentMax < self.RaidUnlocks[2])
 					) and not LastReward_Unlocked
 				then
-					self.Window.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
+					self.Window.Tracker.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(1, 0.784, 0.047, 1.0) -- Gold
 				else
-					self.Window.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0) -- Green
+					self.Window.Tracker.Weekly.Raid[i].frame.box[j].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0) -- Green
 				end
 			end
 			if RaidBosses_Killed > PrevKills then
@@ -570,12 +669,20 @@ function AMT:GET_SeasonalDungeonInfo()
 			local Dung_Score = self.Info.SeasonDungeons[i].dungeonScore
 			local Dung_Level = self.Info.SeasonDungeons[i].dungeonLevel
 
-			self.Window.Dungeons.Icon[i].level:SetText(Dung_Level)
-			self.Window.Dungeons.Icon[i].score:SetText(Dung_Score)
+			self.Window.Tracker.Dungeons.Icon[i].level:SetText(Dung_Level)
+			self.Window.Tracker.Dungeons.Icon[i].score:SetText(Dung_Score)
 
 			local DungScore_Color = C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(Dung_Score)
-			self.Window.Dungeons.Icon[i].level:SetTextColor(DungScore_Color.r, DungScore_Color.g, DungScore_Color.b)
-			self.Window.Dungeons.Icon[i].score:SetTextColor(DungScore_Color.r, DungScore_Color.g, DungScore_Color.b)
+			self.Window.Tracker.Dungeons.Icon[i].level:SetTextColor(
+				DungScore_Color.r,
+				DungScore_Color.g,
+				DungScore_Color.b
+			)
+			self.Window.Tracker.Dungeons.Icon[i].score:SetTextColor(
+				DungScore_Color.r,
+				DungScore_Color.g,
+				DungScore_Color.b
+			)
 		end
 
 		--Update M+ Box colors
@@ -589,9 +696,9 @@ function AMT:GET_SeasonalDungeonInfo()
 
 			if WeeklyKeysHistory[i] ~= nil and WeeklyKeysHistory[i] > 0 then
 				if i == self.MplusUnlocks[1] or i == self.MplusUnlocks[2] or i == self.MplusUnlocks[3] then
-					self.Window.Weekly.Mplus.box[i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
+					self.Window.Tracker.Weekly.Mplus.box[i].tex:SetColorTexture(1, 0.784, 0.047, 1.0)
 				else
-					self.Window.Weekly.Mplus.box[i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
+					self.Window.Tracker.Weekly.Mplus.box[i].tex:SetColorTexture(0.525, 0.69, 0.286, 1.0)
 				end
 			end
 		end
@@ -661,33 +768,42 @@ function AMT:GET_Crests()
 		end
 		self.Crests[i].NumOfRunsNeeded =
 			math.max(0, math.ceil((self.Crests[i].CurrencyCapacity - self.Crests[i].CurrencyTotalEarned) / 12))
-		if self.Window and self.Window.Crests.bar[i] then
-			self.Window.Crests.bar[i]:SetSmoothFill(true)
-			self.Window.Crests.bar[i]:SetValue(self.Crests[i].CurrencyTotalEarned, self.Crests[i].CurrencyCapacity)
+		if self.Window and self.Window.Tracker.Crests.bar[i] then
+			self.Window.Tracker.Crests.bar[i]:SetSmoothFill(true)
+			self.Window.Tracker.Crests.bar[i]:SetValue(
+				self.Crests[i].CurrencyTotalEarned,
+				self.Crests[i].CurrencyCapacity
+			)
 		end
 	end
 end
 
 function AMT:Graph_Update()
 	for i = 1, #self.Info.SeasonalBest do
-		if not self.Window.Graph.dungeons[i].line then
-			self.Window.Graph.dungeons[i].line =
-				self.Window.Graph:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
-			self.Window.Graph.dungeons[i].line:SetFont(self.AntTrail_Font, 14)
+		if not self.Window.Tracker.Graph.dungeons[i].line then
+			self.Window.Tracker.Graph.dungeons[i].line =
+				self.Window.Tracker.Graph:CreateFontString("Dung_AntTrail" .. i, "ARTWORK", "GameFontNormal")
+			self.Window.Tracker.Graph.dungeons[i].line:SetFont(self.AntTrail_Font, 14)
 		end
 
 		--If the key actually exists/was done, set the ant trail
 		if self.Info.SeasonalBest[i].HighestKey and self.Info.SeasonalBest[i].HighestKey > 0 then
-			self.Window.Graph.dungeons[i].line:SetPoint("LEFT", self.Window.Graph.dungeons[i].label, "RIGHT", 6, -1)
-			self.Window.Graph.dungeons[i].line:SetText(
+			self.Window.Tracker.Graph.dungeons[i].line:SetPoint(
+				"LEFT",
+				self.Window.Tracker.Graph.dungeons[i].label,
+				"RIGHT",
+				6,
+				-1
+			)
+			self.Window.Tracker.Graph.dungeons[i].line:SetText(
 				self.Info.SeasonalBest[i].DungBullets .. self.Info.SeasonalBest[i].HighestKey
 			)
 			--If highest key done is same as the current weekly best color the line gold
 			if self.Info.SeasonalBest[i].HighestKey == self.Info.KeysDone[1].level then
-				self.Window.Graph.dungeons[i].line:SetTextColor(1.000, 0.824, 0.000, 1.000)
+				self.Window.Tracker.Graph.dungeons[i].line:SetTextColor(1.000, 0.824, 0.000, 1.000)
 			else
 				--Otherwise color it white
-				self.Window.Graph.dungeons[i].line:SetTextColor(1, 1, 1, 1.0)
+				self.Window.Tracker.Graph.dungeons[i].line:SetTextColor(1, 1, 1, 1.0)
 			end
 		end
 	end
@@ -793,7 +909,7 @@ end
 function AMT:PartyKeystone_Refresh()
 	local Keyname_abbr
 
-	self.Window.PartyKeys.Group = {}
+	self.Window.Tracker.PartyKeys.Group = {}
 
 	if Details and not UnitInRaid("player") then
 		for i = 1, 5 do
@@ -808,7 +924,7 @@ function AMT:PartyKeystone_Refresh()
 						local playerClass = UnitClassBase(unitID)
 						local playerName = UnitName(unitID)
 						local texture = select(4, C_ChallengeMode.GetMapUIInfo(tonumber(mapID)))
-						tinsert(self.Window.PartyKeys.Group, {
+						tinsert(self.Window.Tracker.PartyKeys.Group, {
 							level = level,
 							name = Keyname_abbr,
 							player = AMT_ClassColorString(playerName, playerClass),
@@ -820,25 +936,25 @@ function AMT:PartyKeystone_Refresh()
 		end
 
 		--Sort the keys found from highest to lowest
-		if #self.Window.PartyKeys.Group > 1 then
-			table.sort(self.Window.PartyKeys.Group, function(a, b)
+		if #self.Window.Tracker.PartyKeys.Group > 1 then
+			table.sort(self.Window.Tracker.PartyKeys.Group, function(a, b)
 				return b.level < a.level
 			end)
 		end
 
 		--Set Text
 		for i = 1, 5 do
-			local left_text = self.Window.PartyKeys.lines[i].left
-			local right_text = self.Window.PartyKeys.lines[i].right
-			if self.Window.PartyKeys.Group[i] then
-				right_text:SetText(self.Window.PartyKeys.Group[i].player)
+			local left_text = self.Window.Tracker.PartyKeys.lines[i].left
+			local right_text = self.Window.Tracker.PartyKeys.lines[i].right
+			if self.Window.Tracker.PartyKeys.Group[i] then
+				right_text:SetText(self.Window.Tracker.PartyKeys.Group[i].player)
 				left_text:SetText(
 					format(
 						"|T%s:16:16:0:0:64:64:4:60:7:57:255:255:255|t |c%s%s - %s|r",
-						self.Window.PartyKeys.Group[i].icon,
-						AMT_getKeystoneLevelColor(self.Window.PartyKeys.Group[i].level),
-						self.Window.PartyKeys.Group[i].level,
-						self.Window.PartyKeys.Group[i].name
+						self.Window.Tracker.PartyKeys.Group[i].icon,
+						AMT_getKeystoneLevelColor(self.Window.Tracker.PartyKeys.Group[i].level),
+						self.Window.Tracker.PartyKeys.Group[i].level,
+						self.Window.Tracker.PartyKeys.Group[i].name
 					)
 				)
 			else
@@ -865,9 +981,9 @@ end
 
 --Pick random keystone from the group and print out to group
 function AMT:PartyKeystone_RandomPicker()
-	local i = math.random(#self.Window.PartyKeys.Group)
-	local playername = AMT_StripColorText(self.Window.PartyKeys.Group[i].player)
-	local keyabbr = self.Window.PartyKeys.Group[i].name
+	local i = math.random(#self.Window.Tracker.PartyKeys.Group)
+	local playername = AMT_StripColorText(self.Window.Tracker.PartyKeys.Group[i].player)
+	local keyabbr = self.Window.Tracker.PartyKeys.Group[i].name
 	local keyname
 	for _, dungeon in ipairs(self.SeasonalDungeons) do
 		if dungeon.abbr == keyabbr then
@@ -875,7 +991,7 @@ function AMT:PartyKeystone_RandomPicker()
 			break
 		end
 	end
-	local keylevel = self.Window.PartyKeys.Group[i].level
+	local keylevel = self.Window.Tracker.PartyKeys.Group[i].level
 	local msg = "Next Key: " .. playername .. "'s " .. keyname .. " (" .. keylevel .. ")"
 	if IsInGroup() and not IsInRaid() then
 		SendChatMessage(msg, "PARTY")

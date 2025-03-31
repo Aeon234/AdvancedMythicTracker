@@ -1,17 +1,5 @@
 <Bindings>
   <Binding name="AMT" category="|cff18a8ffAdvanced Mythic Tracker|r">
-    if (InCombatLockdown()) or (UnitLevel("player") ~= GetMaxLevelForPlayerExpansion()) or not C_MythicPlus.IsMythicPlusActive() or PlayerGetTimerunningSeasonID() then return end
-    if AMT_Window:IsVisible()then
-      AMT_Window:Hide()
-    elseif not AMT_Window:IsVisible() and PVEFrame:IsVisible() then
-      AMT_Window:ClearAllPoints()
-      AMT_Window:SetPoint("TOPLEFT", PVEFrame)
-      AMT_Window:Show()
-      PVEFrame_ToggleFrame()
-    else
-      AMT_Window:ClearAllPoints()
-      AMT_Window:SetPoint("TOPLEFT", PVEFrame)
-      AMT_Window:Show()
-    end
+    AMTWindow_Toggle()
   </Binding>
 </Bindings>
