@@ -119,6 +119,7 @@ AMT.AntTrail_Font = "Interface/AddOns/AdvancedMythicTracker/Media/Fonts/AntTrail
 AMT.Keystone_Icon = "Interface/AddOns/AdvancedMythicTracker/Media/Icons/Keystone_Hourglass"
 AMT.Tab = "          "
 AMT.WhiteText = "|cffffffff"
+AMT.DisplayMode = 1
 AMT.BackgroundClear = { 1, 1, 1, 0.0 } --Clear Background
 AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
 AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
@@ -165,6 +166,26 @@ AMT.PVEFrame_Panels = {
 		text = "Advanced Mythic Tracker",
 		frameName = "AMT_Window",
 		isVisible = false,
+	},
+}
+
+--AMT Frame Tabs
+AMT.AMTFrame_Tabs = {
+	{
+		name = "Tracker",
+		tooltipText = "Mythic+ Tracker",
+		-- activeAtlas = "QuestLog-tab-icon-quest",
+		-- inactiveAtlas = "QuestLog-tab-icon-quest-inactive",
+		activeAtlas = "keyflameon-32x32",
+		inactiveAtlas = "keyflameoff-32x32",
+		DisplayMode = 1,
+	},
+	{
+		name = "Seasonal Info",
+		tooltipText = "Seasonal Information",
+		activeAtlas = "QuestLog-tab-icon-MapLegend",
+		inactiveAtlas = "QuestLog-tab-icon-MapLegend-inactive",
+		DisplayMode = 2,
 	},
 }
 

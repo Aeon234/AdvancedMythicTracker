@@ -1,6 +1,90 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 
+	    <Button name="AMTTabButton" mixin="AMTTabButtonMixin" virtual="true">
+        <Size x="43" y="55"/>
+        <Layers>
+            <Layer level="BACKGROUND">
+                <Texture parentKey="Background" file="Interface\AddOns\AdvancedMythicTracker\Media\Frame\QuestlogFrame.blp">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <Texture parentKey="Icon" file="Interface\Icons\INV_Misc_QuestionMark">
+                    <Anchors>
+                        <Anchor point="CENTER" x="-2"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="OVERLAY">
+                <Texture parentKey="Selected" file="Interface\AddOns\AdvancedMythicTracker\Media\Frame\QuestlogFrame.blp">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>            
+            <Layer level="HIGHLIGHT">
+                <Texture parentKey="Highlight" file="Interface\AddOns\AdvancedMythicTracker\Media\Frame\QuestlogFrame.blp">
+                    <Anchors>
+                        <Anchor point="TOPLEFT"/>
+                        <Anchor point="BOTTOMRIGHT"/>
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnLoad method="OnLoad"/>
+            <OnEnter method="OnEnter"/>
+            <OnMouseDown method="OnMouseDown"/>
+            <OnMouseUp method="OnMouseUp"/>
+            <OnLeave function="GameTooltip_Hide"/>
+        </Scripts>
+    </Button>
+    
+    <Frame name="AMTTabButtonTemplate" parentArray="TabButtons" mixin="AMTWindowTabsMixin" virtual="true">
+		<Size x="43" y="55"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" atlas="questlog-tab-side" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="Icon">
+					<Anchors>
+						<Anchor point="CENTER" x="-2"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="SelectedTexture" atlas="QuestLog-Tab-side-Glow-select" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>			
+			<Layer level="HIGHLIGHT">
+				<Texture atlas="QuestLog-Tab-side-Glow-hover" useAtlasSize="true">
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown method="OnMouseDown"/>
+			<OnMouseUp method="OnMouseUp"/>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
 	<Frame name="AMT_Window_RetailTemplate" inherits="DefaultPanelFlatTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -99,11 +183,5 @@
             </AnimationGroup>
         </Animations>
     </Frame>
-
-
-
-
-	
 </Ui>
-
 
