@@ -770,10 +770,17 @@ function AMT:GET_Crests()
 			math.max(0, math.ceil((self.Crests[i].CurrencyCapacity - self.Crests[i].CurrencyTotalEarned) / 12))
 		if self.Window and self.Window.Tracker.Crests.bar[i] then
 			self.Window.Tracker.Crests.bar[i]:SetSmoothFill(true)
-			self.Window.Tracker.Crests.bar[i]:SetValue(
-				self.Crests[i].CurrencyTotalEarned,
-				self.Crests[i].CurrencyCapacity
-			)
+			if name == "Valorstones" then
+				self.Window.Tracker.Crests.bar[i]:SetValue(
+					self.Crests[i].CurrentAmount,
+					self.Crests[i].CurrencyCapacity
+				)
+			else
+				self.Window.Tracker.Crests.bar[i]:SetValue(
+					self.Crests[i].CurrencyTotalEarned,
+					self.Crests[i].CurrencyCapacity
+				)
+			end
 		end
 	end
 end

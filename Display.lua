@@ -1087,8 +1087,13 @@ function AMT:Framework()
 
 	--Crests
 	self.Window.Tracker.Crests = CreateFrame("Frame", "AMT_CrestsTracker_Container", self.Window.Tracker)
-	self.Window.Tracker.Crests:SetPoint("BOTTOM", self.Window.Tracker.Graph, "BOTTOM", 0, -1)
-	self.Window.Tracker.Crests:SetSize(self.Window.Tracker.Graph:GetWidth(), 30)
+	self.Window.Tracker.Crests:SetPoint("BOTTOMRIGHT", self.Window.Tracker.Graph, "BOTTOMRIGHT", 0, -1)
+	self.Window.Tracker.Crests:SetSize(self.Window.Tracker.Graph:GetWidth() + self.Window.Tracker.Weekly:GetWidth(), 30)
+	-- self.Window.Tracker.Crests:SetSize(self.Window.Tracker:GetWidth() - self.Window.Tracker.PartyKeys:GetWidth(), 30)
+	-- self.Window.Tracker.Crests.tex = self.Window.Tracker.Crests:CreateTexture()
+	-- self.Window.Tracker.Crests.tex:SetAllPoints(self.Window.Tracker.Crests)
+	-- self.Window.Tracker.Crests.tex:SetColorTexture(unpack(self.BackgroundDark))
+	-- self.Window.Tracker.Crests:SetSize(self.Window.Tracker.Graph:GetWidth(), 30)
 
 	self.Window.Tracker.Crests.bar = {}
 	for i = 1, #self.Crests do
@@ -1101,13 +1106,13 @@ function AMT:Framework()
 			self.Crests[i].color[3]
 		)
 		if i == 1 then
-			self.Window.Tracker.Crests.bar[i]:SetPoint("BOTTOMLEFT", self.Window.Tracker.Crests, "BOTTOMLEFT", 20, 0)
+			self.Window.Tracker.Crests.bar[i]:SetPoint("BOTTOMRIGHT", self.Window.Tracker.Crests, "BOTTOMRIGHT", -25, 0)
 		else
 			self.Window.Tracker.Crests.bar[i]:SetPoint(
-				"BOTTOMLEFT",
+				"BOTTOMRIGHT",
 				self.Window.Tracker.Crests,
-				"BOTTOMLEFT",
-				20 + (self.Window.Tracker.Crests.bar[i]:GetWidth() + 20) * (i - 1),
+				"BOTTOMRIGHT",
+				-25 - (self.Window.Tracker.Crests.bar[i]:GetWidth() + 25) * (i - 1),
 				0
 			)
 		end
@@ -1136,17 +1141,27 @@ function AMT:Framework()
 			)
 			GameTooltip:AddLine(AMT.Crests[i].CurrencyDescription, 1.000, 0.824, 0.000, true)
 			GameTooltip:AddLine(" ")
-			GameTooltip:AddLine("Current Amount: " .. AMT.WhiteText .. AMT.Crests[i].CurrentAmount)
-			GameTooltip:AddLine(
-				"Season Maximum: "
-					.. AMT.WhiteText
-					.. AMT.Crests[i].CurrencyTotalEarned
-					.. "/"
-					.. AMT.Crests[i].CurrencyCapacity
-			)
-			-- GameTooltip:AddLine(
-			-- 	"You need to time " .. AMT.WhiteText .. AMT.Crests[i].NumOfRunsNeeded .. "|r M+ keys to cap."
-			-- )
+			if AMT.Crests[i].name == "Valorstones" then
+				GameTooltip:AddLine(
+					"Current Amount: "
+						.. AMT.WhiteText
+						.. AMT.Crests[i].CurrentAmount
+						.. "/"
+						.. AMT.Crests[i].CurrencyCapacity
+				)
+			else
+				GameTooltip:AddLine("Current Amount: " .. AMT.WhiteText .. AMT.Crests[i].CurrentAmount)
+				GameTooltip:AddLine(
+					"Season Maximum: "
+						.. AMT.WhiteText
+						.. AMT.Crests[i].CurrencyTotalEarned
+						.. "/"
+						.. AMT.Crests[i].CurrencyCapacity
+				)
+				-- GameTooltip:AddLine(
+				-- 	"You need to time " .. AMT.WhiteText .. AMT.Crests[i].NumOfRunsNeeded .. "|r M+ keys to cap."
+				-- )
+			end
 			GameTooltip:Show()
 		end)
 		self.Window.Tracker.Crests.bar[i]:SetScript("OnLeave", function()
@@ -1162,7 +1177,7 @@ function AMT:Framework()
 		self.Window.Tracker.Keystone.icon,
 		"BOTTOM",
 		0,
-		-200,
+		-155,
 		74,
 		22,
 		"Open Vault"

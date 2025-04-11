@@ -123,6 +123,7 @@ AMT.DisplayMode = 1
 AMT.BackgroundClear = { 1, 1, 1, 0.0 } --Clear Background
 AMT.BackgroundDark = { 0, 0, 0, 0.25 } --Slightly Dark Background
 AMT.BackgroundHover = { 1, 1, 1, 0.25 } --Hovered white color Background
+AMT.Valorstones_Color = { 0.000, 0.800, 1.000, 1.000 }
 AMT.Uncommon_Color = { 0.118, 0.900, 0.000, 1.000 }
 AMT.Rare_Color = { 0.000, 0.569, 0.949, 1.000 }
 AMT.Epic_Color = { 0.639, 0.208, 0.933, 1.000 }
@@ -424,18 +425,11 @@ AMT.Weekly_KillCount = {
 
 AMT.Crests = {
 	{
-		name = "Weathered",
-		color = AMT.Uncommon_Color,
-		currencyID = 3107,
-		displayName = "Weathered Undermine Crest",
-		textureID = 5872053,
-	},
-	{
-		name = "Carved",
-		color = AMT.Rare_Color,
-		currencyID = 3108,
-		displayName = "Carved Undermine Crest",
-		textureID = 5872047,
+		name = "Gilded",
+		color = AMT.Legendary_Color,
+		currencyID = 3110,
+		displayName = "Gilded Undermine Crest",
+		textureID = 5872049,
 	},
 	{
 		name = "Runed",
@@ -445,10 +439,24 @@ AMT.Crests = {
 		textureID = 5872051,
 	},
 	{
-		name = "Gilded",
-		color = AMT.Legendary_Color,
-		currencyID = 3110,
-		displayName = "Gilded Undermine Crest",
-		textureID = 5872049,
+		name = "Carved",
+		color = AMT.Rare_Color,
+		currencyID = 3108,
+		displayName = "Carved Undermine Crest",
+		textureID = 5872047,
+	},
+	{
+		name = "Weathered",
+		color = AMT.Uncommon_Color,
+		currencyID = 3107,
+		displayName = "Weathered Undermine Crest",
+		textureID = 5872053,
+	},
+	{
+		name = "Valorstones",
+		color = AMT.Valorstones_Color,
+		currencyID = 3008,
+		displayName = "Valorstones",
+		textureID = 5868902,
 	},
 }
