@@ -89,7 +89,11 @@ function AMTTabButtonMixin:OnMouseUp(button, upInside)
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 		if upInside then
 			AMT:SetDisplayMode(self.DisplayMode)
-			AMT:RefreshData()
+			if self.DisplayMode == 1 then
+				AMT:RefreshData()
+			elseif self.DisplayMode == 2 then
+				AMT:SeasonalInfo_Refresh()
+			end
 		else
 			self:SetChecked(false)
 		end
@@ -242,7 +246,7 @@ end
 
 function AMT:Score_Update()
 	local color = C_ChallengeMode.GetDungeonScoreRarityColor(self.Info.MplusSummary.currentSeasonScore or 1)
-	if self.Initialized then
+	if self.Tracker_Initialized then
 		self.Window.Tracker.MplusScore.score:SetText(self.Info.MplusSummary.currentSeasonScore)
 		self.Window.Tracker.MplusScore.score:SetTextColor(color.r or 1, color.g or 1, color.b or 1, 1.0)
 	end
@@ -477,7 +481,6 @@ function AMT:GET_RaidInfo()
 			end
 		end
 	end
-	AMTTEST3 = self.Info.SeasonRaids
 
 	for _, raid in ipairs(self.Info.SeasonRaids) do
 		for difficultyKey, difficulty in pairs(raid.difficulty) do
@@ -509,7 +512,7 @@ function AMT:GET_RaidInfo()
 	end
 
 	--Color raid boxes
-	if self.Initialized then
+	if self.Tracker_Initialized then
 		local PrevKills = 0
 		local VaultUnlock_CurrentMax = 0 --store highest # of bosses killed in all prev. analyzed difficulties
 		local LastReward_Unlocked = false
@@ -663,7 +666,7 @@ function AMT:GET_SeasonalDungeonInfo()
 		bestKey.DungBullets = KeyBullets
 	end
 
-	if self.Initialized then
+	if self.Tracker_Initialized then
 		--Update Dungeon Icon colors
 		for i = 1, #self.Info.SeasonDungeons do
 			local Dung_Score = self.Info.SeasonDungeons[i].dungeonScore
@@ -1014,15 +1017,15 @@ function AMT_CreateBorderButton(
 	point,
 	relativeTo,
 	relativePoint,
-	xOffset,
-	yOffset,
+	X_OFFSET,
+	Y_OFFSET,
 	width,
 	height,
 	buttonText
 )
 	-- Create the Button
 	local button = CreateFrame("Button", name, parentFrame)
-	button:SetPoint(point, relativeTo, relativePoint, xOffset, yOffset)
+	button:SetPoint(point, relativeTo, relativePoint, X_OFFSET, Y_OFFSET)
 	button:SetSize(width, height)
 	button:SetText(buttonText)
 
@@ -1105,6 +1108,130 @@ function AMT_CreateHeader(parentFrame, name, point, relativeTo, relativePoint, x
 	frame_label:SetText(text)
 	frame_label:SetFont(AMT.AMT_Font, 14)
 	return frame
+end
+
+-- function AMT_CreateTable(anchor, anchorPos, name, table, height, X_OFFSET, Y_OFFSET)
+-- 	local frameTable = CreateFrame("Frame", name, anchor)
+-- 	-- local DungeonTableWidth = 0
+-- 	local DungeonTableHeight = ((table.content[1] + 1) * height) or 1
+-- 	for i = 1, #table.headers do
+-- 		DungeonTableWidth = DungeonTableWidth + table.headers[i].width
+-- 	end
+-- 	frameTable:SetSize(DungeonTableWidth, DungeonTableHeight)
+-- 	frameTable:SetPoint(anchorPos, anchor, anchorPos, X_OFFSET, Y_OFFSET)
+-- end
+
+function AMT_CreateDataTable(parent, tableData, options)
+	-- Default options
+	options = options or {}
+	local cellHeight = options.cellHeight or 20
+	local xOffset = options.xOffset or 0
+	local yOffset = options.yOffset or 0
+	local position = options.position or "TOPLEFT"
+	local relativePoint = options.relativePoint or "TOPLEFT"
+	local borderColor = options.borderColor or { 0.2, 0.2, 0.2, 1 }
+	local defaultBgColor = options.defaultBgColor or { 0.5, 0.5, 0.5, 0.2 }
+
+	-- Create main frame
+	local dataTable = CreateFrame("Frame", options.name, parent)
+
+	-- Calculate dimensions
+	local tableWidth = 0
+	local tableHeight = ((#tableData.content[1] + 1) * cellHeight) or 1
+
+	for i = 1, #tableData.headers do
+		tableWidth = tableWidth + tableData.headers[i].width
+	end
+
+	dataTable:SetSize(tableWidth, tableHeight)
+	dataTable:SetPoint(position, parent, relativePoint, xOffset, yOffset)
+
+	-- Create cells
+	for row = 1, #tableData.content[1] + 1 do
+		local totalCellWidth = 0
+		for col = 1, #tableData.headers do
+			local cell = CreateFrame("Frame", nil, dataTable)
+			cell:SetSize(tableData.headers[col].width, cellHeight)
+
+			-- Position cells
+			if col == 1 then
+				totalCellWidth = totalCellWidth + tableData.headers[col].width
+				cell:SetPoint("TOPLEFT", dataTable, "TOPLEFT", 0, -(row - 1) * cellHeight)
+			else
+				cell:SetPoint("TOPLEFT", dataTable, "TOPLEFT", totalCellWidth, -(row - 1) * cellHeight)
+				totalCellWidth = totalCellWidth + tableData.headers[col].width
+			end
+
+			-- Background
+			cell.bg = cell:CreateTexture(nil, "BACKGROUND")
+			-- cell.bg:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/AMT_Clean")
+			cell.bg:SetAllPoints(cell)
+			cell.bg:SetColorTexture(unpack(defaultBgColor))
+
+			-- Borders
+			local function CreateBorder(side, width, height)
+				local border = cell:CreateTexture(nil, "OVERLAY")
+				border:SetColorTexture(unpack(borderColor))
+				if width then
+					border:SetWidth(width)
+				end
+				if height then
+					border:SetHeight(height)
+				end
+				return border
+			end
+
+			-- Create borders
+			cell.borderTop = CreateBorder("TOP", nil, 1)
+			cell.borderTop:SetPoint("TOPLEFT", cell, "TOPLEFT", 0, 0)
+			cell.borderTop:SetPoint("TOPRIGHT", cell, "TOPRIGHT", 0, 0)
+
+			cell.borderBottom = CreateBorder("BOTTOM", nil, 1)
+			cell.borderBottom:SetPoint("BOTTOMLEFT", cell, "BOTTOMLEFT", 0, 0)
+			cell.borderBottom:SetPoint("BOTTOMRIGHT", cell, "BOTTOMRIGHT", 0, 0)
+
+			cell.borderLeft = CreateBorder("LEFT", 1, nil)
+			cell.borderLeft:SetPoint("TOPLEFT", cell, "TOPLEFT", 0, 0)
+			cell.borderLeft:SetPoint("BOTTOMLEFT", cell, "BOTTOMLEFT", 0, 0)
+
+			cell.borderRight = CreateBorder("RIGHT", 1, nil)
+			cell.borderRight:SetPoint("TOPRIGHT", cell, "TOPRIGHT", 0, 0)
+			cell.borderRight:SetPoint("BOTTOMRIGHT", cell, "BOTTOMRIGHT", 0, 0)
+
+			-- cell.BarFill = cell:CreateTexture(nil, "BACKGROUND")
+			-- cell.BarFill:SetTexCoord(0, 1, 0.125, 0.250)
+			-- cell.BarFill:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/ProgressBar-Fill")
+			-- cell.BarFill:SetTexture("Interface/AddOns/AdvancedMythicTracker/Media/Frame/AMT_Clean")
+			-- cell.BarFill:SetAllPoints(cell)
+
+			-- Cell Text
+			local cellText = cell:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+			cellText:SetFont(AMT.AMT_Font, 12)
+			cellText:SetPoint("CENTER", cell, "CENTER", 0, 0)
+
+			-- Set text and colors
+			local transparency = 0.3
+			if row == 1 then
+				cellText:SetText(tableData.headers[col].label)
+				transparency = 0.3
+			elseif col == 1 then
+				cellText:SetText(tableData.content[col][row - 1].text)
+				transparency = 0.3
+			else
+				cellText:SetText(tableData.content[col][row - 1].text)
+				if tableData.content[col][row - 1].text == "" then
+					transparency = 0.2
+				end
+				local color = tableData.content[col][row - 1].color
+				if color then
+					-- cell.BarFill:SetVertexColor(color[1], color[2], color[3])
+					cell.bg:SetColorTexture(color[1], color[2], color[3], transparency)
+				end
+			end
+		end
+	end
+
+	return dataTable
 end
 
 do --Easing
@@ -1400,13 +1527,13 @@ do --Metal Progress Bar
 			f.SetupNotchTexture = SetupNotchTexture_Normal
 		elseif sizeType == "large" then
 			file = "ProgressBar-Metal-Large"
-			barWidth, barHeight = 248, 28 --32
+			barWidth, barHeight = 248, 32 --32
 			f.BarLeft:SetTexCoord(0, 0.0625, 0, 0.25)
 			f.BarRight:SetTexCoord(0.46875, 0.53125, 0, 0.25)
 			f.BarMiddle:SetTexCoord(0.0625, 0.46875, 0, 0.25)
 			f.BarLeft:SetSize(32, 64)
 			f.BarRight:SetSize(32, 64)
-			f.BarFill:SetSize(barWidth, 20) --24
+			f.BarFill:SetSize(barWidth, 24) --24
 			f.SetupNotchTexture = SetupNotchTexture_Large
 		end
 
@@ -1424,7 +1551,7 @@ do --Metal Progress Bar
 		f:SetBarWidth(barWidth)
 		f:SetHeight(barHeight)
 		f:SetBarColorTint(2)
-		--f:SetNumThreshold(0);
+		f:SetNumThreshold(0)
 		f:SetValue(0, 100)
 
 		local BarPulse = CreateFrame("Frame", nil, f, "AMTBarPulseTemplate")

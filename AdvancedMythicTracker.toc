@@ -13,4 +13,5 @@ AMT_Frames.xml
 
 Database.lua
 Util.lua
-Display.lua
+Tracker.lua
+SeasonalInfo.lua
