@@ -273,7 +273,9 @@ function AMT:Framework()
 					for _, id in ipairs(dungeon.spellID) do
 						dungSpellID = id
 						dungSpellName = C_Spell.GetSpellName(dungSpellID)
-						-- IsPlayerSpell(dungSpellID) potentially to be used to break when matched
+						if IsPlayerSpell(dungSpellID) then -- potentially to be used to break when matched
+							break
+						end
 					end
 				else
 					dungSpellID = dungeon.spellID
