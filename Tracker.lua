@@ -106,6 +106,12 @@ function AMT:Framework()
 	local title = "Advanced Mythic Tracker (" .. expName .. " Season " .. self.Info.CurrentSeason .. ")"
 	AMT_WindowTitleText:SetText(title)
 
+	self.Window.Titles = {
+		["Tracker"] = title,
+		["Seasonal Info"] = "Seasonal Info",
+		["Portals"] = "Dungeon & Raid Portals",
+	}
+
 	--Create Tracker Frame
 	self.Window.Tracker = CreateFrame("Frame", "AMT_Tracker_Frame", self.Window)
 	self.Window.Tracker:SetPoint("CENTER")
