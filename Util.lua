@@ -825,14 +825,12 @@ end
 
 function AMT:PVEFrameTabNums()
 	self:PrintDebug("Checking PVEFrame Tab Numbers.")
+	self.Info.TabNum = 0
 	for i = 1, PVEFrame.numTabs do
 		local PVEFrame_Tab = _G["PVEFrameTab" .. i]
-
-		if not PVEFrame_Tab:IsVisible() then
-			self.Info.TabNum = i - 1
-			break
-		else
-			self.Info.TabNum = PVEFrame.numTabs
+		if PVEFrame_Tab:IsVisible() then
+			print("PVEFrame_Tab" .. i .. " is visible")
+			self.Info.TabNum = self.Info.TabNum + 1
 		end
 	end
 
