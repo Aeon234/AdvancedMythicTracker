@@ -122,6 +122,11 @@ function AMT:Framework()
 	self.Window.Info:SetPoint("CENTER")
 	self.Window.Info:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
 
+	--Create Portals Window
+	self.Window.Portals = CreateFrame("Frame", "AMT_Portals_Container", self.Window)
+	self.Window.Portals:SetPoint("CENTER")
+	self.Window.Portals:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
+
 	--Keystone Frame
 	self.Window.Tracker.Keystone = CreateFrame("Frame", "AMT_CurrentKeystone_Frame", self.Window.Tracker)
 	self.Window.Tracker.Keystone:SetSize(180, 100)
