@@ -89,10 +89,13 @@ function AMTTabButtonMixin:OnMouseUp(button, upInside)
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_TAB)
 		if upInside then
 			AMT:SetDisplayMode(self.DisplayMode)
+			AMT_WindowTitleText:SetText(AMT.Window.Titles[AMT.AMTFrame_Tabs[self.DisplayMode].name])
 			if self.DisplayMode == 1 then
 				AMT:RefreshData()
 			elseif self.DisplayMode == 2 then
 				AMT:SeasonalInfo_Refresh()
+			elseif self.DisplayMode == 3 then
+				AMT:Portals_Refresh()
 			end
 		else
 			self:SetChecked(false)
@@ -131,9 +134,19 @@ function AMT:SetDisplayMode(displayMode)
 	if displayMode == 1 then
 		self.Window.Tracker:Show()
 		self.Window.Info:Hide()
+		self.Window.Portals:Hide()
 	elseif displayMode == 2 then
 		self.Window.Tracker:Hide()
 		self.Window.Info:Show()
+		self.Window.Portals:Hide()
+	elseif displayMode == 3 then
+		self.Window.Tracker:Hide()
+		self.Window.Info:Hide()
+		self.Window.Portals:Show()
+	else
+		self.Window.Tracker:Show()
+		self.Window.Info:Hide()
+		self.Window.Portals:Hide()
 	end
 end
 
@@ -829,7 +842,6 @@ function AMT:PVEFrameTabNums()
 	for i = 1, PVEFrame.numTabs do
 		local PVEFrame_Tab = _G["PVEFrameTab" .. i]
 		if PVEFrame_Tab:IsVisible() then
-			print("PVEFrame_Tab" .. i .. " is visible")
 			self.Info.TabNum = self.Info.TabNum + 1
 		end
 	end

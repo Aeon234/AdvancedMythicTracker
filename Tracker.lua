@@ -106,6 +106,12 @@ function AMT:Framework()
 	local title = "Advanced Mythic Tracker (" .. expName .. " Season " .. self.Info.CurrentSeason .. ")"
 	AMT_WindowTitleText:SetText(title)
 
+	self.Window.Titles = {
+		["Tracker"] = title,
+		["Seasonal Info"] = "Seasonal Info",
+		["Portals"] = "Dungeon & Raid Portals",
+	}
+
 	--Create Tracker Frame
 	self.Window.Tracker = CreateFrame("Frame", "AMT_Tracker_Frame", self.Window)
 	self.Window.Tracker:SetPoint("CENTER")
@@ -115,6 +121,11 @@ function AMT:Framework()
 	self.Window.Info = CreateFrame("Frame", "AMT_Info_Container", self.Window)
 	self.Window.Info:SetPoint("CENTER")
 	self.Window.Info:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
+
+	--Create Portals Window
+	self.Window.Portals = CreateFrame("Frame", "AMT_Portals_Container", self.Window)
+	self.Window.Portals:SetPoint("CENTER")
+	self.Window.Portals:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
 
 	--Keystone Frame
 	self.Window.Tracker.Keystone = CreateFrame("Frame", "AMT_CurrentKeystone_Frame", self.Window.Tracker)
