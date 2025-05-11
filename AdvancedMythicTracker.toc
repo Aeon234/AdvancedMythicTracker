@@ -15,3 +15,4 @@ Database.lua
 Util.lua
 Tracker.lua
 SeasonalInfo.lua
+Portals.lua

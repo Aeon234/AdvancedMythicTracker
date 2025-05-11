@@ -189,6 +189,13 @@ AMT.AMTFrame_Tabs = {
 		inactiveAtlas = "QuestLog-tab-icon-MapLegend-inactive",
 		DisplayMode = 2,
 	},
+	{
+		name = "Portals",
+		tooltipText = "Dungeon Portals",
+		activeAtlas = "delves-bountiful",
+		inactiveAtlas = "delves-regular",
+		DisplayMode = 3,
+	},
 }
 
 --Rewards table for each key level
@@ -260,93 +267,153 @@ AMT.RewardsTable = {
 --Dungeon info by expansion
 AMT.SeasonalDungeons = {
 	--The War Within
-	{ abbr = "PSF", name = "Priory of the Sacred Flame", spellID = 445444, mapID = 499, instanceID = 2649 }, --Priory of the Sacred Flame
-	{ abbr = "ROOK", name = "The Rookery", spellID = 445443, mapID = 500, instanceID = 2648 }, --The Rookery
-	{ abbr = "SV", name = "The Stonevault", spellID = 445269, mapID = 501, instanceID = 2652 }, --The Stonevault
-	{ abbr = "COT", name = "City of Threads", spellID = 445416, mapID = 502, instanceID = 2669 }, --City of Threads
-	{ abbr = "ARAK", name = "Ara-Kara, City of Echoes", spellID = 445417, mapID = 503, instanceID = 2660 }, --Ara-Kara, City of Echoes
-	{ abbr = "DFC", name = "Darkflame Cleft", spellID = 445441, mapID = 504, instanceID = 2651 }, --Darkflame Cleft
-	{ abbr = "DAWN", name = "The Dawnbreaker", spellID = 445414, mapID = 505, instanceID = 2662 }, --The Dawnbreaker
-	{ abbr = "BREW", name = "Cinderbrew Meadery", spellID = 445440, mapID = 506, instanceID = 2661 }, --Cinderbrew Meadery
-	{ abbr = "FLOOD", name = "Operation: Floodgate", spellID = 1216786, mapID = 525, instanceID = 2773 }, --Operation: Floodgate
+	{ abbr = "PSF", name = "Priory of the Sacred Flame", spellID = 445444, mapID = 499, instanceID = 2649, exp = 10 },
+	{ abbr = "ROOK", name = "The Rookery", spellID = 445443, mapID = 500, instanceID = 2648, exp = 10 },
+	{ abbr = "SV", name = "The Stonevault", spellID = 445269, mapID = 501, instanceID = 2652, exp = 10 },
+	{ abbr = "COT", name = "City of Threads", spellID = 445416, mapID = 502, instanceID = 2669, exp = 10 },
+	{ abbr = "ARAK", name = "Ara-Kara, City of Echoes", spellID = 445417, mapID = 503, instanceID = 2660, exp = 10 },
+	{ abbr = "DFC", name = "Darkflame Cleft", spellID = 445441, mapID = 504, instanceID = 2651, exp = 10 },
+	{ abbr = "DAWN", name = "The Dawnbreaker", spellID = 445414, mapID = 505, instanceID = 2662, exp = 10 },
+	{ abbr = "BREW", name = "Cinderbrew Meadery", spellID = 445440, mapID = 506, instanceID = 2661, exp = 10 },
+	{ abbr = "FLOOD", name = "Operation: Floodgate", spellID = 1216786, mapID = 525, instanceID = 2773, exp = 10 },
 	--Dragonflight
-	{ abbr = "RLP", name = "Ruby Life Pools", spellID = 393256, mapID = 399, instanceID = 2521 }, --Ruby Life Pools
-	{ abbr = "NO", name = "The Nokhud Offensive", spellID = 393262, mapID = 400, instanceID = 2516 }, --The Nokhud Offensive
-	{ abbr = "AV", name = "The Azure Vault", spellID = 393279, mapID = 401, instanceID = 2515 }, --The Azure Vault
-	{ abbr = "AA", name = "Algeth'ar Academy", spellID = 393273, mapID = 402, instanceID = 2526 }, --Algeth'ar Academy
-	{ abbr = "ULD", name = "Uldaman: Legacy of Tyr", spellID = 393222, mapID = 403, instanceID = 2451 }, --Uldaman: Legacy of Tyr
-	{ abbr = "NELT", name = "Neltharus", spellID = 393276, mapID = 404, instanceID = 2519 }, --Neltharus
-	{ abbr = "HOI", name = "Halls of Infusion", spellID = 393283, mapID = 406, instanceID = 2527 }, --Halls of Infusion
-	{ abbr = "BH", name = "Brackenhide Hollow", spellID = 393267, mapID = 405, instanceID = 2520 }, --Brackenhide Hollow
+	{ abbr = "RLP", name = "Ruby Life Pools", spellID = 393256, mapID = 399, instanceID = 2521, exp = 9 },
+	{ abbr = "NO", name = "The Nokhud Offensive", spellID = 393262, mapID = 400, instanceID = 2516, exp = 9 },
+	{ abbr = "AV", name = "The Azure Vault", spellID = 393279, mapID = 401, instanceID = 2515, exp = 9 },
+	{ abbr = "AA", name = "Algeth'ar Academy", spellID = 393273, mapID = 402, instanceID = 2526, exp = 9 },
+	{ abbr = "ULD", name = "Uldaman: Legacy of Tyr", spellID = 393222, mapID = 403, instanceID = 2451, exp = 9 },
+	{ abbr = "NELT", name = "Neltharus", spellID = 393276, mapID = 404, instanceID = 2519, exp = 9 },
+	{ abbr = "HOI", name = "Halls of Infusion", spellID = 393283, mapID = 406, instanceID = 2527, exp = 9 },
+	{ abbr = "BH", name = "Brackenhide Hollow", spellID = 393267, mapID = 405, instanceID = 2520, exp = 9 },
 	{
 		abbr = "FALL",
 		name = "Dawn of the Infinite: Galakrond's Fall",
 		spellID = 424197,
 		mapID = 463,
 		instanceID = 2579,
-	}, --Dawn of the Infinite: Galakrond's Fall
-	{ abbr = "RISE", name = "Dawn of the Infinite: Murozond's Rise", spellID = 424197, mapID = 464, instanceID = 2579 }, --Dawn of the Infinite: Murozond's Rise
+		megaDung = "DOTI",
+		exp = 9,
+	},
+	{
+		abbr = "RISE",
+		name = "Dawn of the Infinite: Murozond's Rise",
+		spellID = 424197,
+		mapID = 464,
+		instanceID = 2579,
+		megaDung = "DOTI",
+		exp = 9,
+	},
 	--Shadowlands
-	{ abbr = "MISTS", name = "Mist of Tirna Scithe", spellID = 354464, mapID = 375, instanceID = 2290 }, --Mist of Tirna Scithe
-	{ abbr = "NW", name = "Necrotic Wake", spellID = 354462, mapID = 376, instanceID = 2286 }, --Necrotic Wake
-	{ abbr = "DOS", name = "De Other Side", spellID = 354468, mapID = 377, instanceID = 2291 }, --De Other Side
-	{ abbr = "HOA", name = "Halls of Atonement", spellID = 354465, mapID = 378, instanceID = 2287 }, --Halls of Atonement
-	{ abbr = "PF", name = "Plaguefall", spellID = 354463, mapID = 379, instanceID = 2289 }, --Plaguefall
-	{ abbr = "SD", name = "Sanguine Depths", spellID = 354469, mapID = 380, instanceID = 2284 }, --Sanguine Depths
-	{ abbr = "SOA", name = "Spires of Ascension", spellID = 354466, mapID = 381, instanceID = 2285 }, --Spires of Ascension
-	{ abbr = "TOP", name = "Theater of Pain", spellID = 354467, mapID = 382, instanceID = 2293 }, --Theater of Pain
+	{ abbr = "MISTS", name = "Mist of Tirna Scithe", spellID = 354464, mapID = 375, instanceID = 2290, exp = 8 },
+	{ abbr = "NW", name = "Necrotic Wake", spellID = 354462, mapID = 376, instanceID = 2286, exp = 8 },
+	{ abbr = "DOS", name = "De Other Side", spellID = 354468, mapID = 377, instanceID = 2291, exp = 8 },
+	{ abbr = "HOA", name = "Halls of Atonement", spellID = 354465, mapID = 378, instanceID = 2287, exp = 8 },
+	{ abbr = "PF", name = "Plaguefall", spellID = 354463, mapID = 379, instanceID = 2289, exp = 8 },
+	{ abbr = "SD", name = "Sanguine Depths", spellID = 354469, mapID = 380, instanceID = 2284, exp = 8 },
+	{ abbr = "SOA", name = "Spires of Ascension", spellID = 354466, mapID = 381, instanceID = 2285, exp = 8 },
+	{ abbr = "TOP", name = "Theater of Pain", spellID = 354467, mapID = 382, instanceID = 2293, exp = 8 },
 	{
 		abbr = "WNDR",
 		name = "Tazavesh, the Veiled Market: Streets of Wonder",
 		spellID = 367416,
 		mapID = 391,
 		instanceID = 2441,
-	}, --Tazavesh, the Veiled Market: Streets of Wonder
+		megaDung = "TAZ",
+		exp = 8,
+	},
 	{
 		abbr = "GMBT",
 		name = "Tazavesh, the Veiled Market: So'leah's Gambit",
 		spellID = 367416,
 		mapID = 392,
 		instanceID = 2441,
-	}, --Tazavesh, the Veiled Market: So'leah's Gambit
+		megaDung = "TAZ",
+		exp = 8,
+	},
 	--Battle for Azeroth
-	{ abbr = "AD", name = "Atal'Dazar", spellID = 424187, mapID = 244, instanceID = 1763 }, --Atal'Dazar
-	{ abbr = "FH", name = "Freehold", spellID = 410071, mapID = 245, instanceID = 1754 }, --Freehold
-	--{ abbr = "TD", name = "Tol Dagor", spellID = 445418, mapID = 246, instanceID=1771 }, --Tol Dagor
-	{ abbr = "ML", name = "The MOTHERLODE!!", spellID = { 467553, 467555 }, mapID = 247, instanceID = 1594 }, --The MOTHERLODE!!
-	-- { abbr = "ML", name = "The MOTHERLODE!!", spellID = 467555, mapID = 247, instanceID = 1594 }, --The MOTHERLODE!!
-	{ abbr = "WM", name = "Waycrest Manor", spellID = 424167, mapID = 248, instanceID = 1862 }, --Waycrest Manor
-	--{ abbr = "KR", name = "Kings' Rest", spellID = 445418, mapID = 249, instanceID=1762 }, --Kings' Rest
-	--{ abbr = "TS", name = "Temple of Sethraliss", spellID = 445418, mapID = 250, instanceID=1877 }, --Temple of Sethraliss
-	{ abbr = "UNDR", name = "The Underrot", spellID = 410074, mapID = 251, instanceID = 1841 }, --The Underrot
-	--{ abbr = "SS", name = "Shrine of the Storm", spellID = 445418, mapID = 252, instanceID=1864 }, --Shrine of the Storm
-	{ abbr = "SIEGE", name = "Siege of Boralus", spellID = { 464256, 445418 }, mapID = 353, instanceID = 1822 }, --Siege of Boralus Horde
-	-- { abbr = "SIEGE", name = "Siege of Boralus", spellID = 445418, mapID = 353, instanceID = 1822 }, --Siege of Boralus Alliance
-	{ abbr = "JY", name = "Operation: Mechagon: Junkyard", spellID = 373274, mapID = 369, instanceID = 2097 }, --Operation: Mechagon: Junkyard
-	{ abbr = "WORK", name = "Operation: Mechagon: Workshop", spellID = 373274, mapID = 370, instanceID = 2097 }, --Operation: Mechagon: Workshop
+	{ abbr = "AD", name = "Atal'Dazar", spellID = 424187, mapID = 244, instanceID = 1763, exp = 7 },
+	{ abbr = "FH", name = "Freehold", spellID = 410071, mapID = 245, instanceID = 1754, exp = 7 },
+	--{ abbr = "TD", name = "Tol Dagor", spellID = 445418, mapID = 246, instanceID=1771 },
+	{ abbr = "ML", name = "The MOTHERLODE!!", spellID = { 467553, 467555 }, mapID = 247, instanceID = 1594, exp = 7 },
+	-- { abbr = "ML", name = "The MOTHERLODE!!", spellID = 467555, mapID = 247, instanceID = 1594 },
+	{ abbr = "WM", name = "Waycrest Manor", spellID = 424167, mapID = 248, instanceID = 1862, exp = 7 },
+	--{ abbr = "KR", name = "Kings' Rest", spellID = 445418, mapID = 249, instanceID=1762 },
+	--{ abbr = "TS", name = "Temple of Sethraliss", spellID = 445418, mapID = 250, instanceID=1877 },
+	{ abbr = "UNDR", name = "The Underrot", spellID = 410074, mapID = 251, instanceID = 1841, exp = 7 },
+	--{ abbr = "SS", name = "Shrine of the Storm", spellID = 445418, mapID = 252, instanceID=1864 },
+	{
+		abbr = "SIEGE",
+		name = "Siege of Boralus",
+		spellID = { 464256, 445418 },
+		mapID = 353,
+		exp = 7,
+		instanceID = 1822,
+	},
+	{
+		abbr = "JY",
+		name = "Operation: Mechagon: Junkyard",
+		spellID = 373274,
+		mapID = 369,
+		instanceID = 2097,
+		megaDung = "MECHA",
+		exp = 7,
+	}, --Operation: Mechagon: Junkyard
+	{
+		abbr = "WORK",
+		name = "Operation: Mechagon: Workshop",
+		spellID = 373274,
+		mapID = 370,
+		instanceID = 2097,
+		megaDung = "MECHA",
+		exp = 7,
+	},
 	--Legion
-	{ abbr = "DHT", name = "Darkheart Thicket", spellID = 424163, mapID = 198, instanceID = 1466 }, --Darkheart Thicket
-	{ abbr = "BRH", name = "Black Rook Hold", spellID = 424153, mapID = 199, instanceID = 1501 }, --Black Rook Hold
-	{ abbr = "HOV", name = "Halls of Valor", spellID = 393764, mapID = 200, instanceID = 1477 }, --Halls of Valor
-	{ abbr = "NL", name = "Neltharion's Lair", spellID = 410078, mapID = 206, instanceID = 1458 }, --Neltharion's Lair
-	{ abbr = "COS", name = "Court of Stars", spellID = 393766, mapID = 210, instanceID = 1571 }, --Court of Stars
-	{ abbr = "LOWER", name = "Return to Karazhan: Lower", spellID = 373262, mapID = 277, instanceID = 1651 }, --Return to Karazhan: Lower
-	{ abbr = "UPPER", name = "Return to Karazhan: Upper", spellID = 373262, mapID = 234, instanceID = 1651 }, --Return to Karazhan: Upper
+	{ abbr = "DHT", name = "Darkheart Thicket", spellID = 424163, mapID = 198, instanceID = 1466, exp = 6 },
+	{ abbr = "BRH", name = "Black Rook Hold", spellID = 424153, mapID = 199, instanceID = 1501, exp = 6 },
+	{ abbr = "HOV", name = "Halls of Valor", spellID = 393764, mapID = 200, instanceID = 1477, exp = 6 },
+	{ abbr = "NL", name = "Neltharion's Lair", spellID = 410078, mapID = 206, instanceID = 1458, exp = 6 },
+	{ abbr = "COS", name = "Court of Stars", spellID = 393766, mapID = 210, instanceID = 1571, exp = 6 },
+	{
+		abbr = "LOWER",
+		name = "Return to Karazhan: Lower",
+		spellID = 373262,
+		mapID = 277,
+		instanceID = 1651,
+		megaDung = "KARA",
+		exp = 6,
+	},
+	{
+		abbr = "UPPER",
+		name = "Return to Karazhan: Upper",
+		spellID = 373262,
+		mapID = 234,
+		instanceID = 1651,
+		megaDung = "KARA",
+		exp = 6,
+	},
 	--Warlords of Draenor
-	{ abbr = "SR", name = "Skyreach", spellID = 159898, mapID = 161, instanceID = 1209 }, --Skyreach
-	{ abbr = "BSM", name = "Bloodmaul Slag Mines", spellID = 159895, mapID = 163, instanceID = 1175 }, --Bloodmaul Slag Mines
-	{ abbr = "AUC", name = "Auchindoun", spellID = 159897, mapID = 164, instanceID = 1182 }, --Auchindoun
-	{ abbr = "SBG", name = "Shadowmoon Burial Grounds", spellID = 159899, mapID = 165, instanceID = 1176 }, --Shadowmoon Burial Grounds
-	{ abbr = "GD", name = "Grimrail Depot", spellID = 159900, mapID = 166, instanceID = 1208 }, --Grimrail Depot
-	{ abbr = "UBRS", name = "Upper Blackrock Spire", spellID = 159902, mapID = 167, instanceID = 1358 }, --Upper Blackrock Spire
-	{ abbr = "EB", name = "The Everbloom", spellID = 159901, mapID = 168, instanceID = 1279 }, --The Everbloom
-	{ abbr = "ID", name = "Iron Docks", spellID = 159896, mapID = 169, instanceID = 1195 }, --Iron Docks
+	{ abbr = "SR", name = "Skyreach", spellID = 159898, mapID = 161, instanceID = 1209, exp = 5 },
+	{ abbr = "BSM", name = "Bloodmaul Slag Mines", spellID = 159895, mapID = 163, instanceID = 1175, exp = 5 },
+	{ abbr = "AUC", name = "Auchindoun", spellID = 159897, mapID = 164, instanceID = 1182, exp = 5 },
+	{ abbr = "SBG", name = "Shadowmoon Burial Grounds", spellID = 159899, mapID = 165, instanceID = 1176, exp = 5 },
+	{ abbr = "GD", name = "Grimrail Depot", spellID = 159900, mapID = 166, instanceID = 1208, exp = 5 },
+	{ abbr = "UBRS", name = "Upper Blackrock Spire", spellID = 159902, mapID = 167, instanceID = 1358, exp = 5 },
+	{ abbr = "EB", name = "The Everbloom", spellID = 159901, mapID = 168, instanceID = 1279, exp = 5 },
+	{ abbr = "ID", name = "Iron Docks", spellID = 159896, mapID = 169, instanceID = 1195, exp = 5 },
 	--Mist of Pandaria
-	{ abbr = "TJS", name = "Temple of the Jade Serpent", spellID = 131204, mapID = 2, instanceID = 960 }, --Temple of the Jade Serpent
+	{ abbr = "GOTSS", name = "Gate of the Setting Sun", spellID = 131225, mapID = 57, instanceID = 962, exp = 4 },
+	{ abbr = "MSP", name = "Mogu'shan Palace", spellID = 131222, mapID = 60, instanceID = 994, exp = 4 },
+	{ abbr = "SCHOLO", name = "Scholomance", spellID = 131232, mapID = 76, instanceID = 1007, exp = 4 },
+	{ abbr = "SH", name = "Scarlet Halls", spellID = 131231, mapID = 77, instanceID = 1001, exp = 4 },
+	{ abbr = "SM", name = "Scarlet Monastery", spellID = 131229, mapID = 78, instanceID = 1004, exp = 4 },
+	{ abbr = "SNT", name = "Siege of Niuzao", spellID = 131228, mapID = 59, instanceID = 1011, exp = 4 },
+	{ abbr = "SPM", name = "Shado-Pan Monastery", spellID = 131206, mapID = 58, instanceID = 959, exp = 4 },
+	{ abbr = "SSB", name = "Stormstout Brewery", spellID = 131205, mapID = 56, instanceID = 961, exp = 4 },
+	{ abbr = "TJS", name = "Temple of the Jade Serpent", spellID = 131204, mapID = 2, instanceID = 960, exp = 4 },
 	--Cataclysm
-	{ abbr = "VP", name = "The Vortex Pinnacle", spellID = 410080, mapID = 438, instanceID = 657 }, --The Vortex Pinnacle
-	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456, instanceID = 456 }, --Throne of the Tides
-	{ abbr = "GB", name = "Grim Batol", spellID = 445424, mapID = 507, instanceID = 670 }, --Grim Batol
+	{ abbr = "VP", name = "The Vortex Pinnacle", spellID = 410080, mapID = 438, instanceID = 657, exp = 3 },
+	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456, instanceID = 456, exp = 3 },
+	{ abbr = "GB", name = "Grim Batol", spellID = 445424, mapID = 507, instanceID = 670, exp = 3 },
 }
 
 AMT.Raids = {
