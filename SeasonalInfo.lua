@@ -6,9 +6,9 @@ local CellHeight = 19
 local X_OFFSET = 7
 local Y_OFFSET_TOP = -23
 local Y_OFFSET_BOTTOM = 4
-local CatalystID = 3116
-local HalfSparkID = 230905
-local FullSparkID = 230906
+local CatalystID = 3269
+local HalfSparkID = 231757
+local FullSparkID = 231756
 
 function AMT:SeasonalInfo_Setup()
 	-- self.Window.Info.WIP = self.Window.Info:CreateFontString(nil, "OVERLAY", "GameFontNormal")
