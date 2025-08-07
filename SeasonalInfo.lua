@@ -7,6 +7,7 @@ local X_OFFSET = 7
 local Y_OFFSET_TOP = -23
 local Y_OFFSET_BOTTOM = 4
 local CatalystID = 3269
+local SparkDustID = 3141
 local HalfSparkID = 231757
 local FullSparkID = 231756
 
@@ -290,57 +291,23 @@ function AMT:GET_SparksInfo()
 	if not self.Window.Info.Spark.db then
 		self.Window.Info.Spark.db = {}
 	end
-	-- Create Full and Fragment Spark Info
+
 	local Info = self.Window.Info.Spark.db
+
+	-- Create Full Spark Item to use as Icon in tooltipText
 	local FullSparkItem = Item:CreateFromItemID(FullSparkID)
 	FullSparkItem:ContinueOnItemLoad(function()
 		Info.SparkName = FullSparkItem:GetItemName()
 		Info.SparkTex = FullSparkItem:GetItemIcon()
 	end)
 
-	local HalfSparkItem = Item:CreateFromItemID(HalfSparkID)
-	HalfSparkItem:ContinueOnItemLoad(function()
-		Info.FragName = HalfSparkItem:GetItemName()
-		Info.FragTex = HalfSparkItem:GetItemIcon()
-	end)
+	-- Start Calculation for Sparks
+	local SparkInfo = C_CurrencyInfo.GetCurrencyInfo(SparkDustID)
 
-	Info.BaseSparks = 3
+	Info.TotalAvailableSparks = SparkInfo.maxQuantity - SparkInfo.quantity
+	Info.SparksInHand = SparkInfo.quantity
 
-	local startDate = time({
-		year = 2025,
-		month = 3,
-		day = 25,
-		hour = 10,
-		min = 0,
-		sec = 0,
-	})
-
-	local currentTime = time()
-
-	local dayOfWeek = tonumber(date("%w", startDate))
-	local daysToTuesday = (2 - dayOfWeek + 7) % 7
-	if daysToTuesday == 0 then
-		daysToTuesday = 7
-	end
-
-	local firstTuesday = startDate + (daysToTuesday * 86400) -- Still at 10am
-
-	-- Calculate total earned sparks
-	local extraHalfSparks = 0
-
-	if currentTime >= firstTuesday then
-		local weeksSinceFirstTuesday = math.floor((currentTime - firstTuesday) / 604800)
-		local n = weeksSinceFirstTuesday + 1
-		extraHalfSparks = 0.5 * n
-	end
-
-	Info.TotalAvailableSparks = Info.BaseSparks + extraHalfSparks
-
-	-- Inventory check
-	Info.HalvesInHand = C_Item.GetItemCount(HalfSparkID, true)
-	Info.FullsInHand = C_Item.GetItemCount(FullSparkID, true)
-	Info.SparksInHand = Info.FullsInHand + (Info.HalvesInHand * 0.5)
-
+	-- Inventory Check for Crafted Pieces Equipped
 	Info.SparksUsed = 0
 
 	local twoHandTypes = {
@@ -354,10 +321,10 @@ function AMT:GET_SparksInfo()
 		end
 
 		for _, line in ipairs(lines) do
-			if line.leftText and line.leftText:find("Fortune Crafted") then
+			if line.leftText and line.leftText:find("Starlight Crafted") then
 				local itemName, _, _, _, _, _, _, _, equipSlot = C_Item.GetItemInfo(itemLink)
 
-				if itemName == "Spark of Fortunes" then
+				if itemName == "Spark of Starlight" then
 					return false
 				end
 
