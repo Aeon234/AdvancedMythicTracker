@@ -123,20 +123,13 @@ function AMT:SeasonalInfo_Setup()
 			true
 		)
 		GameTooltip:AddLine(" ")
+		GameTooltip:AddLine("Maximum Sparks Available: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.MaxShards)
 		GameTooltip:AddLine(
-			"Maximum Sparks Available: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.TotalAvailableSparks
+			"Sparks Acquired: " .. AMT.WhiteText .. math.floor(AMT.Window.Info.Spark.db.SparksInHand) / 2
 		)
-		GameTooltip:AddLine("Sparks in Inventory: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.SparksInHand)
-		-- GameTooltip:AddLine("Fragments in Inventory: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.HalvesInHand)
 		GameTooltip:AddLine("Sparks Used: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.SparksUsed)
 		GameTooltip:AddLine(
-			"Left to Gain: "
-				.. AMT.WhiteText
-				.. (
-					AMT.Window.Info.Spark.db.TotalAvailableSparks
-					- AMT.Window.Info.Spark.db.SparksInHand
-					- AMT.Window.Info.Spark.db.SparksUsed
-				)
+			"Fractured Sparks Left to Gain: " .. AMT.WhiteText .. AMT.Window.Info.Spark.db.TotalAvailableSparks
 		)
 
 		GameTooltip:Show()
@@ -145,79 +138,6 @@ function AMT:SeasonalInfo_Setup()
 		GameTooltip:Hide()
 	end)
 
-	-- Dungeon Drops Table
-	-- self.Window.Info.DungeonTable = CreateFrame("Frame", "AMT_DungeonTable", self.Window.Info)
-	-- local DungeonTableWidth = 0
-	-- local DungeonTableHeight = ((#self.SeasonalInfo.DungeonTable.content[1] + 1) * CellHeight) or 1
-	-- for i = 1, #self.SeasonalInfo.DungeonTable.headers do
-	-- 	DungeonTableWidth = DungeonTableWidth + self.SeasonalInfo.DungeonTable.headers[i].width
-	-- end
-	-- self.Window.Info.DungeonTable:SetSize(DungeonTableWidth, DungeonTableHeight)
-	-- self.Window.Info.DungeonTable:SetPoint("BOTTOMLEFT", self.Window.Info, "BOTTOMLEFT", X_OFFSET, Y_OFFSET_BOTTOM)
-
-	-- for row = 1, #self.SeasonalInfo.DungeonTable.content[1] + 1 do
-	-- 	local TotalCellWidth = 0
-	-- 	for col = 1, #self.SeasonalInfo.DungeonTable.headers do
-	-- 		local cell = CreateFrame("Frame", nil, self.Window.Info.DungeonTable)
-	-- 		cell:SetSize(self.SeasonalInfo.DungeonTable.headers[col].width, CellHeight)
-	-- 		if col == 1 then
-	-- 			TotalCellWidth = TotalCellWidth + self.SeasonalInfo.DungeonTable.headers[col].width
-	-- 			cell:SetPoint("TOPLEFT", self.Window.Info.DungeonTable, "TOPLEFT", 0, -(row - 1) * CellHeight)
-	-- 		else
-	-- 			cell:SetPoint(
-	-- 				"TOPLEFT",
-	-- 				self.Window.Info.DungeonTable,
-	-- 				"TOPLEFT",
-	-- 				TotalCellWidth,
-	-- 				-(row - 1) * CellHeight
-	-- 			)
-	-- 			TotalCellWidth = TotalCellWidth + self.SeasonalInfo.DungeonTable.headers[col].width
-	-- 		end
-
-	-- 		-- Background Color
-	-- 		cell.bg = cell:CreateTexture(nil, "BACKGROUND")
-	-- 		cell.bg:SetAllPoints(cell)
-	-- 		cell.bg:SetColorTexture(0.5, 0.5, 0.5, 0.2)
-
-	-- 		local borderColor = { 0.2, 0.2, 0.2, 1 }
-	-- 		cell.borderTop = cell:CreateTexture(nil, "OVERLAY")
-	-- 		cell.borderTop:SetHeight(1)
-	-- 		cell.borderTop:SetColorTexture(unpack(borderColor))
-	-- 		cell.borderTop:SetPoint("TOPLEFT", cell, "TOPLEFT", 0, 0)
-	-- 		cell.borderTop:SetPoint("TOPRIGHT", cell, "TOPRIGHT", 0, 0)
-
-	-- 		cell.borderBottom = cell:CreateTexture(nil, "OVERLAY")
-	-- 		cell.borderBottom:SetHeight(1)
-	-- 		cell.borderBottom:SetColorTexture(unpack(borderColor))
-	-- 		cell.borderBottom:SetPoint("BOTTOMLEFT", cell, "BOTTOMLEFT", 0, 0)
-	-- 		cell.borderBottom:SetPoint("BOTTOMRIGHT", cell, "BOTTOMRIGHT", 0, 0)
-
-	-- 		cell.borderLeft = cell:CreateTexture(nil, "OVERLAY")
-	-- 		cell.borderLeft:SetWidth(1)
-	-- 		cell.borderLeft:SetColorTexture(unpack(borderColor))
-	-- 		cell.borderLeft:SetPoint("TOPLEFT", cell, "TOPLEFT", 0, 0)
-	-- 		cell.borderLeft:SetPoint("BOTTOMLEFT", cell, "BOTTOMLEFT", 0, 0)
-
-	-- 		cell.borderRight = cell:CreateTexture(nil, "OVERLAY")
-	-- 		cell.borderRight:SetWidth(1)
-	-- 		cell.borderRight:SetColorTexture(unpack(borderColor))
-	-- 		cell.borderRight:SetPoint("TOPRIGHT", cell, "TOPRIGHT", 0, 0)
-	-- 		cell.borderRight:SetPoint("BOTTOMRIGHT", cell, "BOTTOMRIGHT", 0, 0)
-
-	-- 		-- Cell Text
-	-- 		local cellText = cell:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-	-- 		cellText:SetPoint("CENTER", cell, "CENTER", 0, 0)
-	-- 		if row == 1 then
-	-- 			cellText:SetText(self.SeasonalInfo.DungeonTable.headers[col].label)
-	-- 		elseif col == 1 then
-	-- 			cellText:SetText(self.SeasonalInfo.DungeonTable.content[col][row - 1].text)
-	-- 		else
-	-- 			cellText:SetText(self.SeasonalInfo.DungeonTable.content[col][row - 1].text)
-	-- 			local color = self.SeasonalInfo.DungeonTable.content[col][row - 1].color
-	-- 			cell.bg:SetColorTexture(color[1], color[2], color[3], 0.3)
-	-- 		end
-	-- 	end
-	-- end
 	local DungeonTable_Options = {
 		name = "AMT_DungeonTable",
 		cellHeight = CellHeight,
@@ -305,6 +225,7 @@ function AMT:GET_SparksInfo()
 	local SparkInfo = C_CurrencyInfo.GetCurrencyInfo(SparkDustID)
 
 	Info.TotalAvailableSparks = SparkInfo.maxQuantity - SparkInfo.quantity
+	Info.MaxShards = math.floor(SparkInfo.maxQuantity) / 2 or 0
 	Info.SparksInHand = SparkInfo.quantity
 
 	-- Inventory Check for Crafted Pieces Equipped
@@ -355,13 +276,11 @@ function AMT:GET_SparksInfo()
 		end
 	end
 
-	local BarTotal
-	if Info.TotalAvailableSparks % 1 ~= 0 then
-		BarTotal = math.floor(Info.TotalAvailableSparks)
-	else
-		BarTotal = Info.TotalAvailableSparks
+	local BarTotal = SparkInfo.maxQuantity / 2
+	if SparkInfo.maxQuantity % 1 ~= 0 then
+		BarTotal = math.floor(SparkInfo.maxQuantity)
 	end
 
 	self.Window.Info.Spark.ChargesBar:SetNumThreshold(BarTotal - 1)
-	self.Window.Info.Spark.ChargesBar:SetValue(Info.SparksInHand + Info.SparksUsed, BarTotal)
+	self.Window.Info.Spark.ChargesBar:SetValue(SparkInfo.quantity, BarTotal)
 end
