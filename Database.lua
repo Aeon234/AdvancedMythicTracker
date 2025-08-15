@@ -503,14 +503,14 @@ AMT.Crests = {
 	{
 		name = "Gilded",
 		color = AMT.Legendary_Color,
-		currencyID = 3291,
+		currencyID = 3290,
 		displayName = "Gilded Ethereal Crest",
 		textureID = 5872057,
 	},
 	{
 		name = "Runed",
 		color = AMT.Epic_Color,
-		currencyID = 3289,
+		currencyID = 3288,
 		displayName = "Runed Ethereal Crest",
 		textureID = 5872059,
 	},
