@@ -133,20 +133,12 @@ function AMT:SetDisplayMode(displayMode)
 
 	if displayMode == 1 then
 		self.Window.Tracker:Show()
-		self.Window.Info:Hide()
-		self.Window.Portals:Hide()
 	elseif displayMode == 2 then
 		self.Window.Tracker:Hide()
-		self.Window.Info:Show()
-		self.Window.Portals:Hide()
 	elseif displayMode == 3 then
 		self.Window.Tracker:Hide()
-		self.Window.Info:Hide()
-		self.Window.Portals:Show()
 	else
 		self.Window.Tracker:Show()
-		self.Window.Info:Hide()
-		self.Window.Portals:Hide()
 	end
 end
 
@@ -294,9 +286,9 @@ function AMT:Keystone_Update()
 		local affix = self.Info.Affix.Current
 		if affix and keystone_level >= 12 then
 			weekly_modifier = self.Keystone_Modifiers[3].values
-		elseif affix and affix[2] == 9 then
+		elseif affix and affix[3] == 9 then
 			weekly_modifier = self.Keystone_Modifiers[1].values
-		elseif affix and affix[2] == 10 then
+		elseif affix and affix[3] == 10 then
 			weekly_modifier = self.Keystone_Modifiers[2].values
 		end
 		-- Creating the modifiers portion of the tooltip
@@ -744,6 +736,7 @@ function AMT:GET_AffixInformation()
 			self.Info.Affix.Table[2].id,
 			self.Info.Affix.Table[3].id,
 			self.Info.Affix.Table[4].id,
+			self.Info.Affix.Table[5].id,
 		}
 		-- CurrentRotation = self.Info.Affix.Current[1]
 	end
