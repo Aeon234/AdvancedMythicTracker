@@ -176,25 +176,9 @@ AMT.AMTFrame_Tabs = {
 	{
 		name = "Tracker",
 		tooltipText = "Mythic+ Tracker",
-		-- activeAtlas = "QuestLog-tab-icon-quest",
-		-- inactiveAtlas = "QuestLog-tab-icon-quest-inactive",
 		activeAtlas = "keyflameon-32x32",
 		inactiveAtlas = "keyflameoff-32x32",
 		DisplayMode = 1,
-	},
-	{
-		name = "Seasonal Info",
-		tooltipText = "Seasonal Information",
-		activeAtlas = "QuestLog-tab-icon-MapLegend",
-		inactiveAtlas = "QuestLog-tab-icon-MapLegend-inactive",
-		DisplayMode = 2,
-	},
-	{
-		name = "Portals",
-		tooltipText = "Dungeon Portals",
-		activeAtlas = "delves-bountiful",
-		inactiveAtlas = "delves-regular",
-		DisplayMode = 3,
 	},
 }
 
@@ -266,6 +250,12 @@ AMT.RewardsTable = {
 }
 --Dungeon info by expansion
 AMT.SeasonalDungeons = {
+	--Midnight
+	{ abbr = "MT", name = "Magisters' Terrace", spellID = 1254572, mapID = 558, instanceID = 2811, exp = 11 },
+	{ abbr = "MC", name = "Maisara Caverns", spellID = 1254559, mapID = 560, instanceID = 2874, exp = 11 },
+	{ abbr = "NPX", name = "Nexus-Point Xenas", spellID = 1254563, mapID = 559, instanceID = 2915, exp = 11 },
+	{ abbr = "WS", name = "Windrunner Spire", spellID = 1254400, mapID = 557, instanceID = 2805, exp = 11 },
+
 	--The War Within
 	{ abbr = "PSF", name = "Priory of the Sacred Flame", spellID = 445444, mapID = 499, instanceID = 2649, exp = 10 },
 	{ abbr = "ROOK", name = "The Rookery", spellID = 445443, mapID = 500, instanceID = 2648, exp = 10 },
@@ -369,6 +359,7 @@ AMT.SeasonalDungeons = {
 		exp = 7,
 	},
 	--Legion
+	{ abbr = "SEAT", name = "Seat of the Triumvirate", spellID = 1254551, mapID = 239, instanceID = 1753, exp = 6 },
 	{ abbr = "DHT", name = "Darkheart Thicket", spellID = 424163, mapID = 198, instanceID = 1466, exp = 6 },
 	{ abbr = "BRH", name = "Black Rook Hold", spellID = 424153, mapID = 199, instanceID = 1501, exp = 6 },
 	{ abbr = "HOV", name = "Halls of Valor", spellID = 393764, mapID = 200, instanceID = 1477, exp = 6 },
@@ -393,7 +384,7 @@ AMT.SeasonalDungeons = {
 		exp = 6,
 	},
 	--Warlords of Draenor
-	{ abbr = "SR", name = "Skyreach", spellID = 159898, mapID = 161, instanceID = 1209, exp = 5 },
+	{ abbr = "SR", name = "Skyreach", spellID = { 159898, 1254557 }, mapID = 161, instanceID = 1209, exp = 5 },
 	{ abbr = "BSM", name = "Bloodmaul Slag Mines", spellID = 159895, mapID = 163, instanceID = 1175, exp = 5 },
 	{ abbr = "AUC", name = "Auchindoun", spellID = 159897, mapID = 164, instanceID = 1182, exp = 5 },
 	{ abbr = "SBG", name = "Shadowmoon Burial Grounds", spellID = 159899, mapID = 165, instanceID = 1176, exp = 5 },
@@ -415,6 +406,8 @@ AMT.SeasonalDungeons = {
 	{ abbr = "VP", name = "The Vortex Pinnacle", spellID = 410080, mapID = 438, instanceID = 657, exp = 3 },
 	{ abbr = "TOTT", name = "Throne of the Tides", spellID = 424142, mapID = 456, instanceID = 456, exp = 3 },
 	{ abbr = "GB", name = "Grim Batol", spellID = 445424, mapID = 507, instanceID = 670, exp = 3 },
+	--Wrath of the Lich King
+	{ abbr = "GB", name = "Grim Batol", spellID = 1254555, mapID = 556, instanceID = 658, exp = 2 },
 }
 
 AMT.Raids = {
@@ -482,14 +475,14 @@ AMT.Keystone_Modifiers = {
 
 --Affix Rotation for the Season
 AMT.AffixRotation = {
-	{ rotation = { 148, 9, 10, 147 } }, --Ascendant
-	{ rotation = { 162, 10, 9, 147 } }, --Pulsar
-	{ rotation = { 158, 9, 10, 147 } }, --Voidbound
-	{ rotation = { 160, 10, 9, 147 } }, --Devour
-	{ rotation = { 162, 9, 10, 147 } }, --Pulsar
-	{ rotation = { 148, 10, 9, 147 } }, --Ascendant
-	{ rotation = { 160, 9, 10, 147 } }, --Devour
-	{ rotation = { 158, 10, 9, 147 } }, --Voidbound
+	{ rotation = { 165, 148, 9, 10, 147 } }, --Ascendant
+	{ rotation = { 165, 162, 10, 9, 147 } }, --Pulsar
+	{ rotation = { 165, 158, 9, 10, 147 } }, --Voidbound
+	{ rotation = { 165, 160, 10, 9, 147 } }, --Devour
+	{ rotation = { 165, 162, 9, 10, 147 } }, --Pulsar
+	{ rotation = { 165, 148, 10, 9, 147 } }, --Ascendant
+	{ rotation = { 165, 160, 9, 10, 147 } }, --Devour
+	{ rotation = { 165, 158, 10, 9, 147 } }, --Voidbound
 }
 
 AMT.Weekly_KillCount = {
@@ -501,39 +494,39 @@ AMT.Weekly_KillCount = {
 
 AMT.Crests = {
 	{
-		name = "Gilded",
+		name = "Myth",
 		color = AMT.Legendary_Color,
-		currencyID = 3290,
-		displayName = "Gilded Ethereal Crest",
-		textureID = 5872057,
+		currencyID = 3347,
+		displayName = "Myth Dawncrest",
+		textureID = 7639523,
 	},
 	{
-		name = "Runed",
+		name = "Hero",
 		color = AMT.Epic_Color,
-		currencyID = 3288,
-		displayName = "Runed Ethereal Crest",
-		textureID = 5872059,
+		currencyID = 3345,
+		displayName = "Hero Dawncrest",
+		textureID = 7639521,
 	},
 	{
-		name = "Carved",
+		name = "Champion",
 		color = AMT.Rare_Color,
-		currencyID = 3286,
-		displayName = "Carved Ethereal Crest",
-		textureID = 5872055,
+		currencyID = 3343,
+		displayName = "Champion Dawncrest",
+		textureID = 7639519,
 	},
 	{
-		name = "Weathered",
+		name = "Veteran",
 		color = AMT.Uncommon_Color,
-		currencyID = 3284,
-		displayName = "Weathered Ethereal Crest",
-		textureID = 5872061,
+		currencyID = 3341,
+		displayName = "Veteran Dawncrest",
+		textureID = 7639525,
 	},
 	{
-		name = "Valorstones",
+		name = "Adventurer",
 		color = AMT.Valorstones_Color,
-		currencyID = 3008,
-		displayName = "Valorstones",
-		textureID = 5868902,
+		currencyID = 3383,
+		displayName = "Adventurer Dawncrest",
+		textureID = 7639517,
 	},
 }
 AMT.SeasonalInfo = {}

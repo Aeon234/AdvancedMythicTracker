@@ -1,4 +1,4 @@
-## Interface: 110200
+## Interface: 120001
 ## Title:|cff18a8ffAdvanced Mythic Tracker|r
 ## Notes: Track your |cffffd200Raid|r, |cffffd200Mythic+|r, and |cffffd200World|r activities.
 ## Author: Aeon
@@ -14,5 +14,5 @@ AMT_Frames.xml
 Database.lua
 Util.lua
 Tracker.lua
-SeasonalInfo.lua
-Portals.lua
+# SeasonalInfo.lua
+# Portals.lua

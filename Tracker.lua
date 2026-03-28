@@ -51,7 +51,6 @@ function AMT:Initialize()
 		PlaySound(SOUNDKIT.IG_CHARACTER_INFO_OPEN)
 		self:Update_PVEFrame_Panels()
 		self:RefreshData()
-		self:SetDisplayMode(self.DisplayMode)
 	end)
 
 	--Hook PVEFrame
@@ -77,24 +76,6 @@ function AMT:Initialize()
 		self.Window:Hide()
 	end)
 
-	--Create AMT Window's Tab Buttons
-	self.WindowTab = {}
-	for i = 1, #self.AMTFrame_Tabs do
-		self.WindowTab[i] = CreateFrame("Button", "AMT_WindowTab" .. i, self.Window, "AMTTabButton")
-		if i == 1 then
-			self.WindowTab[i]:SetPoint("TOPLEFT", self.Window, "TOPRIGHT", -4, -28)
-		else
-			self.WindowTab[i]:SetPoint("TOP", self.WindowTab[i - 1], "BOTTOM", 0, -3)
-		end
-		self.WindowTab[i].name = self.AMTFrame_Tabs[i].name
-		self.WindowTab[i].activeAtlas = self.AMTFrame_Tabs[i].activeAtlas
-		self.WindowTab[i].inactiveAtlas = self.AMTFrame_Tabs[i].inactiveAtlas
-		self.WindowTab[i].DisplayMode = self.AMTFrame_Tabs[i].DisplayMode
-		-- self.WindowTab[i].Icon = self.WindowTab[i]:CreateTexture(nil, "ARTWORK")
-		self.WindowTab[i].Icon:SetPoint("CENTER", -2, 0)
-		self.WindowTab[i].Icon:SetAtlas(self.WindowTab[i].activeAtlas, true)
-	end
-
 	self:Framework()
 end
 
@@ -108,24 +89,12 @@ function AMT:Framework()
 
 	self.Window.Titles = {
 		["Tracker"] = title,
-		["Seasonal Info"] = "Seasonal Info",
-		["Portals"] = "Dungeon & Raid Portals",
 	}
 
 	--Create Tracker Frame
 	self.Window.Tracker = CreateFrame("Frame", "AMT_Tracker_Frame", self.Window)
 	self.Window.Tracker:SetPoint("CENTER")
 	self.Window.Tracker:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
-
-	--Create Seasonal Info Window
-	self.Window.Info = CreateFrame("Frame", "AMT_Info_Container", self.Window)
-	self.Window.Info:SetPoint("CENTER")
-	self.Window.Info:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
-
-	--Create Portals Window
-	self.Window.Portals = CreateFrame("Frame", "AMT_Portals_Container", self.Window)
-	self.Window.Portals:SetPoint("CENTER")
-	self.Window.Portals:SetSize(AMT_WINDOW_WIDTH, AMT_WINDOW_HEIGHT)
 
 	--Keystone Frame
 	self.Window.Tracker.Keystone = CreateFrame("Frame", "AMT_CurrentKeystone_Frame", self.Window.Tracker)
@@ -398,7 +367,7 @@ function AMT:Framework()
 					end
 				end
 			end
-			if IsSpellKnown(dungSpellID, false) then
+			if C_SpellBook.IsSpellInSpellBook(dungSpellID) then
 				local spellCooldownInfo = C_Spell.GetSpellCooldown(dungSpellID)
 
 				GameTooltip:AddLine(" ")
@@ -434,7 +403,7 @@ function AMT:Framework()
 
 	--Affixes
 	local AffixIconSize = 34
-	local AffixIconPadding = 14
+	local AffixIconPadding = 6
 	self.Window.Tracker.Affix = CreateFrame("Frame", "AMT_Affixes_Compartment", self.Window.Tracker)
 	self.Window.Tracker.Affix:SetSize(200, 150)
 	self.Window.Tracker.Affix:SetPoint("TOPRIGHT", self.Window, "TOPRIGHT", -X_OFFSET, -Y_OFFSET)
@@ -598,8 +567,12 @@ function AMT:Framework()
 			"!"
 		)
 		self.Window.Tracker.PartyKeys.details:SetScript("OnClick", function()
-			if _G.SlashCmdList["KEYSTONE"] then
-				_G.SlashCmdList["KEYSTONE"]("")
+			if SlashCmdList.KEYSTONE then
+				SlashCmdList.KEYSTONE("", {
+					GetText = function()
+						return "/keystone"
+					end,
+				})
 			end
 		end)
 
