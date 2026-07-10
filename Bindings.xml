@@ -1,5 +1,0 @@
-<Bindings>
-  <Binding name="AMT" category="|cff18a8ffAdvanced Mythic Tracker|r">
-    AMTWindow_Toggle()
-  </Binding>
-</Bindings>
