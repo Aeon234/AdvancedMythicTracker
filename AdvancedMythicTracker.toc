@@ -1,0 +1,17 @@
+## Interface: 120007
+## Title:Advanced Mythic Tracker
+## Notes:
+## Author: Aeon
+## Version: @project-version@
+## SavedVariables: AdvancedMythicTrackerDB
+## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\AdvancedMythicTracker
+## X-Curse-Project-ID: 1037826
+## X-Wago-ID: 
+## OptionalDeps: RaiderIO
+
+Libs\Init.xml
+
+Core.lua
+Locales\Localization.xml
+
+Dashboard.lua

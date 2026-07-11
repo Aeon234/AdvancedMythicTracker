@@ -1,0 +1,20 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ https://raw.githubusercontent.com/Gethe/wow-ui-source/live/Interface/AddOns/Blizzard_SharedXML/UI.xsd">
+
+    <!-- enUS is the base locale and always loads (English). Each foreign file
+         below gates on GetLocale() (e.g. `if GetLocale() ~= "deDE" then return end`)
+         and overlays only its translations, falling back to the English base. -->
+    <Script file="enUS.lua" />
+    <!-- <Script file="zhCN.lua"/> -->
+    <!-- <Script file="zhTW.lua"/> -->
+    <!-- <Script file="deDE.lua"/> -->
+    <!-- <Script file="frFR.lua"/> -->
+    <!-- <Script file="itIT.lua"/> -->
+    <!-- <Script file="ptBR.lua"/> -->
+    <!-- <Script file="ruRU.lua"/> -->
+    <!-- <Script file="koKR.lua"/> -->
+    <!-- <Script file="esMX.lua"/> -->
+    <!-- <Script file="esES.lua"/> -->
+
+</Ui>
