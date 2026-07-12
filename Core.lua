@@ -52,14 +52,14 @@ end
 
 local function SlashHandler()
 	if AMT.Dashboard then
-		AdvancedMythicTracker_ToggleDashboard()
+		AMT.ToggleDashboard()
 	else
-		AMT:Print("Options UI failed to load. Try /reload.")
+		return
 	end
 end
 
 AMT:RegisterSlashCommand("ADVANCEDMYTHICTRACKER", { "amt" }, SlashHandler)
-AMT:RegisterSlashCommand("AEONCORE_RELOAD", "rl", function()
+AMT:RegisterSlashCommand("ADVANCEDMYTHICTRACKER_RELOAD", "rl", function()
 	C_UI.Reload()
 end)
 
@@ -160,8 +160,6 @@ function EventFrame:ADDON_LOADED(name)
 	end
 	self:UnregisterEvent("ADDON_LOADED")
 	AMT:Print(AMT.addonVersion .. " loaded.")
-
-	AMT:CreateDashboard()
 end
 
 EventFrame:RegisterEvent("ADDON_LOADED")
