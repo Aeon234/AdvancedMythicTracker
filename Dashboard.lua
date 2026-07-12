@@ -140,18 +140,13 @@ local function CreateDashboardTabs(f)
 	f.numTabs = AMT_TAB_INDEX
 
 	for i = 1, #PVE_PANELS do
-		local tab = CreateFrame("Button", "AdvancedMythicTrackerDashboardTab" .. i, f, "PanelTabButtonTemplate", i)
+		local tab = CreateFrame("Button", "AdvancedMythicTrackerTab" .. i, f, "PanelTabButtonTemplate", i)
 		tab:SetScript("OnClick", OnMirroredTabClick)
 		f.Tabs[i] = tab
 	end
 
-	local amtTab = CreateFrame(
-		"Button",
-		"AdvancedMythicTrackerDashboardTab" .. AMT_TAB_INDEX,
-		f,
-		"PanelTabButtonTemplate",
-		AMT_TAB_INDEX
-	)
+	local amtTab =
+		CreateFrame("Button", "AdvancedMythicTrackerTab" .. AMT_TAB_INDEX, f, "PanelTabButtonTemplate", AMT_TAB_INDEX)
 	amtTab:SetText(L["TAB_NAME"])
 	PanelTemplates_TabResize(amtTab, 0)
 	f.Tabs[AMT_TAB_INDEX] = amtTab
@@ -204,6 +199,11 @@ local function CreateDashboard()
 		self.openSoundKit = nil
 		self:SetTitle(GetDashboardTitle()) -- season data may have arrived since creation
 		UpdateDashboardTabs()
+		-- Mutual exclusivity from this side too, in case a future code path
+		-- shows the dashboard without going through the swap helpers.
+		if PVEFrame:IsShown() then
+			HideUIPanel(PVEFrame)
+		end
 	end)
 	f:SetScript("OnHide", function(self)
 		if self.suppressCloseSound then
@@ -246,6 +246,15 @@ local function CreateDashboard()
 	-- One-time hooks. HookScript STACKS handlers — installing these inside the
 	-- OnShow hook would add a duplicate set on every PVEFrame open.
 	PVEFrame:HookScript("OnShow", function()
+		-- Mutual exclusivity: PVEFrame appearing through ANY path (keybind,
+		-- micro button, LFG events) replaces the dashboard, mirroring how the
+		-- dashboard replaces PVEFrame. PVEFrame's open sound already plays, so
+		-- our close sound stays silent.
+		if f:IsShown() then
+			f.suppressCloseSound = true
+			f:Hide()
+		end
+
 		AMT.UpdateMainTabState()
 
 		-- PVEFrame.Tabs does not exist (XML only sets parentKey tab1..3);
