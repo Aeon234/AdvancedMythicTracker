@@ -29,7 +29,7 @@
 
 | Transition | Ours | Blizzard's (unavoidable) |
 |---|---|---|
-| `/amt` or keybind open | `IG_CHARACTER_INFO_OPEN` | — |
+| `/amt` or keybind open (incl. swap-in-place when PVEFrame open) | `IG_CHARACTER_INFO_OPEN` | `..._CLOSE` from PVEFrame OnHide when swapping |
 | `/amt` close / Escape | `IG_CHARACTER_INFO_CLOSE` | — |
 | PVEFrame tab → dashboard | `IG_CHARACTER_INFO_TAB` | `..._CLOSE` from PVEFrame OnHide |
 | dashboard mirrored tab → PVEFrame | none (suppressed) | `..._OPEN` from PVEFrame OnShow |
@@ -76,24 +76,10 @@ local AMT_TAB_INDEX = #PVE_PANELS + 1
 -- === Show / Toggle ========
 -- ==========================
 
----Toggle the dashboard (slash command / future keybind path — standard open
----sound). No-ops in combat and on ineligible conditions.
-function AMT.ToggleDashboard()
-	if InCombatLockdown() or not AMT.IsTabEligible() then
-		return
-	end
-
-	AMT.Dashboard:SetShown(not AMT.Dashboard:IsShown())
-end
-
----Swap PVEFrame out for the dashboard: anchor to PVEFrame's current screen
----position, hide it, show the dashboard with the tab-click sound. PVEFrame's
----own OnHide close sound overlaps the tab sound; unavoidable without taint.
-local function SwitchToDashboard()
-	if InCombatLockdown() or not AMT.IsTabEligible() then
-		return
-	end
-
+---Anchor the dashboard to PVEFrame's current screen position, hide PVEFrame,
+---show the dashboard. PVEFrame's own OnHide close sound plays regardless;
+---unavoidable without taint.
+local function SwapFromPVEFrame()
 	local f = AMT.Dashboard
 	local left, top = PVEFrame:GetLeft(), PVEFrame:GetTop()
 	if left and top then
@@ -101,9 +87,36 @@ local function SwitchToDashboard()
 		f:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
 	end
 
-	f.openSoundKit = SOUNDKIT.IG_CHARACTER_INFO_TAB
 	HideUIPanel(PVEFrame)
 	f:Show()
+end
+
+---Toggle the dashboard (slash command / future keybind path — standard open
+---sound). Swaps in place of PVEFrame when it is open. No-ops in combat and
+---on ineligible conditions.
+function AMT.ToggleDashboard()
+	if InCombatLockdown() or not AMT.IsTabEligible() then
+		return
+	end
+
+	local f = AMT.Dashboard
+	if f:IsShown() then
+		f:Hide()
+	elseif PVEFrame:IsShown() then
+		SwapFromPVEFrame() -- default open sound: this path is not a tab click
+	else
+		f:Show()
+	end
+end
+
+---PVEFrame-tab click path: same swap, but sounds like a tab click.
+local function SwitchToDashboard()
+	if InCombatLockdown() or not AMT.IsTabEligible() then
+		return
+	end
+
+	AMT.Dashboard.openSoundKit = SOUNDKIT.IG_CHARACTER_INFO_TAB
+	SwapFromPVEFrame()
 end
 
 -- ==========================
@@ -333,7 +346,7 @@ Run: `luac -p Dashboard.lua` — expect silence.
 ## Design choices surfaced (Alex decides, defaults chosen)
 
 1. **Sound overlaps** (see table above): PVEFrame's own OPEN/CLOSE sounds cannot be suppressed without taint. Tab-into-dashboard = TAB+CLOSE together; tab-back = OPEN only (our TAB suppressed there to avoid a triple). If the TAB+CLOSE mix bothers you in-game, the fallback is dropping our TAB sound and letting CLOSE stand alone — one-line change.
-2. **`/amt` while PVEFrame is open** leaves PVEFrame open and shows the dashboard at its own last position — spec only defines the swap for the tab path. Alternative: make `/amt` also swap in place when PVEFrame is shown; say the word.
+2. **`/amt` while PVEFrame is open swaps in place** (hides PVEFrame, dashboard at its position) — Alex-confirmed 2026-07-11. Sound stays the window-open kit: the tab-click sound is reserved for actual tab clicks per the spec.
 3. **Escape (or close button) on the dashboard does NOT reopen PVEFrame** — it just closes, like closing any window.
 4. **Dashboard's active tab is click-dead** (stock PanelTemplates behavior for selected tabs) — clicking "Mythic+ Tracker" on the dashboard does nothing, exactly like clicking PVEFrame's own active tab.
 5. **Mirrored tab visibility uses `IsShown()`** of the Blizzard tabs (their own flag, valid while PVEFrame is hidden). Disabled-state on PVEFrame's Challenges tab (M+ inactive) is NOT mirrored — dashboard is unreachable in that state anyway (eligibility gate).
@@ -344,12 +357,12 @@ Run: `luac -p Dashboard.lua` — expect silence.
 1. Max-level char, active season: open Group Finder → AMT tab enabled at the right of the tab row (no Lua error on open — `PVEFrame.Tabs` fix).
 2. Click AMT tab → PVEFrame closes, dashboard appears at the exact same spot; tab-click sound (plus PVEFrame's close sound underneath — accepted); dashboard shows Group Finder / PvP / Mythic+ / Mythic+ Tracker tabs with Mythic+ Tracker active (pressed-in, no click).
 3. Click "Group Finder" on the dashboard → dashboard closes silently, PVEFrame opens on Group Finder panel (window-open sound only). Same for PvP and Mythic+ (Challenges panel loads on demand).
-4. `/amt` (PVEFrame closed) → dashboard opens at last position with window-open sound; `/amt` again → closes with window-close sound; Escape also closes.
+4. `/amt` (PVEFrame closed) → dashboard opens at last position with window-open sound; `/amt` again → closes with window-close sound; Escape also closes. `/amt` with PVEFrame OPEN → PVEFrame closes, dashboard appears in its place (window-open sound, not tab sound).
 5. Drag dashboard elsewhere, close it, reopen via PVEFrame tab → snaps back to PVEFrame's position.
 6. Sub-max char: AMT tab greyed/disabled with tooltip (unchanged behavior).
 7. Paste any Lua error verbatim.
 
 ## Execution Status
 
-- Task 1: pending
+- Task 1: done — Dashboard.lua replaced verbatim with the Step 1 code block (273 lines). `luac -p Dashboard.lua` silent (pass). Starting file was 144 lines, not 146 as the plan noted; immaterial to a whole-file replacement.
 - Task 2: pending
