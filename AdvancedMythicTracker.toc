@@ -9,9 +9,11 @@
 ## X-Wago-ID: 
 ## OptionalDeps: RaiderIO
 
+FrameTemplates.xml
 Libs\Init.xml
 
 Core.lua
+Util.lua
 Locales\Localization.xml
 
 Dashboard.lua
