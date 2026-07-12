@@ -14,10 +14,12 @@ AMT.L = setmetatable({}, {
 	end,
 })
 
+---@class API
+AMT.API = {}
+
 local CreateFrame = CreateFrame
 local SlashCmdList = SlashCmdList
 local type = type
-local pairs = pairs
 local ipairs = ipairs
 local lower = string.lower
 local _G = _G

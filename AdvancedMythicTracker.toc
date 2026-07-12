@@ -15,5 +15,6 @@ Libs\Init.xml
 Core.lua
 Util.lua
 Locales\Localization.xml
+Widgets\Nineslice.lua
 
 Dashboard.lua
