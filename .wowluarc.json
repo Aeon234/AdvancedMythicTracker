@@ -1,0 +1,21 @@
+{
+  "flavors": ["retail"],
+
+  "globals": {
+    "read": ["SlashCmdList", "StaticPopupDialogs"],
+    "write": ["AdvancedMythicTracker*", "AdvancedMythicTrackerDB", "SlashCmdList"]
+  },
+
+  "diagnostics": {
+    "enable": [
+      "need-check-nil",
+      "nil-index",
+      "invalid-op",
+      "redundant-condition",
+      "redundant-and",
+      "redundant-or",
+      "unused-function",
+      "unused-vararg"
+    ]
+  }
+}

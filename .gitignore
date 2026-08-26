@@ -1,0 +1,14 @@
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Packaging output
+/.release/
+*.zip
+*.7z
+
+# VS Code.
+.vscode/

@@ -1,0 +1,11 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+*.tga binary
+*.blp binary
+*.png binary
+*.ttf binary
+*.ogg binary
+
+# Shell scripts must stay LF or Git Bash chokes on the carriage returns.
+*.sh text eol=lf
