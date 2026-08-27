@@ -3,7 +3,12 @@
 
   "globals": {
     "read": ["SlashCmdList", "StaticPopupDialogs"],
-    "write": ["AdvancedMythicTracker*", "AdvancedMythicTrackerDB", "SlashCmdList"]
+    "write": [
+      "AdvancedMythicTracker*",
+      "AdvancedMythicTrackerDB",
+      "AMTAPI",
+      "SlashCmdList"
+    ]
   },
 
   "diagnostics": {

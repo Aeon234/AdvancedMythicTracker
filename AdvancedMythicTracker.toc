@@ -7,7 +7,7 @@
 ## SavedVariables: AdvancedMythicTrackerDB
 
 ## IconTexture: 4352494
-## OptionalDeps: RaiderIO
+## OptionalDeps: 
 
 ## X-Curse-Project-ID: 1037826
 ## X-Wago-ID:
@@ -23,3 +23,5 @@
 ## Category-ruRU: Подземелья и рейды
 ## Category-zhCN: 地下城和团队副本
 ## Category-zhTW: 地城與團隊
+
+Core\Init.lua
