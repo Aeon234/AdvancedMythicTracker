@@ -5,6 +5,7 @@ local addonName = ...
 ---@field name string
 ---@field version string
 ---@field Util AMTUtil
+---@field L AMTLocale
 local AMT = select(2, ...)
 
 AMT.name = addonName

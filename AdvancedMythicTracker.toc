@@ -26,3 +26,4 @@
 
 Core\Init.lua
 Core\Util.lua
+Core\Locale.lua
