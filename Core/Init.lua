@@ -9,9 +9,10 @@ local AMT = select(2, ...)
 AMT.name = addonName
 AMT.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or ERROR_CAPS
 
----@class AMTAPI
----@field version integer
-AMTAPI = { version = 1 }
+-- AMT API exposed to other addons. Here just in case in future I want to expose anything.
+-- ---@class AMTAPI
+-- ---@field version integer
+-- AMTAPI = { version = 1 }
 
 SLASH_ADVANCEDMYTHICTRACKER1 = "/amt"
 
