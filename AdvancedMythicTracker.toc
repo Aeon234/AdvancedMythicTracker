@@ -30,4 +30,5 @@ Core\Locale.lua
 Core\Module.lua
 Core\Events.lua
 Core\DB.lua
+Core\Profiles.lua
 Core\Bootstrap.lua

@@ -11,7 +11,7 @@ local SCHEMA_VERSION = 1
 ---@field records AMTRecords
 
 ---@class AMTSettings
----@field profiles table<string,table>
+---@field profiles table<string,AMTProfile>
 ---@field profileKeys table<string,string>
 ---@field defaultProfile string
 

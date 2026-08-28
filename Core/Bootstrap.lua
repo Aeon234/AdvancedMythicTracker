@@ -16,6 +16,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		self:UnregisterEvent(event)
 
 		AMT.DB.Initialize()
+		AMT.Profiles.Initialize()
 
 		for module in Modules.Iterate() do
 			if module.OnInitialize then
