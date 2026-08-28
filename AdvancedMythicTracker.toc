@@ -34,3 +34,4 @@ Core\Profiles.lua
 Core\Bootstrap.lua
 
 State\State.lua
+State\Challenge.lua

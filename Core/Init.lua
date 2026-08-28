@@ -11,6 +11,7 @@ local addonName = ...
 ---@field Events AMTEvents
 ---@field Profiles AMTProfiles
 ---@field State AMTState
+---@field Challenge AMTChallenge
 local AMT = select(2, ...)
 
 AMT.name = addonName
