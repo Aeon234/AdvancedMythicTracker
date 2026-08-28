@@ -13,8 +13,10 @@ local Challenge = {}
 AMT.Challenge = Challenge
 
 ---@return boolean
-function Challenge.IsActive()
-	return C_ChallengeMode.IsChallengeModeActive()
+function Challenge.IsInChallengeInstance()
+	local _, instanceType, difficultyID = GetInstanceInfo()
+
+	return instanceType == "party" and difficultyID == DifficultyUtil.ID.DungeonChallenge
 end
 
 ---@param timeLimit number seconds as reported by GetMapUIInfo
