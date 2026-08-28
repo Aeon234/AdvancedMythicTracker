@@ -10,6 +10,7 @@ local addonName = ...
 ---@field Modules AMTModules
 ---@field Events AMTEvents
 ---@field Profiles AMTProfiles
+---@field State AMTState
 local AMT = select(2, ...)
 
 AMT.name = addonName

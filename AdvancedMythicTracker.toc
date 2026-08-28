@@ -32,3 +32,5 @@ Core\Events.lua
 Core\DB.lua
 Core\Profiles.lua
 Core\Bootstrap.lua
+
+State\State.lua
