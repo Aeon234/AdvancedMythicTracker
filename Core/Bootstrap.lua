@@ -95,6 +95,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			end
 		end
 	else
+		C_MythicPlus.RequestMapInfo()
 		CheckForChallenge()
 	end
 end)

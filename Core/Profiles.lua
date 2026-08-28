@@ -51,7 +51,6 @@ function Profiles.Initialize()
 	local settings = AMT.DB.settings
 	local name = settings.profileKeys[CharacterKey()] or settings.defaultProfile
 
-	settings.profileKeys[CharacterKey()] = name
 	Profiles.activeName = name
 	Profiles.active = Profiles.Create(name)
 end
@@ -71,10 +70,6 @@ end
 
 ---@param name string
 function Profiles.SetDefaultForAll(name)
-	local settings = AMT.DB.settings
-
-	settings.defaultProfile = name
-	wipe(settings.profileKeys)
-
+	AMT.DB.settings.defaultProfile = name
 	Profiles.Activate(name)
 end
