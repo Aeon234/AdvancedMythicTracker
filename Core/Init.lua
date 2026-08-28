@@ -12,6 +12,7 @@ local addonName = ...
 ---@field Profiles AMTProfiles
 ---@field State AMTState
 ---@field Challenge AMTChallenge
+---@field Forces AMTForces
 local AMT = select(2, ...)
 
 AMT.name = addonName
