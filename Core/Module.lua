@@ -75,5 +75,6 @@ function Modules.Disable(module)
 		module:OnDisable()
 	end
 
+	AMT.Events.UnregisterAll(module)
 	module.enabled = false
 end

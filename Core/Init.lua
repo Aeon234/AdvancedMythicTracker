@@ -7,6 +7,7 @@ local addonName = ...
 ---@field Util AMTUtil
 ---@field L AMTLocale
 ---@field Modules AMTModules
+---@field Events AMTEvents
 local AMT = select(2, ...)
 
 AMT.name = addonName

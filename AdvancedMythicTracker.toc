@@ -28,3 +28,4 @@ Core\Init.lua
 Core\Util.lua
 Core\Locale.lua
 Core\Module.lua
+Core\Events.lua
