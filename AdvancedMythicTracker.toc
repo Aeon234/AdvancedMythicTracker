@@ -29,4 +29,5 @@ Core\Util.lua
 Core\Locale.lua
 Core\Module.lua
 Core\Events.lua
+Core\DB.lua
 Core\Bootstrap.lua

@@ -4,6 +4,7 @@ local addonName = ...
 ---@class AMT
 ---@field name string
 ---@field version string
+---@field DB AMTDB
 ---@field Util AMTUtil
 ---@field L AMTLocale
 ---@field Modules AMTModules
