@@ -75,11 +75,24 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED")
 		self:RegisterEvent("CHALLENGE_MODE_START")
 		self:RegisterEvent("CHALLENGE_MODE_MAPS_UPDATE")
+		self:RegisterEvent("CHALLENGE_MODE_COMPLETED")
 	elseif event == "CHALLENGE_MODE_MAPS_UPDATE" then
 		local state = AMT.State.current
 
 		if state.inChallenge and state.timeLimit == 0 then
 			AMT.Challenge.Load()
+		end
+	elseif event == "CHALLENGE_MODE_COMPLETED" then
+		if not AMT.State.current.inChallenge then
+			return
+		end
+
+		AMT.Challenge.Complete()
+
+		for module in Modules.Iterate() do
+			if module.OnChallengeComplete then
+				module:OnChallengeComplete()
+			end
 		end
 	else
 		CheckForChallenge()

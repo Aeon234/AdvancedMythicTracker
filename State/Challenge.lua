@@ -80,3 +80,15 @@ function Challenge.Load()
 
 	return true
 end
+
+function Challenge.Complete()
+	local info = C_ChallengeMode.GetChallengeCompletionInfo()
+	local state = State.current
+
+	state.challengeCompleted = true
+	state.completedOnTime = info.onTime
+	state.completionMS = info.time
+	state.upgradeLevels = info.keystoneUpgradeLevels
+
+	State.MarkDirty("timer")
+end

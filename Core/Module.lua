@@ -8,6 +8,7 @@ local AMT = select(2, ...)
 ---@field OnDisable fun(self:AMTModule)?
 ---@field OnProfileChanged fun(self:AMTModule)?
 ---@field OnChallengeStart fun(self:AMTModule)?
+---@field OnChallengeComplete fun(self: AMTModule)?
 ---@field OnChallengeEnd fun(self:AMTModule,completed:boolean)?
 
 ---@class AMTModules

@@ -18,6 +18,7 @@ local Util = AMT.Util
 ---@field challengeCompleted boolean
 ---@field completedOnTime boolean?
 ---@field completionMS integer?
+---@field upgradeLevels integer?
 ---@field timerStarted boolean
 ---@field elapsed number
 ---@field timeLimit number
@@ -45,6 +46,7 @@ local defaults = {
 	challengeCompleted = false,
 	completedOnTime = nil,
 	completionMS = nil,
+	upgradeLevels = nil,
 	timerStarted = false,
 	elapsed = 0,
 	timeLimit = 0,
