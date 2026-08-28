@@ -36,3 +36,4 @@ Core\Bootstrap.lua
 State\State.lua
 State\Challenge.lua
 State\Forces.lua
+State\Deaths.lua
