@@ -15,6 +15,7 @@ local addonName = ...
 ---@field Forces AMTForces
 ---@field Deaths AMTDeaths
 ---@field Objectives AMTObjectives
+---@field Pull AMTPull
 local AMT = select(2, ...)
 
 AMT.name = addonName
