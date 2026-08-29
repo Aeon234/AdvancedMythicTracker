@@ -51,7 +51,8 @@ local function Add(event, module, handler, challenge)
 	end
 
 	if IndexOf(entries, module) then
-		error(("Advanced Mythic Tracker: module %q already listens for %s"):format(module.name, event), 3)
+		AMT.Util.Warn("module %q already listens for %s; ignoring the duplicate.", module.name, event)
+		return
 	end
 
 	entries[#entries + 1] = { module = module, handler = handler, challenge = challenge }

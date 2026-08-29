@@ -21,12 +21,16 @@ function Providers.Register(name, set)
 end
 
 ---@param name string
+---@return boolean
 function Providers.Use(name)
 	local set = sets[name]
 
 	if not set then
-		error(("no provider set named %q"):format(name), 2)
+		AMT.Util.Warn("no provider set named %q; keeping the current one.", name)
+		return false
 	end
 
 	Providers.active = set
+
+	return true
 end

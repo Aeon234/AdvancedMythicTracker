@@ -47,7 +47,7 @@ function DB.Initialize()
 	local stored = AdvancedMythicTrackerDB.version
 
 	if stored and stored > SCHEMA_VERSION then
-		print("%s: settings were upgraded to a newer version and you may cause changes."):format(AMT.name)
+		AMT.Util.Warn("settings were saved by a newer version and may not load correctly.")
 	end
 
 	Util.MergeDefaults(AdvancedMythicTrackerDB, defaults)

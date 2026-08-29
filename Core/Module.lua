@@ -24,8 +24,11 @@ local inOrder = {}
 ---@param name string
 ---@return AMTModule
 function Modules.New(name)
-	if byName[name] then
-		error(("module%q already registered"):format(name), 2)
+	local existing = byName[name]
+
+	if existing then
+		AMT.Util.Warn("module %q already registered.", name)
+		return existing
 	end
 
 	---@type AMTModule

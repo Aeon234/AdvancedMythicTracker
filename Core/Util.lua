@@ -4,6 +4,29 @@ local AMT = select(2, ...)
 local Util = {}
 AMT.Util = Util
 
+local PREFIX = "|cff33ff99Advanced Mythic Tracker|r: "
+local WARN_PREFIX = "|cff33ff99Advanced Mythic Tracker|r |cffff7f3fWarning|r: "
+
+---@param message string
+---@param ... any
+function Util.Print(message, ...)
+	if select("#", ...) > 0 then
+		message = message:format(...)
+	end
+
+	print(PREFIX .. message)
+end
+
+---@param message string
+---@param ... any
+function Util.Warn(message, ...)
+	if select("#", ...) > 0 then
+		message = message:format(...)
+	end
+
+	print(WARN_PREFIX .. message)
+end
+
 ---@generic T
 ---@param source T
 ---@return T

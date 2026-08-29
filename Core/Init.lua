@@ -30,5 +30,5 @@ AMT.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or ERROR_CAPS
 SLASH_ADVANCEDMYTHICTRACKER1 = "/amt"
 
 SlashCmdList.ADVANCEDMYTHICTRACKER = function()
-	print(("%s v%s"):format(AMT.name, AMT.version))
+	AMT.Util.Print("v%s", AMT.version)
 end
