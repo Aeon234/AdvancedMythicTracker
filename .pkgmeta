@@ -1,1 +1,16 @@
 package-as: AdvancedMythicTracker
+
+enable-nolib-creation: no
+
+externals:
+Libs/LibStub: https://repos.wowace.com/wow/libstub/trunk
+Libs/CallbackHandler-1.0: https://repos.wowace.com/wow/callbackhandler/trunk/CallbackHandler-1.0
+Libs/LibSharedMedia-3.0: https://repos.wowace.com/wow/libsharedmedia-3-0/trunk/LibSharedMedia-3.0
+
+ignore:
+
+- .pkgmeta
+- .wowluarc.json
+- .github
+- Scripts
+- "\*.md"
