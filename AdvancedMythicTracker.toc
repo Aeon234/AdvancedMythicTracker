@@ -26,24 +26,8 @@
 
 Libs\embeds.xml
 
-Core\Init.lua
-Core\Util.lua
-Core\Locale.lua
-Core\Media.lua
-Core\Module.lua
-Core\Events.lua
-Core\DB.lua
-Core\Profiles.lua
-Core\Bootstrap.lua
-
-State\State.lua
-State\Challenge.lua
-State\Forces.lua
-State\Deaths.lua
-State\Objectives.lua
-State\Pull.lua
-
-Providers\Providers.lua
-Providers\Live.lua
+Core\Core.xml
+State\State.xml
+Providers\Providers.xml
 
 Modules\_Test.lua
