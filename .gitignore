@@ -11,6 +11,6 @@ desktop.ini
 *.7z
 
 # VS Code.
-.vscode/.vscode/
+.vscode/
 
 /Libs/
