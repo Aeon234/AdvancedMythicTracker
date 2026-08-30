@@ -24,9 +24,12 @@
 ## Category-zhCN: 地下城和团队副本
 ## Category-zhTW: 地城與團隊
 
+Libs\embeds.xml
+
 Core\Init.lua
 Core\Util.lua
 Core\Locale.lua
+Core\Media.lua
 Core\Module.lua
 Core\Events.lua
 Core\DB.lua
@@ -42,3 +45,5 @@ State\Pull.lua
 
 Providers\Providers.lua
 Providers\Live.lua
+
+Modules\_Test.lua
