@@ -43,26 +43,25 @@ function Util.Copy(source)
 	return result
 end
 
----@generic T: table
----@param target table|nil
----@param defaults T
----@return T
+---@param target table<any, any>?
+---@param defaults table<any, any>
 function Util.MergeDefaults(target, defaults)
 	if not target then
-		return defaults
+		return
 	end
 
 	for key, value in pairs(defaults) do
+		local current = target[key]
+
 		if type(value) == "table" then
-			if type(target[key]) ~= "table" then
-				target[key] = {}
+			if type(current) ~= "table" then
+				current = {}
+				target[key] = current
 			end
 
-			Util.MergeDefaults(target[key], value)
-		elseif target[key] == nil then
+			Util.MergeDefaults(current, value)
+		elseif current == nil then
 			target[key] = value
 		end
 	end
-
-	return target
 end
