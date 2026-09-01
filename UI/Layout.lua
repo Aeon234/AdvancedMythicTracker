@@ -121,3 +121,5 @@ function Layout.Apply()
 
 	root:SetHeight(math.max(y - GROUP_SPACING, 1))
 end
+
+AMT.Render.Register("layout", Layout.Apply)
