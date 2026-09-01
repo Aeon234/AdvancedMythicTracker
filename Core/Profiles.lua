@@ -6,14 +6,21 @@ local Modules = AMT.Modules
 -- Incase I need to force Profile Upgrades
 local PROFILE_VERSION = 1
 
+---@class AMTTimerProfile
+---@field scale number
+---@field position AMTFramePosition
+
 ---@class AMTProfile
 ---@field version integer
----@field timer table
+---@field timer AMTTimerProfile
 
 ---@type AMTProfile
 local profileDefaults = {
 	version = PROFILE_VERSION,
-	timer = {},
+	timer = {
+		scale = 1.0,
+		position = { anchor = "RIGHT", x = 0, y = -10 },
+	},
 }
 
 ---@class AMTProfiles

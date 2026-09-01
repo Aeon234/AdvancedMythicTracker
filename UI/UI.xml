@@ -3,4 +3,6 @@
     <Script file="Mixins\Mixins.lua" />
     <Script file="Mixins\Bar.lua" />
     <Script file="Mixins\Draggable.lua" />
+
+    <Script file="Frames.lua" />
 </Ui>
