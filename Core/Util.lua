@@ -65,3 +65,41 @@ function Util.MergeDefaults(target, defaults)
 		end
 	end
 end
+
+---@param seconds number
+---@param decimals integer? 0-3, default 0
+---@param signed boolean? prefix the sign, for diffs
+---@return string
+function Util.FormatTime(seconds, decimals, signed)
+	local precision = decimals or 0
+	local factor = 10 ^ precision
+	local absolute = Round(math.abs(seconds) * factor) / factor
+
+	local hours = math.floor(absolute / 3600)
+	local minutes = math.floor((absolute % 3600) / 60)
+	local wholeSeconds = math.floor(absolute % 60)
+
+	local formatted
+
+	if hours > 0 then
+		formatted = ("%d:%02d:%02d"):format(hours, minutes, wholeSeconds)
+	else
+		formatted = ("%d:%02d"):format(minutes, wholeSeconds)
+	end
+
+	if precision > 0 then
+		formatted = formatted .. ("%." .. precision .. "f"):format(absolute % 1):sub(2)
+	end
+
+	if not signed then
+		return formatted
+	end
+
+	if seconds > 0 then
+		return "+" .. formatted
+	elseif seconds < 0 then
+		return "-" .. formatted
+	end
+
+	return "±" .. formatted
+end
