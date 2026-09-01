@@ -29,7 +29,7 @@ function Text:ApplyStyle(style)
 	local font = AMT.Media.Font(style.font)
 
 	if font then
-		self:SetFont(font, style.size, style.outline)
+		self:SetFont(font, style.size, style.outline) ---@diagnostic disable-line: type-mismatch
 	end
 
 	local color = style.color
