@@ -36,8 +36,15 @@ end
 ---@param elementKey string
 ---@param frame Frame
 function Layout.RegisterElement(groupKey, elementKey, frame)
-	if elements[elementKey] then
-		AMT.Util.Warn("layout element %q is already registered.", elementKey)
+	local existing = elements[elementKey]
+
+	if existing then
+		AMT.Util.Warn(
+			"layout element %q is already registered in group %q; ignoring the one in %q.",
+			elementKey,
+			existing.group,
+			groupKey
+		)
 
 		return
 	end
