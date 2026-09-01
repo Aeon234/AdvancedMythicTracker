@@ -7,7 +7,7 @@ local Modules = AMT.Modules
 local PROFILE_VERSION = 1
 
 ---@class AMTProfile
----@field integer
+---@field version integer
 ---@field timer table
 
 ---@type AMTProfile

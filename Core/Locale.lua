@@ -7,7 +7,7 @@ local function FallBackToKey(_, key)
 	return key
 end
 
----@class AMTLocale: table
+---@class AMTLocale : table<string, string>
 local L = setmetatable({}, { __index = FallBackToKey })
 
 AMT.L = L
