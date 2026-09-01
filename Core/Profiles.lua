@@ -69,7 +69,20 @@ function Profiles.Activate(name)
 end
 
 ---@param name string
-function Profiles.SetDefaultForAll(name)
-	AMT.DB.settings.defaultProfile = name
-	Profiles.Activate(name)
+function Profiles.SetDefaultForNewCharacters(name)
+	local settings = AMT.DB.settings
+
+	settings.defaultProfile = name
+	Profiles.Create(name)
+
+	if not settings.profileKeys[CharacterKey()] then
+		Profiles.activeName = name
+		Profiles.active = settings.profiles[name]
+
+		for module in Modules.Iterate() do
+			if module.OnProfileChanged then
+				module:OnProfileChanged()
+			end
+		end
+	end
 end
