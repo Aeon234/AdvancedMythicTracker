@@ -6,9 +6,22 @@ local Modules = AMT.Modules
 -- Incase I need to force Profile Upgrades
 local PROFILE_VERSION = 1
 
+---@class AMTLayoutElementSettings
+---@field enabled boolean
+---@field nudge number[] {x, y}
+
+---@class AMTLayoutOrder
+---@field groups AMTLayoutGroupKey[]
+---@field keyInfo string[]
+---@field timer string[]
+---@field objectives string[]
+---@field forces string[]
+
 ---@class AMTTimerProfile
 ---@field scale number
 ---@field position AMTFramePosition
+---@field order AMTLayoutOrder
+---@field elements table<string, AMTLayoutElementSettings>
 
 ---@class AMTProfile
 ---@field version integer
@@ -20,6 +33,14 @@ local profileDefaults = {
 	timer = {
 		scale = 1.0,
 		position = { anchor = "RIGHT", x = 0, y = -10 },
+		order = {
+			groups = { "keyInfo", "timer", "objectives", "forces" },
+			keyInfo = {},
+			timer = {},
+			objectives = {},
+			forces = {},
+		},
+		elements = {},
 	},
 }
 

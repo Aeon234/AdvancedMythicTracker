@@ -20,6 +20,7 @@ local addonName = ...
 ---@field Media AMTMedia
 ---@field Mixins AMTMixins
 ---@field Frames AMTFrames
+---@field Layout AMTLayout
 local AMT = select(2, ...)
 
 AMT.name = addonName

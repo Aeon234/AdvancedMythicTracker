@@ -5,4 +5,5 @@
     <Script file="Mixins\Draggable.lua" />
 
     <Script file="Frames.lua" />
+    <Script file="Layout.lua" />
 </Ui>
