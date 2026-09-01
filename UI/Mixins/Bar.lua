@@ -2,23 +2,28 @@ local AMT = select(2, ...)
 
 local SLOT_INSET = 4
 
+---@class AMTBarSlotAnchor
+---@field point "LEFT"|"CENTER"|"RIGHT"
+---@field relativePoint "LEFT"|"CENTER"|"RIGHT"
+---@field x number
+
+---@type table<string, AMTBarSlotAnchor>
 local SLOT_ANCHORS = {
-	LEFT = { "LEFT", "LEFT", SLOT_INSET },
-	CENTER = { "CENTER", "CENTER", 0 },
-	RIGHT = { "RIGHT", "RIGHT", -SLOT_INSET },
+	LEFT = { point = "LEFT", relativePoint = "LEFT", x = SLOT_INSET },
+	CENTER = { point = "CENTER", relativePoint = "CENTER", x = 0 },
+	RIGHT = { point = "RIGHT", relativePoint = "RIGHT", x = -SLOT_INSET },
 }
 
 ---@class AMTBarStyle
----@field texture string? LibSharedMedia statusbar name
+---@field texture string LibSharedMedia statusbar name
 ---@field color number[] {r, g, b, a} fill
 ---@field background number[]? {r, g, b, a} background
 ---@field height number?
 
----@class AMTBarMixin
+---@class AMTBarMixin : StatusBar
+---@field background Texture
 local Bar = {}
 AMT.Mixins.Bar = Bar
-
----@class AMTBar : StatusBar, AMTBarMixin
 
 function Bar:OnLoad()
 	self:SetMinMaxValues(0, 1)
@@ -46,19 +51,22 @@ end
 ---@param style AMTBarStyle
 function Bar:ApplyStyle(style)
 	local texture = AMT.Media.Statusbar(style.texture)
+	local color = style.color
 
 	if texture then
 		self:SetStatusBarTexture(texture)
 	end
 
-	self:SetStatusBarColor(unpack(style.color))
+	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
 
-	if style.background then
+	local background = style.background
+
+	if background then
 		if texture then
 			self.background:SetTexture(texture)
 		end
 
-		self.background:SetVertexColor(unpack(style.background))
+		self.background:SetVertexColor(background[1], background[2], background[3], background[4])
 		self.background:Show()
 	else
 		self.background:Hide()
@@ -69,7 +77,7 @@ function Bar:ApplyStyle(style)
 	end
 end
 
----@param region Region
+---@param region FontString|Texture
 ---@param slot "LEFT"|"CENTER"|"RIGHT"
 function Bar:AttachToSlot(region, slot)
 	local anchor = SLOT_ANCHORS[slot]
@@ -81,11 +89,11 @@ function Bar:AttachToSlot(region, slot)
 	end
 
 	region:ClearAllPoints()
-	region:SetPoint(anchor[1], self, anchor[2], anchor[3], 0)
+	region:SetPoint(anchor.point, self, anchor.relativePoint, anchor.x, 0)
 end
 
 ---@param parent Frame
----@return AMTBar
+---@return AMTBarMixin
 function AMT.Mixins.NewBar(parent)
 	local bar = CreateFrame("StatusBar", nil, parent)
 
