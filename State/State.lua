@@ -71,10 +71,15 @@ local defaults = {
 
 ---@alias AMTDirtyKey "timer"|"forces"|"objectives"|"deaths"|"keyInfo"|"layout"
 
+---@type AMTDirtyKey[]
+local DIRTY_KEYS = { "keyInfo", "timer", "objectives", "forces", "deaths", "layout" }
+
 ---@class AMTState
 ---@field current AMTStateData
 local State = {}
 AMT.State = State
+
+State.DIRTY_KEYS = DIRTY_KEYS
 
 State.current = Util.Copy(defaults)
 
@@ -90,6 +95,12 @@ end
 ---@param key AMTDirtyKey
 function State.MarkDirty(key)
 	dirty[key] = true
+end
+
+function State.MarkAllDirty()
+	for _, key in ipairs(DIRTY_KEYS) do
+		dirty[key] = true
+	end
 end
 
 ---@param key AMTDirtyKey

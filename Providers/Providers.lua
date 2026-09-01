@@ -1,6 +1,7 @@
 local AMT = select(2, ...)
 
 ---@class AMTProviderSet
+---@field Tick fun()
 ---@field LoadKey fun(): boolean
 ---@field UpdateForces fun()
 ---@field UpdateObjectives fun()

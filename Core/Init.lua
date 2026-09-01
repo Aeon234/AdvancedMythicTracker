@@ -22,6 +22,7 @@ local addonName = ...
 ---@field Frames AMTFrames
 ---@field Layout AMTLayout
 ---@field Render AMTRender
+---@field Demo AMTDemo
 local AMT = select(2, ...)
 
 AMT.name = addonName
@@ -34,6 +35,12 @@ AMT.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or ERROR_CAPS
 
 SLASH_ADVANCEDMYTHICTRACKER1 = "/amt"
 
-SlashCmdList.ADVANCEDMYTHICTRACKER = function()
-	AMT.Util.Print("v%s", AMT.version)
+SlashCmdList.ADVANCEDMYTHICTRACKER = function(msg)
+	local command, argument = (msg or ""):lower():match("^%s*(%S*)%s*(%S*)")
+
+	if command == "demo" then
+		AMT.Demo.Toggle(argument == "live")
+	else
+		AMT.Util.Print("v%s", AMT.version)
+	end
 end

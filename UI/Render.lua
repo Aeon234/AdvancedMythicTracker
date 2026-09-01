@@ -2,9 +2,6 @@ local AMT = select(2, ...)
 
 local DEFAULT_INTERVAL = 0.1
 
----@type AMTDirtyKey[]
-local DISPATCH_ORDER = { "keyInfo", "timer", "objectives", "forces", "deaths", "layout" }
-
 ---@alias AMTRenderCallback fun()
 
 ---@class AMTRender
@@ -31,8 +28,10 @@ function Render.Register(key, callback)
 end
 
 function Render.Flush()
-	for index = 1, #DISPATCH_ORDER do
-		local key = DISPATCH_ORDER[index]
+	local keys = AMT.State.DIRTY_KEYS
+
+	for index = 1, #keys do
+		local key = keys[index]
 
 		if AMT.State.IsDirty(key) then
 			local list = handlers[key]
@@ -49,9 +48,7 @@ function Render.Flush()
 end
 
 local function OnTick()
-	AMT.State.current.elapsed = select(2, GetWorldElapsedTime(1))
-	AMT.State.MarkDirty("timer")
-
+	AMT.Providers.active.Tick()
 	Render.Flush()
 end
 

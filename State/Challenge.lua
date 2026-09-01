@@ -12,6 +12,8 @@ local UPGRADE_FRACTIONS = { 1.0, 0.8, 0.6 }
 local Challenge = {}
 AMT.Challenge = Challenge
 
+Challenge.PERIL_AFFIX_ID = CHALLENGERS_PERIL_AFFIX_ID
+
 ---@return boolean
 function Challenge.IsInChallengeInstance()
 	local _, instanceType, difficultyID = GetInstanceInfo()
@@ -92,5 +94,10 @@ function Challenge.Complete()
 	state.completionMS = info.time
 	state.upgradeLevels = info.keystoneUpgradeLevels
 
+	State.MarkDirty("timer")
+end
+
+function Challenge.UpdateElapsed()
+	State.current.elapsed = select(2, GetWorldElapsedTime(1))
 	State.MarkDirty("timer")
 end
