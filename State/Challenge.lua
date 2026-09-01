@@ -25,6 +25,8 @@ function Challenge.SetTimeLimit(timeLimit)
 	local bonus = state.hasChallengersPeril and CHALLENGERS_PERIL_BONUS or 0
 	local base = timeLimit - bonus
 
+	state.timeLimit = timeLimit
+
 	local limits = state.timeLimits
 	wipe(limits)
 

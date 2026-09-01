@@ -11,7 +11,7 @@ local State = AMT.State
 local Deaths = {}
 AMT.Deaths = Deaths
 
----@type tgable<string,AMTPartyMember>
+---@type table<string,AMTPartyMember>
 local partyByGUID = {}
 
 function Deaths.SnapshotParty()
@@ -24,7 +24,7 @@ function Deaths.SnapshotParty()
 			local guid = UnitGUID(unit)
 
 			if guid and not issecretvalue(guid) then
-				local name = UnitName(guid)
+				local name = UnitName(unit)
 				local class = select(2, UnitClass(unit))
 
 				if name and class then
@@ -54,7 +54,7 @@ function Deaths.RecordDeath(guid)
 	local state = State.current
 
 	state.deaths[#state.deaths + 1] = {
-		atMS = math.floor(select(2, GetWorldElapsedTime(1)) * 100),
+		atMS = math.floor(select(2, GetWorldElapsedTime(1)) * 1000),
 		name = member.name,
 		class = member.class,
 	}
