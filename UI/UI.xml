@@ -6,4 +6,5 @@
 
     <Script file="Frames.lua" />
     <Script file="Layout.lua" />
+    <Script file="Render.lua" />
 </Ui>

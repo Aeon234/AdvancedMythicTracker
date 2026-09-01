@@ -13,9 +13,12 @@ local function StartChallenge()
 			module:OnChallengeStart()
 		end
 	end
+
+	AMT.Render.StartTicker()
 end
 
 local function EndChallenge()
+	AMT.Render.StopTicker()
 	local completed = AMT.State.current.challengeCompleted
 
 	for module in Modules.Iterate() do
