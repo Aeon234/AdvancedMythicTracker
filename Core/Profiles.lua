@@ -34,8 +34,8 @@ local PROFILE_VERSION = 1
 ---@field position AMTFramePosition
 ---@field order AMTLayoutOrder
 ---@field elements table<string, AMTLayoutElementSettings>
----@field bar AMTBarProfile
----@field text AMTTextProfile
+---@field bar AMTBarStyle
+---@field text AMTTextStyle
 
 ---@class AMTProfile
 ---@field version integer
