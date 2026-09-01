@@ -30,5 +30,6 @@ Core\Core.xml
 State\State.xml
 Providers\Providers.xml
 UI\UI.xml
+Modules\Modules.xml
 
 Modules\_Test.lua

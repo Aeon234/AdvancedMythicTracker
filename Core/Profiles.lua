@@ -17,11 +17,25 @@ local PROFILE_VERSION = 1
 ---@field objectives string[]
 ---@field forces string[]
 
+---@class AMTBarProfile
+---@field texture string
+---@field height number
+---@field color number[]
+---@field background number[]
+
+---@class AMTTextProfile
+---@field font string
+---@field size number
+---@field outline AMTFontOutline
+---@field color number[]
+
 ---@class AMTTimerProfile
 ---@field scale number
 ---@field position AMTFramePosition
 ---@field order AMTLayoutOrder
 ---@field elements table<string, AMTLayoutElementSettings>
+---@field bar AMTBarProfile
+---@field text AMTTextProfile
 
 ---@class AMTProfile
 ---@field version integer
@@ -41,6 +55,18 @@ local profileDefaults = {
 			forces = {},
 		},
 		elements = {},
+		bar = {
+			texture = "Blizzard",
+			height = 24,
+			color = { 0.2, 0.6, 1, 1 },
+			background = { 0, 0, 0, 0.5 },
+		},
+		text = {
+			font = "Friz Quadrata TT",
+			size = 16,
+			outline = "OUTLINE",
+			color = { 1, 1, 1, 1 },
+		},
 	},
 }
 
