@@ -18,6 +18,7 @@ local addonName = ...
 ---@field Pull AMTPull
 ---@field Providers AMTProviders
 ---@field Media AMTMedia
+---@field Mixins AMTMixins
 local AMT = select(2, ...)
 
 AMT.name = addonName

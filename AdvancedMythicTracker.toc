@@ -29,5 +29,6 @@ Libs\embeds.xml
 Core\Core.xml
 State\State.xml
 Providers\Providers.xml
+UI\UI.xml
 
 Modules\_Test.lua
