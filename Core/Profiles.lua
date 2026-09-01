@@ -34,6 +34,10 @@ local PROFILE_VERSION = 1
 ---@field position AMTFramePosition
 ---@field order AMTLayoutOrder
 ---@field elements table<string, AMTLayoutElementSettings>
+---@field direction "UP"|"DOWN"
+---@field decimals integer
+---@field successColor number[]
+---@field failColor number[]
 ---@field bar AMTBarStyle
 ---@field text AMTTextStyle
 
@@ -55,6 +59,10 @@ local profileDefaults = {
 			forces = {},
 		},
 		elements = {},
+		direction = "UP",
+		decimals = 1,
+		successColor = { 1, 1, 0, 1 },
+		failColor = { 1, 0, 0, 1 },
 		bar = {
 			texture = "Blizzard",
 			height = 24,

@@ -57,19 +57,46 @@ function module:RefreshTicks()
 	self.bar:SetTicks(fractions, bar.tickColor or { 1, 1, 1, 0.5 })
 end
 
+---@return string
+function module:FormatDisplayTime()
+	local state = AMT.State.current
+	local profile = AMT.Profiles.active.timer
+
+	if state.challengeCompleted and state.completionMS then
+		return AMT.Util.FormatTime(state.completionMS / 1000, profile.decimals)
+	end
+
+	if profile.direction == "DOWN" then
+		local remaining = state.timeLimit - state.elapsed
+
+		return AMT.Util.FormatTime(remaining, 0, remaining < 0)
+	end
+
+	return AMT.Util.FormatTime(state.elapsed)
+end
+
 function module:OnProfileChanged()
 	self:ApplyStyle()
 end
 
 function module:Render()
 	local state = AMT.State.current
-	local tierColors = AMT.Profiles.active.timer.bar.tierColors
+	local profile = AMT.Profiles.active.timer
+	local completed = state.challengeCompleted and state.completionMS
+	local seconds = completed and (state.completionMS / 1000) or state.elapsed
 
-	self.bar:SetValues(state.elapsed, state.timeLimit)
-	self.text:SetText(AMT.Util.FormatTime(state.elapsed))
-	self.bar:SetTickCutoff(state.timeLimit > 0 and state.elapsed / state.timeLimit or 0)
+	self.bar:SetValues(seconds, state.timeLimit)
+	self.bar:SetTickCutoff(state.timeLimit > 0 and seconds / state.timeLimit or 0)
 
-	if tierColors then
-		self.bar:SetColor(tierColors[AMT.Challenge.GetUpgradeTier() + 1])
+	if profile.bar.tierColors then
+		self.bar:SetColor(profile.bar.tierColors[AMT.Challenge.GetUpgradeTier() + 1])
+	end
+
+	self.text:SetText(self:FormatDisplayTime())
+
+	if state.challengeCompleted then
+		self.text:SetColor(state.completedOnTime and profile.successColor or profile.failColor)
+	else
+		self.text:SetColor(profile.text.color)
 	end
 end

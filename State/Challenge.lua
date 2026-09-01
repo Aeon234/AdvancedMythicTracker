@@ -98,7 +98,13 @@ function Challenge.Complete()
 end
 
 function Challenge.UpdateElapsed()
-	State.current.elapsed = select(2, GetWorldElapsedTime(1))
+	local state = State.current
+
+	if state.challengeCompleted then
+		return
+	end
+
+	state.elapsed = select(2, GetWorldElapsedTime(1))
 	State.MarkDirty("timer")
 end
 

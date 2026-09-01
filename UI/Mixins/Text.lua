@@ -67,3 +67,8 @@ function AMT.Mixins.NewText(parent, layer)
 
 	return text
 end
+
+---@param color number[]
+function Text:SetColor(color)
+	self:SetTextColor(color[1], color[2], color[3], color[4])
+end
