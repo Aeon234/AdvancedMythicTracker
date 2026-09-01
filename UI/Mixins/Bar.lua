@@ -18,7 +18,7 @@ local SLOT_ANCHORS = {
 ---@field texture string LibSharedMedia statusbar name
 ---@field color number[] {r, g, b, a} fill
 ---@field background number[]? {r, g, b, a} background
----@field height number?
+---@field height number
 
 ---@class AMTBarMixin : StatusBar
 ---@field background Texture
