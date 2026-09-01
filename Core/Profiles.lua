@@ -60,6 +60,15 @@ local profileDefaults = {
 			height = 24,
 			color = { 0.2, 0.6, 1, 1 },
 			background = { 0, 0, 0, 0.5 },
+			-- Indexed tier+1: depleted, +1, +2, +3. MPlusTimer's defaults (D-42).
+			tierColors = {
+				{ 89 / 255, 90 / 255, 92 / 255, 1 },
+				{ 1, 112 / 255, 0, 1 },
+				{ 1, 1, 0, 1 },
+				{ 128 / 255, 1, 0, 1 },
+			},
+			showTicks = true,
+			tickColor = { 1, 1, 1, 0.5 },
 		},
 		text = {
 			font = "Friz Quadrata TT",

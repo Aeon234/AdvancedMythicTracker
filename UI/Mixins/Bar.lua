@@ -19,9 +19,14 @@ local SLOT_ANCHORS = {
 ---@field color number[] {r, g, b, a} fill
 ---@field background number[]? {r, g, b, a} background
 ---@field height number
+---@field tierColors number[][]? four {r,g,b,a} for timer
+---@field showTicks boolean?
+---@field tickColor number[]?
 
 ---@class AMTBarMixin : StatusBar
 ---@field background Texture
+---@field ticks Texture[]
+---@field tickFractions number[]
 local Bar = {}
 AMT.Mixins.Bar = Bar
 
@@ -32,6 +37,9 @@ function Bar:OnLoad()
 	self.background = self:CreateTexture(nil, "BACKGROUND")
 	self.background:SetAllPoints()
 	self.background:Hide()
+
+	self.ticks = {}
+	self.tickFractions = {}
 end
 
 ---@param current number
@@ -101,4 +109,52 @@ function AMT.Mixins.NewBar(parent)
 	bar:OnLoad()
 
 	return bar
+end
+
+---@param color number[]
+function Bar:SetColor(color)
+	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
+end
+
+---@param fractions number[]
+---@param color number[]
+function Bar:SetTicks(fractions, color)
+	local width = self:GetWidth()
+
+	wipe(self.tickFractions)
+
+	for index = 1, #fractions do
+		self.tickFractions[index] = fractions[index]
+	end
+
+	for index = 1, math.max(#fractions, #self.ticks) do
+		local tick = self.ticks[index]
+
+		if index <= #fractions then
+			if not tick then
+				tick = self:CreateTexture(nil, "OVERLAY")
+				tick:SetWidth(1)
+				self.ticks[index] = tick
+			end
+
+			local offset = width * fractions[index]
+
+			tick:SetColorTexture(color[1], color[2], color[3], color[4])
+			tick:ClearAllPoints()
+			tick:SetPoint("TOP", self, "TOPLEFT", offset, 0)
+			tick:SetPoint("BOTTOM", self, "BOTTOMLEFT", offset, 0)
+			tick:Show()
+		elseif tick then
+			tick:Hide()
+		end
+	end
+end
+
+---@param progress number 0-1
+function Bar:SetTickCutoff(progress)
+	for index, tick in ipairs(self.ticks) do
+		local fraction = self.tickFractions[index]
+
+		tick:SetShown(fraction ~= nil and fraction >= progress)
+	end
 end

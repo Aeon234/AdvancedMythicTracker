@@ -101,3 +101,22 @@ function Challenge.UpdateElapsed()
 	State.current.elapsed = select(2, GetWorldElapsedTime(1))
 	State.MarkDirty("timer")
 end
+
+---@return integer
+function Challenge.GetUpgradeTier()
+	local state = State.current
+
+	if state.challengeCompleted and state.upgradeLevels then
+		return state.upgradeLevels
+	end
+
+	local limits = state.timeLimits
+
+	for tier = #limits, 1, -1 do
+		if state.elapsed <= limits[tier] then
+			return tier
+		end
+	end
+
+	return 0
+end
