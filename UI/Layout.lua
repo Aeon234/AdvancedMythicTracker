@@ -98,7 +98,9 @@ end
 function Layout.Apply()
 	local profile = AMT.Profiles.active.timer
 	local root = AMT.Frames.root
-	local y = 0
+	local background = profile.background
+	local padding = background.enabled and background.padding or 0
+	local y = padding
 
 	for _, groupKey in ipairs(profile.order.groups) do
 		if groups[groupKey] then
@@ -107,8 +109,8 @@ function Layout.Apply()
 
 			if height > 0 then
 				group:ClearAllPoints()
-				group:SetPoint("TOPLEFT", root, "TOPLEFT", 0, -y)
-				group:SetPoint("TOPRIGHT", root, "TOPRIGHT", 0, -y)
+				group:SetPoint("TOPLEFT", root, "TOPLEFT", padding, -y)
+				group:SetPoint("TOPRIGHT", root, "TOPRIGHT", -padding, -y)
 				group:SetHeight(height)
 				group:Show()
 
@@ -119,7 +121,7 @@ function Layout.Apply()
 		end
 	end
 
-	root:SetHeight(math.max(y - GROUP_SPACING, 1))
+	root:SetHeight(math.max(y - GROUP_SPACING + padding, 1))
 end
 
 AMT.Render.Register("layout", Layout.Apply)

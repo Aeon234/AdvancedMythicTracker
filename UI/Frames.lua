@@ -5,6 +5,7 @@ local PLACEHOLDER_HEIGHT = 120
 
 ---@class AMTFrames
 ---@field root AMTDraggableMixin!
+---@field background Texture!
 local Frames = {}
 AMT.Frames = Frames
 
@@ -15,9 +16,19 @@ end
 
 function Frames.ApplyProfile()
 	local profile = TimerProfile()
+	local background = profile.background
 
 	Frames.root:SetScale(profile.scale)
 	Frames.root:ApplyPosition(profile.position)
+
+	if background.enabled then
+		local color = background.color
+
+		Frames.background:SetColorTexture(color[1], color[2], color[3], color[4])
+		Frames.background:Show()
+	else
+		Frames.background:Hide()
+	end
 end
 
 --- Called once from Core/Bootstrap.lua after profiles are resolved.
@@ -27,6 +38,9 @@ function Frames.Initialize()
 	root:SetSize(PLACEHOLDER_WIDTH, PLACEHOLDER_HEIGHT)
 	root:SetFrameStrata("MEDIUM")
 	root:Hide()
+
+	Frames.background = root:CreateTexture(nil, "BACKGROUND")
+	Frames.background:SetAllPoints()
 
 	root.OnPositionChanged = function(_, position)
 		local stored = TimerProfile().position

@@ -56,6 +56,12 @@ local PROFILE_VERSION = 1
 ---@field separator string
 ---@field text AMTTextStyle
 
+-- Timer Background
+---@class AMTBackgroundProfile
+---@field enabled boolean
+---@field color number[]
+---@field padding number
+
 ---@class AMTTimerProfile
 ---@field scale number
 ---@field position AMTFramePosition
@@ -71,6 +77,7 @@ local PROFILE_VERSION = 1
 ---@field thresholds AMTThresholdSettings[]
 ---@field keyInfo AMTKeyInfoProfile
 ---@field affixes AMTAffixesProfile
+---@field background AMTBackgroundProfile
 
 ---@class AMTProfile
 ---@field version integer
@@ -152,6 +159,11 @@ local profileDefaults = {
 			spacing = 2,
 			separator = " - ",
 			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 0.7, 0.7, 0.7, 1 } },
+		},
+		background = {
+			enabled = false,
+			color = { 0, 0, 0, 0.6 },
+			padding = 6,
 		},
 	},
 }
