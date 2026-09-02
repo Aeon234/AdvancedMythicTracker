@@ -2,6 +2,8 @@ local AMT = select(2, ...)
 
 local SLOT_INSET = 4
 
+---@alias AMTAnchorable FontString|Texture
+
 ---@class AMTBarSlotAnchor
 ---@field point "LEFT"|"CENTER"|"RIGHT"
 ---@field relativePoint "LEFT"|"CENTER"|"RIGHT"
@@ -85,7 +87,7 @@ function Bar:ApplyStyle(style)
 	end
 end
 
----@param region ScriptRegion
+---@param region AMTAnchorable
 ---@param slot "LEFT"|"CENTER"|"RIGHT"
 function Bar:AttachToSlot(region, slot)
 	local anchor = SLOT_ANCHORS[slot]
@@ -100,7 +102,7 @@ function Bar:AttachToSlot(region, slot)
 	region:SetPoint(anchor.point, self, anchor.relativePoint, anchor.x, 0)
 end
 
----@param region ScriptRegion
+---@param region AMTAnchorable
 ---@param fraction number 0-1
 function Bar:AttachAtFraction(region, fraction)
 	region:ClearAllPoints()
