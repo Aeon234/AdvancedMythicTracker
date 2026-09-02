@@ -4,8 +4,9 @@
     <Script file="Util.lua" />
     <Script file="Locale.lua" />
     <Script file="Media.lua" />
-    <Script file="Module.lua" />
+    <Script file="NineSlice.lua" />
     <Script file="Events.lua" />
+    <Script file="Module.lua" />
     <Script file="DB.lua" />
     <Script file="Profiles.lua" />
     <Script file="Bootstrap.lua" />
