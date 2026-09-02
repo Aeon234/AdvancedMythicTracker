@@ -15,6 +15,15 @@ local module = AMT.Modules.New("Deaths")
 
 function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("keyInfo"))
+	self.element:SetMouseMotionEnabled(true)
+
+	self.element:SetScript("OnEnter", function()
+		AMT.Tooltip.ShowDeaths(self.element)
+	end)
+
+	self.element:SetScript("OnLeave", function()
+		AMT.Tooltip.Hide()
+	end)
 
 	self.row = CreateFrame("Frame", nil, self.element)
 
