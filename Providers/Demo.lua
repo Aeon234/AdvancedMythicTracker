@@ -3,7 +3,7 @@ local AMT = select(2, ...)
 local State = AMT.State
 
 local LEVEL = 12
-local MAP_ID = 456
+local MAP_ID = 78
 local TIME_LIMIT = 1980
 local TOTAL_FORCES = 388
 local TIME_SCALE = 10
@@ -16,14 +16,19 @@ local DEATH_PENALTY = 5
 local FALLBACK_AFFIX_IDS = { 152 }
 
 local BOSS_NAMES = {
-	"Rhahk'zor",
+	-- "Rhahk'zor",
 	-- "Miner Johnson",
 	-- "Sneed’s Shredder",
 	-- "Gilnid",
-	"Mr. Smite",
-	"Captain Greenskin",
-	"Edwin VanCleef",
-	"Cookie",
+	-- "Mr. Smite",
+	-- "Captain Greenskin",
+	-- "Edwin VanCleef",
+	-- "Cookie",
+	"Interrogator Vishas",
+	"Houndmaster Loksey",
+	"Arcanist Doan",
+	"Scarlet Commander Mograine",
+	"High Inquisitor Whitemane",
 }
 
 local FAKE_DEATHS = {
