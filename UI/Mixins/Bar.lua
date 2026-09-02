@@ -104,12 +104,7 @@ end
 ---@param fraction number 0-1
 function Bar:AttachAtFraction(region, fraction)
 	region:ClearAllPoints()
-
-	if fraction >= 1 then
-		region:SetPoint("RIGHT", self, "RIGHT", -SLOT_INSET, 0)
-	else
-		region:SetPoint("LEFT", self, "LEFT", self:GetWidth() * fraction + SLOT_INSET, 0)
-	end
+	region:SetPoint("RIGHT", self, "LEFT", self:GetWidth() * fraction - SLOT_INSET, 0)
 end
 
 ---@param parent Frame

@@ -35,6 +35,14 @@ local PROFILE_VERSION = 1
 ---@field behindColor number[]
 ---@field text AMTTextStyle
 
+---@class AMTKeyInfoProfile
+---@field height number
+---@field showLevel boolean
+---@field combineLevel boolean
+---@field colorLevel boolean
+---@field text AMTTextStyle
+---@field level AMTTextStyle
+
 ---@class AMTTimerProfile
 ---@field scale number
 ---@field position AMTFramePosition
@@ -48,6 +56,7 @@ local PROFILE_VERSION = 1
 ---@field text AMTTextStyle
 ---@field spacedSlash boolean
 ---@field thresholds AMTThresholdSettings[]
+---@field keyInfo AMTKeyInfoProfile
 
 ---@class AMTProfile
 ---@field version integer
@@ -112,6 +121,14 @@ local profileDefaults = {
 				behindColor = { 1, 0, 0, 1 },
 				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
+		},
+		keyInfo = {
+			height = 18,
+			showLevel = true,
+			combineLevel = false,
+			colorLevel = true,
+			text = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			level = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 		},
 	},
 }
