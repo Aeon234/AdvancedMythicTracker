@@ -63,6 +63,20 @@ local PROFILE_VERSION = 1
 ---@field padding number
 ---@field nineslice boolean
 
+-- Timer Forces
+---@class AMTForcesTextSettings
+---@field enabled boolean
+---@field slot "LEFT"|"CENTER"|"RIGHT"
+---@field text AMTTextStyle
+
+---@class AMTForcesProfile
+---@field bar AMTBarStyle
+---@field count AMTForcesTextSettings
+---@field percent AMTForcesTextSettings
+---@field decimals integer
+---@field spacedSlash boolean
+---@field completedColor number[]
+
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
 ---@field scale number
@@ -83,6 +97,7 @@ local PROFILE_VERSION = 1
 ---@field thresholds AMTThresholdSettings[]
 ---@field keyInfo AMTKeyInfoProfile
 ---@field affixes AMTAffixesProfile
+---@field forces AMTForcesProfile
 ---@field background AMTBackgroundProfile
 ---@field __preTimerStyleBackup AMTTimerProfile?
 
@@ -171,6 +186,27 @@ local profileDefaults = {
 			spacing = 2,
 			separator = " - ",
 			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 0.7, 0.7, 0.7, 1 } },
+		},
+		forces = {
+			bar = {
+				texture = "Blizzard",
+				height = 16,
+				color = { 0.55, 0.2, 0.2, 1 },
+				background = { 0, 0, 0, 0.5 },
+			},
+			count = {
+				enabled = true,
+				slot = "RIGHT",
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			percent = {
+				enabled = true,
+				slot = "CENTER",
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			decimals = 2,
+			spacedSlash = false,
+			completedColor = { 0.2, 0.8, 0.2, 1 },
 		},
 		background = {
 			enabled = true,
