@@ -1,5 +1,7 @@
 local AMT = select(2, ...)
 
+---@type table<string, FramePoint>
+local JUSTIFY_POINTS = { LEFT = "TOPLEFT", CENTER = "TOP", RIGHT = "TOPRIGHT" }
 local GROUP_SPACING = 4
 local ELEMENT_SPACING = 2
 
@@ -68,6 +70,7 @@ end
 local function ApplyGroup(groupKey)
 	local profile = AMT.Profiles.active.timer
 	local group = groups[groupKey]
+	local spanning = profile.geometry == "SPAN"
 	local y = 0
 
 	for _, elementKey in ipairs(profile.order[groupKey]) do
@@ -79,10 +82,20 @@ local function ApplyGroup(groupKey)
 
 			if settings and settings.enabled then
 				local nudge = settings.nudge
+				local top = -y + nudge[2]
 
 				frame:ClearAllPoints()
-				frame:SetPoint("TOPLEFT", group, "TOPLEFT", nudge[1], -y + nudge[2])
-				frame:SetPoint("TOPRIGHT", group, "TOPRIGHT", nudge[1], -y + nudge[2])
+
+				if spanning then
+					frame:SetPoint("TOPLEFT", group, "TOPLEFT", nudge[1], top)
+					frame:SetPoint("TOPRIGHT", group, "TOPRIGHT", nudge[1], top)
+				else
+					local point = JUSTIFY_POINTS[profile.justify] or "TOPRIGHT"
+
+					frame:SetPoint(point, group, point, nudge[1], top)
+					frame:SetWidth(profile.contentWidth)
+				end
+
 				frame:Show()
 
 				y = y + frame:GetHeight() + ELEMENT_SPACING

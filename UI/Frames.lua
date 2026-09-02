@@ -1,6 +1,5 @@
 local AMT = select(2, ...)
 
-local PLACEHOLDER_WIDTH = 320
 local PLACEHOLDER_HEIGHT = 120
 
 ---@class AMTFrames
@@ -18,6 +17,7 @@ function Frames.ApplyProfile()
 	local profile = TimerProfile()
 	local background = profile.background
 
+	Frames.root:SetWidth(profile.width)
 	Frames.root:SetScale(profile.scale)
 	Frames.root:ApplyPosition(profile.position)
 
@@ -35,7 +35,7 @@ end
 function Frames.Initialize()
 	local root = AMT.Mixins.MakeDraggable(CreateFrame("Frame", "AdvancedMythicTrackerFrame", UIParent))
 
-	root:SetSize(PLACEHOLDER_WIDTH, PLACEHOLDER_HEIGHT)
+	root:SetSize(TimerProfile().width, PLACEHOLDER_HEIGHT)
 	root:SetFrameStrata("MEDIUM")
 	root:Hide()
 
