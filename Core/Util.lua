@@ -129,3 +129,16 @@ function Util.Overlay(target, source)
 		end
 	end
 end
+
+---@param settings AMTSplitsProfile
+---@param verdict AMTSplitVerdict
+---@return number[]
+function Util.SplitColor(settings, verdict)
+	if verdict == "AHEAD" then
+		return settings.aheadColor
+	elseif verdict == "BEHIND" then
+		return settings.behindColor
+	end
+
+	return settings.equalColor
+end

@@ -64,15 +64,15 @@ local PROFILE_VERSION = 1
 ---@field nineslice boolean
 
 -- Timer Forces
----@class AMTForcesTextSettings
+---@class AMTOverlayTextSettings
 ---@field enabled boolean
 ---@field slot "LEFT"|"CENTER"|"RIGHT"
 ---@field text AMTTextStyle
 
 ---@class AMTForcesProfile
 ---@field bar AMTBarStyle
----@field count AMTForcesTextSettings
----@field percent AMTForcesTextSettings
+---@field count AMTOverlayTextSettings
+---@field percent AMTOverlayTextSettings
 ---@field decimals integer
 ---@field spacedSlash boolean
 ---@field completedColor number[]
@@ -88,6 +88,17 @@ local PROFILE_VERSION = 1
 ---@field time AMTTextStyle
 ---@field completedColor number[]
 ---@field pendingColor number[]
+
+-- Timer Splits
+---@class AMTSplitsProfile
+---@field overall "ALWAYS"|"COUNTDOWN_AND_AFTER"|"NEVER"
+---@field boss "ALWAYS"|"AFTER"
+---@field decimals integer
+---@field aheadColor number[]
+---@field equalColor number[]
+---@field behindColor number[]
+---@field pbCompare AMTOverlayTextSettings
+---@field forcesSplit AMTOverlayTextSettings
 
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
@@ -111,6 +122,7 @@ local PROFILE_VERSION = 1
 ---@field affixes AMTAffixesProfile
 ---@field forces AMTForcesProfile
 ---@field objectives AMTObjectivesProfile
+---@field splits AMTSplitsProfile
 ---@field background AMTBackgroundProfile
 ---@field __preTimerStyleBackup AMTTimerProfile?
 
@@ -231,6 +243,24 @@ local profileDefaults = {
 			time = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			completedColor = { 0.6, 0.6, 0.6, 1 },
 			pendingColor = { 1, 1, 1, 1 },
+		},
+		splits = {
+			overall = "COUNTDOWN_AND_AFTER",
+			boss = "ALWAYS",
+			decimals = 0,
+			aheadColor = { 0, 1, 0, 1 },
+			equalColor = { 1, 0.8, 0, 1 },
+			behindColor = { 1, 0, 0, 1 },
+			pbCompare = {
+				enabled = true,
+				slot = "RIGHT",
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			forcesSplit = {
+				enabled = true,
+				slot = "LEFT",
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
 		},
 		background = {
 			enabled = true,

@@ -5,6 +5,7 @@ local AMT = select(2, ...)
 ---@field bar AMTBarMixin
 ---@field text AMTTextMixin
 ---@field thresholds AMTTextMixin[]
+---@field pbCompare AMTTextMixin
 local module = AMT.Modules.New("Timer")
 
 function module:OnInitialize()
@@ -21,6 +22,8 @@ function module:OnInitialize()
 	for index = 1, 3 do
 		self.thresholds[index] = AMT.Mixins.NewText(self.bar)
 	end
+
+	self.pbCompare = AMT.Mixins.NewText(self.bar)
 
 	AMT.Layout.RegisterElement("timer", "timerBar", self.element)
 
@@ -48,6 +51,10 @@ function module:ApplyStyle()
 	for index, text in ipairs(self.thresholds) do
 		text:ApplyStyle(profile.thresholds[index].text)
 	end
+	local splits = profile.splits
+
+	self.pbCompare:ApplyStyle(splits.pbCompare.text)
+	self.bar:AttachToSlot(self.pbCompare, splits.pbCompare.slot)
 	self:RefreshMarks()
 
 	AMT.State.MarkDirty("layout")
@@ -133,6 +140,53 @@ function module:RenderThresholds()
 	end
 end
 
+---@return boolean
+function module:ShouldShowPB()
+	local mode = AMT.Profiles.active.timer.splits.overall
+	local state = AMT.State.current
+
+	if mode == "NEVER" then
+		return false
+	elseif mode == "ALWAYS" then
+		return true
+	end
+
+	return not state.timerStarted or state.challengeCompleted
+end
+
+function module:RenderPBCompare()
+	local profile = AMT.Profiles.active.timer.splits
+	local settings = profile.pbCompare
+
+	if not settings.enabled or not self:ShouldShowPB() then
+		self.pbCompare:Hide()
+
+		return
+	end
+
+	local diff = AMT.Splits.FinishDiffMS()
+
+	if diff then
+		self.pbCompare:SetText(AMT.Util.FormatTime(diff / 1000, profile.decimals, true))
+		self.pbCompare:SetColor(AMT.Util.SplitColor(profile, AMT.Splits.Classify(diff)))
+		self.pbCompare:Show()
+
+		return
+	end
+
+	local target = AMT.Splits.TargetMS()
+
+	if not target then
+		self.pbCompare:Hide()
+
+		return
+	end
+
+	self.pbCompare:SetFormatted("%s %s", AMT.L["PB"], AMT.Util.FormatTime(target / 1000))
+	self.pbCompare:SetColor(settings.text.color)
+	self.pbCompare:Show()
+end
+
 function module:OnProfileChanged()
 	self:ApplyStyle()
 end
@@ -158,4 +212,6 @@ function module:Render()
 	else
 		self.text:SetColor(profile.text.color)
 	end
+
+	self:RenderPBCompare()
 end
