@@ -109,3 +109,23 @@ function Util.FormatTime(seconds, decimals, signed)
 
 	return "±" .. formatted
 end
+
+---Instead of MergeDefaults, overwrites existing table completely.
+---@param target table
+---@param source table
+function Util.Overlay(target, source)
+	for key, value in pairs(source) do
+		if type(value) == "table" then
+			local current = target[key]
+
+			if type(current) ~= "table" then
+				current = {}
+				target[key] = current
+			end
+
+			Util.Overlay(current, value)
+		else
+			target[key] = value
+		end
+	end
+end

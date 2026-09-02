@@ -25,6 +25,7 @@ local addonName = ...
 ---@field Demo AMTDemo
 ---@field Locale AMTLocaleUtil
 ---@field Options AMTOptions
+---@field Style AMTStyle
 local AMT = select(2, ...)
 
 AMT.name = addonName
@@ -42,6 +43,12 @@ SlashCmdList.ADVANCEDMYTHICTRACKER = function(msg)
 
 	if command == "demo" then
 		AMT.Demo.Toggle(argument == "live")
+	elseif command == "style" then
+		if AMT.Style.Apply(argument:upper()) then
+			AMT.Util.Print("style set to %s.", argument:upper())
+		end
+	elseif command == "undo" then
+		AMT.Style.Undo()
 	else
 		AMT.Util.Print("v%s", AMT.version)
 	end

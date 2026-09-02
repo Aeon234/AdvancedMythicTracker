@@ -1,5 +1,7 @@
 local AMT = select(2, ...)
 
+---@type string[]
+local registrationOrder = {}
 ---@type table<string, FramePoint>
 local JUSTIFY_POINTS = { LEFT = "TOPLEFT", CENTER = "TOP", RIGHT = "TOPRIGHT" }
 local GROUP_SPACING = 4
@@ -34,6 +36,20 @@ function Layout.GetGroup(key)
 	return group
 end
 
+---@param elementKey string
+local function SeedElement(elementKey)
+	local profile = AMT.Profiles.active.timer
+	local order = profile.order[elements[elementKey].group]
+
+	if order and not tContains(order, elementKey) then
+		order[#order + 1] = elementKey
+	end
+
+	if not profile.elements[elementKey] then
+		profile.elements[elementKey] = { enabled = true, nudge = { 0, 0 } }
+	end
+end
+
 ---@param groupKey AMTLayoutGroupKey
 ---@param elementKey string
 ---@param frame Frame
@@ -52,16 +68,14 @@ function Layout.RegisterElement(groupKey, elementKey, frame)
 	end
 
 	elements[elementKey] = { group = groupKey, frame = frame }
+	registrationOrder[#registrationOrder + 1] = elementKey
 
-	local profile = AMT.Profiles.active.timer
-	local order = profile.order[groupKey]
+	SeedElement(elementKey)
+end
 
-	if not tContains(order, elementKey) then
-		order[#order + 1] = elementKey
-	end
-
-	if not profile.elements[elementKey] then
-		profile.elements[elementKey] = { enabled = true, nudge = { 0, 0 } }
+function Layout.ReseedProfile()
+	for _, elementKey in ipairs(registrationOrder) do
+		SeedElement(elementKey)
 	end
 end
 

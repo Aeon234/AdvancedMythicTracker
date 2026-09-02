@@ -83,6 +83,7 @@ local PROFILE_VERSION = 1
 ---@field keyInfo AMTKeyInfoProfile
 ---@field affixes AMTAffixesProfile
 ---@field background AMTBackgroundProfile
+---@field __preTimerStyleBackup AMTTimerProfile?
 
 ---@class AMTProfile
 ---@field version integer
