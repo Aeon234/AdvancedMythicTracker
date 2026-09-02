@@ -117,6 +117,7 @@ local function SeasonMapSet()
 		return nil
 	end
 
+	---@type table<integer, true>
 	local set = {}
 
 	for _, mapID in ipairs(maps) do
@@ -189,9 +190,9 @@ function module:OnAbandonVote(event, votePassed)
 end
 
 function module:OnEnable()
-	AMT.Events.Register("PLAYER_ENTERING_WORLD", self, function(this)
+	AMT.Events.Register("PLAYER_ENTERING_WORLD", self, function()
 		C_Timer.After(LOGIN_DELAY, function()
-			this:RefreshHistory()
+			module:RefreshHistory()
 		end)
 	end)
 end

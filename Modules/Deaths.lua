@@ -1,7 +1,5 @@
 local AMT = select(2, ...)
 
-local AMT = select(2, ...)
-
 local SKULL = [[Interface\TargetingFrame\UI-RaidTargetingIcon_8]]
 local ICON_GAP = 4
 local RED = { 1, 0.2, 0.2, 1 }
