@@ -2,6 +2,8 @@ local AMT = select(2, ...)
 
 ---@type string[]
 local registrationOrder = {}
+---@type table<string, boolean>
+local collapsed = {}
 ---@type table<string, FramePoint>
 local JUSTIFY_POINTS = { LEFT = "TOPLEFT", CENTER = "TOP", RIGHT = "TOPRIGHT" }
 local GROUP_SPACING = 4
@@ -79,6 +81,18 @@ function Layout.ReseedProfile()
 	end
 end
 
+---@param elementKey string
+---@param isCollapsed boolean
+function Layout.SetCollapsed(elementKey, isCollapsed)
+	if collapsed[elementKey] == isCollapsed then
+		return
+	end
+
+	collapsed[elementKey] = isCollapsed
+
+	AMT.State.MarkDirty("layout")
+end
+
 ---@param groupKey AMTLayoutGroupKey
 ---@return number height
 local function ApplyGroup(groupKey)
@@ -94,7 +108,7 @@ local function ApplyGroup(groupKey)
 			local settings = profile.elements[elementKey]
 			local frame = element.frame
 
-			if settings and settings.enabled then
+			if settings and settings.enabled and not collapsed[elementKey] then
 				local nudge = settings.nudge
 				local top = -y + nudge[2]
 

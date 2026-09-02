@@ -6,6 +6,7 @@ local AMT = select(2, ...)
 ---@field count AMTTextMixin
 ---@field percent AMTTextMixin
 ---@field percentFormat string
+---@field split AMTTextMixin
 local module = AMT.Modules.New("Forces")
 
 function module:OnInitialize()
@@ -16,6 +17,7 @@ function module:OnInitialize()
 
 	self.count = AMT.Mixins.NewText(self.bar)
 	self.percent = AMT.Mixins.NewText(self.bar)
+	self.split = AMT.Mixins.NewText(self.bar)
 
 	AMT.Layout.RegisterElement("forces", "forcesBar", self.element)
 
@@ -40,6 +42,10 @@ function module:ApplyStyle()
 
 	self.percentFormat = "%." .. profile.decimals .. "f%%"
 
+	local splits = AMT.Profiles.active.timer.splits
+	self.split:ApplyStyle(splits.forcesSplit.text)
+	self.bar:AttachToSlot(self.split, splits.forcesSplit.slot)
+
 	AMT.State.MarkDirty("layout")
 end
 
@@ -60,4 +66,18 @@ function module:Render()
 
 	self.percent:SetFormatted(self.percentFormat, state.currentPercent * 100)
 	self.percent:SetShown(profile.percent.enabled)
+
+	local splits = AMT.Profiles.active.timer.splits
+	local diff = splits.forcesSplit.enabled
+			and (splits.boss == "ALWAYS" or state.challengeCompleted)
+			and AMT.Splits.ForcesDiffMS()
+		or nil
+
+	if diff then
+		self.split:SetText(AMT.Util.FormatTime(diff / 1000, splits.decimals, true))
+		self.split:SetColor(AMT.Util.SplitColor(splits, AMT.Splits.Classify(diff)))
+		self.split:Show()
+	else
+		self.split:Hide()
+	end
 end

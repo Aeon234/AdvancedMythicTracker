@@ -89,6 +89,11 @@ local PROFILE_VERSION = 1
 ---@field completedColor number[]
 ---@field pendingColor number[]
 
+-- Timer Boss Splits
+---@class AMTElementTextSettings
+---@field enabled boolean
+---@field text AMTTextStyle
+
 -- Timer Splits
 ---@class AMTSplitsProfile
 ---@field overall "ALWAYS"|"COUNTDOWN_AND_AFTER"|"NEVER"
@@ -99,6 +104,18 @@ local PROFILE_VERSION = 1
 ---@field behindColor number[]
 ---@field pbCompare AMTOverlayTextSettings
 ---@field forcesSplit AMTOverlayTextSettings
+---@field bossSplit AMTElementTextSettings
+
+-- Timer Deaths
+---@class AMTDeathsProfile
+---@field height number
+---@field label "SKULL"|"TEXT"|"NONE"
+---@field iconSize number
+---@field penalty boolean
+---@field brackets "PAREN"|"SQUARE"
+---@field red boolean
+---@field justify "LEFT"|"CENTER"|"RIGHT"
+---@field text AMTTextStyle
 
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
@@ -120,6 +137,7 @@ local PROFILE_VERSION = 1
 ---@field thresholds AMTThresholdSettings[]
 ---@field keyInfo AMTKeyInfoProfile
 ---@field affixes AMTAffixesProfile
+---@field deaths AMTDeathsProfile
 ---@field forces AMTForcesProfile
 ---@field objectives AMTObjectivesProfile
 ---@field splits AMTSplitsProfile
@@ -212,6 +230,16 @@ local profileDefaults = {
 			separator = " - ",
 			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 0.7, 0.7, 0.7, 1 } },
 		},
+		deaths = {
+			height = 16,
+			label = "SKULL",
+			iconSize = 12,
+			penalty = true,
+			brackets = "PAREN",
+			red = false,
+			justify = "RIGHT",
+			text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+		},
 		forces = {
 			bar = {
 				texture = "Blizzard",
@@ -259,6 +287,10 @@ local profileDefaults = {
 			forcesSplit = {
 				enabled = true,
 				slot = "LEFT",
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			bossSplit = {
+				enabled = true,
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 		},

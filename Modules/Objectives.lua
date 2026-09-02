@@ -7,6 +7,7 @@ local ICON_PENDING = [[Interface\RaidFrame\ReadyCheck-Waiting]]
 ---@field icon Texture
 ---@field name AMTTextMixin
 ---@field time AMTTextMixin
+---@field split AMTTextMixin
 
 ---@class AMTObjectivesModule : AMTModule
 ---@field element Frame
@@ -41,6 +42,9 @@ function module:AcquireRow(index)
 	row.time = AMT.Mixins.NewText(row)
 	row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
+	row.split = AMT.Mixins.NewText(row)
+	row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+
 	self.rows[index] = row
 
 	self:StyleRow(row)
@@ -63,6 +67,8 @@ function module:StyleRow(row)
 	else
 		row.name:SetPoint("LEFT", row, "LEFT", 0, 0)
 	end
+
+	row.split:ApplyStyle(AMT.Profiles.active.timer.splits.bossSplit.text)
 end
 
 function module:ApplyStyle()
@@ -71,6 +77,27 @@ function module:ApplyStyle()
 	end
 
 	AMT.State.MarkDirty("objectives")
+end
+
+---@param row AMTObjectiveRow
+---@param diffMS integer?
+function module:RenderSplit(row, diffMS)
+	local profile = AMT.Profiles.active.timer.splits
+
+	row.time:ClearAllPoints()
+
+	if not diffMS then
+		row.split:Hide()
+		row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+
+		return
+	end
+
+	row.split:SetText(AMT.Util.FormatTime(diffMS / 1000, profile.decimals, true))
+	row.split:SetColor(AMT.Util.SplitColor(profile, AMT.Splits.Classify(diffMS)))
+	row.split:Show()
+
+	row.time:SetPoint("RIGHT", row.split, "LEFT", -4, 0)
 end
 
 function module:OnProfileChanged()
@@ -82,6 +109,9 @@ function module:Render()
 	local objectives = AMT.State.current.objectives
 	local spacing = profile.spacing
 	local y = 0
+
+	local splits = AMT.Profiles.active.timer.splits
+	local showSplits = splits.bossSplit.enabled and (splits.boss == "ALWAYS" or AMT.State.current.challengeCompleted)
 
 	for index, objective in ipairs(objectives) do
 		local row = self:AcquireRow(index)
@@ -104,6 +134,8 @@ function module:Render()
 		else
 			row.time:Hide()
 		end
+
+		self:RenderSplit(row, showSplits and AMT.Splits.BossDiffMS(index) or nil)
 
 		row:Show()
 
