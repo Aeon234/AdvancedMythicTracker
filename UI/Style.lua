@@ -14,16 +14,7 @@ function Style.Replace(source)
 	AMT.Util.Overlay(timer, source)
 
 	AMT.Layout.ReseedProfile()
-	AMT.Frames.ApplyProfile()
-
-	for module in AMT.Modules.Iterate() do
-		if module.OnProfileChanged then
-			module:OnProfileChanged()
-		end
-	end
-
-	AMT.State.MarkAllDirty()
-	AMT.Render.Flush()
+	AMT.Profiles.Refresh()
 end
 
 ---@param key AMTStyleKey

@@ -2,5 +2,6 @@
     xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
     <Script file="Init.lua" />
     <Script file="Registry.lua" />
+    <Script file="Binding.lua" />
     <Script file="Styles.lua" />
 </Ui>

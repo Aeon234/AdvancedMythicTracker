@@ -348,11 +348,7 @@ function Profiles.Activate(name)
 	Profiles.activeName = name
 	Profiles.active = Profiles.Create(name)
 
-	for module in Modules.Iterate() do
-		if module.OnProfileChanged then
-			module:OnProfileChanged()
-		end
-	end
+	Profiles.Refresh()
 end
 
 ---@param name string
@@ -366,15 +362,24 @@ function Profiles.SetDefaultForNewCharacters(name)
 		Profiles.activeName = name
 		Profiles.active = settings.profiles[name]
 
-		for module in Modules.Iterate() do
-			if module.OnProfileChanged then
-				module:OnProfileChanged()
-			end
-		end
+		Profiles.Refresh()
 	end
 end
 
 ---@return AMTTimerProfile
 function Profiles.TimerDefaults()
 	return Util.Copy(profileDefaults.timer)
+end
+
+function Profiles.Refresh()
+	AMT.Frames.ApplyProfile()
+
+	for module in Modules.Iterate() do
+		if module.OnProfileChanged then
+			module:OnProfileChanged()
+		end
+	end
+
+	AMT.State.MarkAllDirty()
+	AMT.Render.Flush()
 end
