@@ -27,20 +27,34 @@ function Render.Register(key, callback)
 	list[#list + 1] = callback
 end
 
+local MAX_PASSES = 3
+
 function Render.Flush()
 	local keys = AMT.State.DIRTY_KEYS
 
-	for index = 1, #keys do
-		local key = keys[index]
+	for _ = 1, MAX_PASSES do
+		local ran = false
 
-		if AMT.State.IsDirty(key) then
-			local list = handlers[key]
+		for index = 1, #keys do
+			local key = keys[index]
 
-			if list then
-				for _, callback in ipairs(list) do
-					callback()
+			if AMT.State.IsDirty(key) then
+				AMT.State.ClearDirtyKey(key)
+
+				local list = handlers[key]
+
+				if list then
+					for _, callback in ipairs(list) do
+						callback()
+					end
 				end
+
+				ran = true
 			end
+		end
+
+		if not ran then
+			return
 		end
 	end
 

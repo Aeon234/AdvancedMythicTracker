@@ -77,6 +77,18 @@ local PROFILE_VERSION = 1
 ---@field spacedSlash boolean
 ---@field completedColor number[]
 
+-- Timer Objectives
+---@class AMTObjectivesProfile
+---@field rowHeight number
+---@field spacing number
+---@field icon boolean
+---@field iconSize number
+---@field showTime boolean
+---@field text AMTTextStyle
+---@field time AMTTextStyle
+---@field completedColor number[]
+---@field pendingColor number[]
+
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
 ---@field scale number
@@ -98,6 +110,7 @@ local PROFILE_VERSION = 1
 ---@field keyInfo AMTKeyInfoProfile
 ---@field affixes AMTAffixesProfile
 ---@field forces AMTForcesProfile
+---@field objectives AMTObjectivesProfile
 ---@field background AMTBackgroundProfile
 ---@field __preTimerStyleBackup AMTTimerProfile?
 
@@ -207,6 +220,17 @@ local profileDefaults = {
 			decimals = 2,
 			spacedSlash = false,
 			completedColor = { 0.2, 0.8, 0.2, 1 },
+		},
+		objectives = {
+			rowHeight = 14,
+			spacing = 2,
+			icon = true,
+			iconSize = 12,
+			showTime = true,
+			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			time = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			completedColor = { 0.6, 0.6, 0.6, 1 },
+			pendingColor = { 1, 1, 1, 1 },
 		},
 		background = {
 			enabled = true,

@@ -3,4 +3,5 @@
     <Script file="Timer.lua" />
     <Script file="KeyInfo.lua" />
     <Script file="Forces.lua" />
+    <Script file="Objectives.lua" />
 </Ui>

@@ -112,3 +112,8 @@ end
 function State.ClearDirty()
 	wipe(dirty)
 end
+
+---@param key AMTDirtyKey
+function State.ClearDirtyKey(key)
+	dirty[key] = nil
+end
