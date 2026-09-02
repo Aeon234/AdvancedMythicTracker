@@ -63,6 +63,7 @@ local PROFILE_VERSION = 1
 ---@field padding number
 
 ---@class AMTTimerProfile
+---@field style "MINIMAL"|"PANEL"|"AEON"
 ---@field scale number
 ---@field width number
 ---@field geometry "SPAN"|"SIZED"
@@ -91,6 +92,7 @@ local PROFILE_VERSION = 1
 local profileDefaults = {
 	version = PROFILE_VERSION,
 	timer = {
+		style = "PANEL",
 		scale = 1.0,
 		width = 320,
 		geometry = "SPAN",
@@ -169,7 +171,7 @@ local profileDefaults = {
 			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 0.7, 0.7, 0.7, 1 } },
 		},
 		background = {
-			enabled = false,
+			enabled = true,
 			color = { 0, 0, 0, 0.6 },
 			padding = 6,
 		},
@@ -245,4 +247,9 @@ function Profiles.SetDefaultForNewCharacters(name)
 			end
 		end
 	end
+end
+
+---@return AMTTimerProfile
+function Profiles.TimerDefaults()
+	return Util.Copy(profileDefaults.timer)
 end

@@ -31,5 +31,6 @@ State\State.xml
 Providers\Providers.xml
 UI\UI.xml
 Modules\Modules.xml
+Options\Options.xml
 
 Modules\_Test.lua

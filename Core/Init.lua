@@ -24,6 +24,7 @@ local addonName = ...
 ---@field Render AMTRender
 ---@field Demo AMTDemo
 ---@field Locale AMTLocaleUtil
+---@field Options AMTOptions
 local AMT = select(2, ...)
 
 AMT.name = addonName
