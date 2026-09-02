@@ -1,8 +1,10 @@
 local AMT = select(2, ...)
 
 ---@class AMTTimerModule : AMTModule
+---@field element Frame
 ---@field bar AMTBarMixin
 ---@field text AMTTextMixin
+---@field thresholds AMTTextMixin[]
 local module = AMT.Modules.New("Timer")
 
 function module:OnInitialize()
@@ -14,6 +16,12 @@ function module:OnInitialize()
 	self.text = AMT.Mixins.NewText(self.bar)
 	self.bar:AttachToSlot(self.text, "LEFT")
 
+	self.thresholds = {}
+
+	for index = 1, 3 do
+		self.thresholds[index] = AMT.Mixins.NewText(self.bar)
+	end
+
 	AMT.Layout.RegisterElement("timer", "timerBar", self.element)
 
 	AMT.Render.Register("timer", function()
@@ -21,7 +29,7 @@ function module:OnInitialize()
 	end)
 
 	AMT.Render.Register("keyInfo", function()
-		self:RefreshTicks()
+		self:RefreshMarks()
 	end)
 
 	self:ApplyStyle()
@@ -33,17 +41,21 @@ function module:ApplyStyle()
 	self.element:SetHeight(profile.bar.height)
 	self.bar:ApplyStyle(profile.bar)
 	self.text:ApplyStyle(profile.text)
-	self:RefreshTicks()
+	for index, text in ipairs(self.thresholds) do
+		text:ApplyStyle(profile.thresholds[index].text)
+	end
+	self:RefreshMarks()
 
 	AMT.State.MarkDirty("layout")
 end
 
-function module:RefreshTicks()
+function module:RefreshMarks()
 	local bar = AMT.Profiles.active.timer.bar
 	local limits = AMT.State.current.timeLimits
+	local tickColor = bar.tickColor or { 1, 1, 1, 0.5 }
 
-	if not bar.showTicks or not limits[1] or limits[1] <= 0 then
-		self.bar:SetTicks({}, bar.tickColor or { 1, 1, 1, 0.5 })
+	if not limits[1] or limits[1] <= 0 then
+		self.bar:SetTicks({}, tickColor)
 
 		return
 	end
@@ -54,25 +66,67 @@ function module:RefreshTicks()
 		fractions[#fractions + 1] = limits[tier] / limits[1]
 	end
 
-	self.bar:SetTicks(fractions, bar.tickColor or { 1, 1, 1, 0.5 })
+	self.bar:SetTicks(bar.showTicks and fractions or {}, tickColor)
+
+	for index, text in ipairs(self.thresholds) do
+		self.bar:AttachAtFraction(text, limits[index] / limits[1])
+	end
 end
 
 ---@return string
 function module:FormatDisplayTime()
 	local state = AMT.State.current
 	local profile = AMT.Profiles.active.timer
+	local separator = profile.spacedSlash and " / " or "/"
+	local current
 
 	if state.challengeCompleted and state.completionMS then
-		return AMT.Util.FormatTime(state.completionMS / 1000, profile.decimals)
-	end
-
-	if profile.direction == "DOWN" then
+		current = AMT.Util.FormatTime(state.completionMS / 1000, profile.decimals)
+	elseif profile.direction == "DOWN" then
 		local remaining = state.timeLimit - state.elapsed
 
-		return AMT.Util.FormatTime(remaining, 0, remaining < 0)
+		current = AMT.Util.FormatTime(remaining, 0, remaining < 0)
+	else
+		current = AMT.Util.FormatTime(state.elapsed)
 	end
 
-	return AMT.Util.FormatTime(state.elapsed)
+	return current .. separator .. AMT.Util.FormatTime(state.timeLimit)
+end
+
+function module:RenderThresholds()
+	local profile = AMT.Profiles.active.timer
+	local state = AMT.State.current
+	local limits = state.timeLimits
+
+	for index, text in ipairs(self.thresholds) do
+		local settings = profile.thresholds[index]
+		local limit = limits[index]
+
+		if not settings.enabled or not limit then
+			text:Hide()
+		elseif state.challengeCompleted then
+			local achieved = (state.upgradeLevels or 0) >= index
+			local difference = limit - state.elapsed
+
+			text:SetText((achieved and "-" or "+") .. AMT.Util.FormatTime(math.abs(difference)))
+			text:SetColor(achieved and settings.aheadColor or settings.behindColor)
+			text:Show()
+		else
+			local remaining = limit - state.elapsed
+
+			if remaining >= 0 then
+				text:SetText(AMT.Util.FormatTime(remaining))
+				text:SetColor(settings.text.color)
+				text:Show()
+			elseif index == 1 then
+				text:SetText("+" .. AMT.Util.FormatTime(-remaining))
+				text:SetColor(settings.behindColor)
+				text:Show()
+			else
+				text:Hide()
+			end
+		end
+	end
 end
 
 function module:OnProfileChanged()
@@ -93,6 +147,7 @@ function module:Render()
 	end
 
 	self.text:SetText(self:FormatDisplayTime())
+	self:RenderThresholds()
 
 	if state.challengeCompleted then
 		self.text:SetColor(state.completedOnTime and profile.successColor or profile.failColor)

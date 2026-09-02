@@ -85,7 +85,7 @@ function Bar:ApplyStyle(style)
 	end
 end
 
----@param region FontString|Texture
+---@param region ScriptRegion
 ---@param slot "LEFT"|"CENTER"|"RIGHT"
 function Bar:AttachToSlot(region, slot)
 	local anchor = SLOT_ANCHORS[slot]
@@ -98,6 +98,18 @@ function Bar:AttachToSlot(region, slot)
 
 	region:ClearAllPoints()
 	region:SetPoint(anchor.point, self, anchor.relativePoint, anchor.x, 0)
+end
+
+---@param region ScriptRegion
+---@param fraction number 0-1
+function Bar:AttachAtFraction(region, fraction)
+	region:ClearAllPoints()
+
+	if fraction >= 1 then
+		region:SetPoint("RIGHT", self, "RIGHT", -SLOT_INSET, 0)
+	else
+		region:SetPoint("LEFT", self, "LEFT", self:GetWidth() * fraction + SLOT_INSET, 0)
+	end
 end
 
 ---@param parent Frame

@@ -29,6 +29,12 @@ local PROFILE_VERSION = 1
 ---@field outline AMTFontOutline
 ---@field color number[]
 
+---@class AMTThresholdSettings
+---@field enabled boolean
+---@field aheadColor number[]
+---@field behindColor number[]
+---@field text AMTTextStyle
+
 ---@class AMTTimerProfile
 ---@field scale number
 ---@field position AMTFramePosition
@@ -40,6 +46,8 @@ local PROFILE_VERSION = 1
 ---@field failColor number[]
 ---@field bar AMTBarStyle
 ---@field text AMTTextStyle
+---@field spacedSlash boolean
+---@field thresholds AMTThresholdSettings[]
 
 ---@class AMTProfile
 ---@field version integer
@@ -83,6 +91,27 @@ local profileDefaults = {
 			size = 16,
 			outline = "OUTLINE",
 			color = { 1, 1, 1, 1 },
+		},
+		spacedSlash = true,
+		thresholds = {
+			{
+				enabled = true,
+				aheadColor = { 0, 1, 0, 1 },
+				behindColor = { 1, 0, 0, 1 },
+				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			{
+				enabled = true,
+				aheadColor = { 0, 1, 0, 1 },
+				behindColor = { 1, 0, 0, 1 },
+				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
+			{
+				enabled = true,
+				aheadColor = { 0, 1, 0, 1 },
+				behindColor = { 1, 0, 0, 1 },
+				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
 		},
 	},
 }
