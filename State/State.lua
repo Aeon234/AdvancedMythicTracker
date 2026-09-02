@@ -72,7 +72,7 @@ local defaults = {
 ---@alias AMTDirtyKey "timer"|"forces"|"objectives"|"deaths"|"keyInfo"|"layout"
 
 ---@type AMTDirtyKey[]
-local DIRTY_KEYS = { "keyInfo", "timer", "objectives", "forces", "deaths", "layout" }
+local DIRTY_KEYS = { "layout", "keyInfo", "timer", "objectives", "forces", "deaths" }
 
 ---@class AMTState
 ---@field current AMTStateData

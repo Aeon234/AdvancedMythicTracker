@@ -101,6 +101,7 @@ local function ApplyGroup(groupKey)
 				frame:ClearAllPoints()
 
 				if spanning then
+					frame:SetWidth(0)
 					frame:SetPoint("TOPLEFT", group, "TOPLEFT", nudge[1], top)
 					frame:SetPoint("TOPRIGHT", group, "TOPRIGHT", nudge[1], top)
 				else

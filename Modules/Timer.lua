@@ -32,6 +32,10 @@ function module:OnInitialize()
 		self:RefreshMarks()
 	end)
 
+	AMT.Render.Register("layout", function()
+		self:RefreshMarks()
+	end)
+
 	self:ApplyStyle()
 end
 
