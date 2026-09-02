@@ -5,4 +5,5 @@
     <Script file="Forces.lua" />
     <Script file="Objectives.lua" />
     <Script file="Deaths.lua" />
+    <Script file="Analytics.lua" />
 </Ui>
