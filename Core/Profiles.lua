@@ -17,12 +17,14 @@ local PROFILE_VERSION = 1
 ---@field objectives string[]
 ---@field forces string[]
 
+-- Timer Bars
 ---@class AMTBarProfile
 ---@field texture string
 ---@field height number
 ---@field color number[]
 ---@field background number[]
 
+-- Timer Text
 ---@class AMTTextProfile
 ---@field font string
 ---@field size number
@@ -35,6 +37,7 @@ local PROFILE_VERSION = 1
 ---@field behindColor number[]
 ---@field text AMTTextStyle
 
+-- Timer Key Info
 ---@class AMTKeyInfoProfile
 ---@field height number
 ---@field showLevel boolean
@@ -42,6 +45,16 @@ local PROFILE_VERSION = 1
 ---@field colorLevel boolean
 ---@field text AMTTextStyle
 ---@field level AMTTextStyle
+
+-- Timer Affixes
+---@class AMTAffixesProfile
+---@field height number
+---@field widget "ICON"|"TEXT"
+---@field justify "LEFT"|"CENTER"|"RIGHT"
+---@field iconSize number
+---@field spacing number
+---@field separator string
+---@field text AMTTextStyle
 
 ---@class AMTTimerProfile
 ---@field scale number
@@ -57,6 +70,7 @@ local PROFILE_VERSION = 1
 ---@field spacedSlash boolean
 ---@field thresholds AMTThresholdSettings[]
 ---@field keyInfo AMTKeyInfoProfile
+---@field affixes AMTAffixesProfile
 
 ---@class AMTProfile
 ---@field version integer
@@ -129,6 +143,15 @@ local profileDefaults = {
 			colorLevel = true,
 			text = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			level = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+		},
+		affixes = {
+			height = 18,
+			widget = "ICON",
+			justify = "RIGHT",
+			iconSize = 16,
+			spacing = 2,
+			separator = " - ",
+			text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 0.7, 0.7, 0.7, 1 } },
 		},
 	},
 }

@@ -43,6 +43,12 @@ function Util.Copy(source)
 	return result
 end
 
+---@param text string
+---@return string
+function Util.Trim(text)
+	return (text:gsub("^%s*(.-)%s*$", "%1"))
+end
+
 ---@param target table<any, any>?
 ---@param defaults table<any, any>
 function Util.MergeDefaults(target, defaults)

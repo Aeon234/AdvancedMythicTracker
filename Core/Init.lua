@@ -23,6 +23,7 @@ local addonName = ...
 ---@field Layout AMTLayout
 ---@field Render AMTRender
 ---@field Demo AMTDemo
+---@field Locale AMTLocaleUtil
 local AMT = select(2, ...)
 
 AMT.name = addonName
