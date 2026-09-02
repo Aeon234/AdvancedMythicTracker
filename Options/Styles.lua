@@ -18,7 +18,10 @@ local definitions = {
 	PANEL = {},
 
 	AEON = {
-		background = { color = { 31 / 255, 24 / 255, 19 / 255, 1 } },
+		background = {
+			color = { 31 / 255, 24 / 255, 19 / 255, 1 },
+			nineslice = true,
+		},
 	},
 }
 

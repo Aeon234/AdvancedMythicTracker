@@ -61,6 +61,7 @@ local PROFILE_VERSION = 1
 ---@field enabled boolean
 ---@field color number[]
 ---@field padding number
+---@field nineslice boolean
 
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
@@ -175,6 +176,7 @@ local profileDefaults = {
 			enabled = true,
 			color = { 0, 0, 0, 0.6 },
 			padding = 6,
+			nineslice = false,
 		},
 	},
 }

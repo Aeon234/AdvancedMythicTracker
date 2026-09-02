@@ -5,6 +5,8 @@ local PLACEHOLDER_HEIGHT = 120
 ---@class AMTFrames
 ---@field root AMTDraggableMixin!
 ---@field background Texture!
+---@field fill AMTBorder?
+---@field ring AMTBorder?
 local Frames = {}
 AMT.Frames = Frames
 
@@ -16,18 +18,23 @@ end
 function Frames.ApplyProfile()
 	local profile = TimerProfile()
 	local background = profile.background
+	local color = background.color
+	local nineslice = background.enabled and background.nineslice
 
 	Frames.root:SetWidth(profile.width)
 	Frames.root:SetScale(profile.scale)
 	Frames.root:ApplyPosition(profile.position)
 
-	if background.enabled then
-		local color = background.color
+	Frames.background:SetColorTexture(color[1], color[2], color[3], color[4])
+	Frames.background:SetShown(background.enabled and not nineslice)
 
-		Frames.background:SetColorTexture(color[1], color[2], color[3], color[4])
-		Frames.background:Show()
-	else
-		Frames.background:Hide()
+	if Frames.fill then
+		Frames.fill:SetVertexColor(color[1], color[2], color[3], color[4])
+		Frames.fill:SetShown(nineslice)
+	end
+
+	if Frames.ring then
+		Frames.ring:SetShown(nineslice)
 	end
 end
 
@@ -41,6 +48,8 @@ function Frames.Initialize()
 
 	Frames.background = root:CreateTexture(nil, "BACKGROUND")
 	Frames.background:SetAllPoints()
+	Frames.fill = AMT.NineSlice.Apply(root, "Solid", nil, "BACKGROUND", 0)
+	Frames.ring = AMT.NineSlice.Apply(root, "Ring", nil, "BACKGROUND", 1)
 
 	root.OnPositionChanged = function(_, position)
 		local stored = TimerProfile().position
