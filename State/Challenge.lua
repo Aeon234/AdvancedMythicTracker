@@ -54,10 +54,12 @@ function Challenge.Load()
 	end
 
 	local state = State.current
+	local seasonID = C_MythicPlus.GetCurrentSeason()
 
 	state.mapID = mapID
 	state.level = level
 	state.hasChallengersPeril = false
+	state.seasonID = seasonID > 0 and seasonID or nil
 
 	wipe(state.affixIDs)
 

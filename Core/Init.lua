@@ -27,6 +27,7 @@ local addonName = ...
 ---@field Options AMTOptions
 ---@field Style AMTStyle
 ---@field NineSlice AMTNineSlice
+---@field Splits AMTSplits
 local AMT = select(2, ...)
 
 AMT.name = addonName

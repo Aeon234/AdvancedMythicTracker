@@ -6,4 +6,5 @@
     <Script file="Deaths.lua" />
     <Script file="Objectives.lua" />
     <Script file="Pull.lua" />
+    <Script file="Splits.lua" />
 </Ui>

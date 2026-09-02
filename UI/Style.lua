@@ -29,9 +29,9 @@ end
 ---@param key AMTStyleKey
 ---@return boolean applied
 function Style.Apply(key)
-	local Styles = AMT.Options.Styles
+	local override = AMT.Options.Styles.GetOverride(key)
 
-	if not Styles.Exists(key) then
+	if not override then
 		AMT.Util.Warn("unknown style %q.", tostring(key))
 
 		return false
@@ -50,7 +50,7 @@ function Style.Apply(key)
 
 	local stamped = AMT.Profiles.TimerDefaults()
 
-	AMT.Util.Overlay(stamped, Styles.GetOverride(key))
+	AMT.Util.Overlay(stamped, override)
 	stamped.style = key
 
 	for field, value in pairs(preserved) do
