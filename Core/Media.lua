@@ -33,7 +33,6 @@ function Media.Background(name)
 	return LSM:Fetch("background", name)
 end
 
---- Sorted name list for the options dropdowns (Phase 9).
 ---@param mediaType string
 ---@return string[]
 function Media.List(mediaType)

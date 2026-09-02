@@ -53,6 +53,5 @@ function Locale.FormatAffixName(name)
 		result = result:gsub(filter, "")
 	end
 
-	-- Removing interior words leaves runs of spaces behind, so collapse before trimming.
 	return AMT.Util.Trim((result:gsub("%s+", " ")))
 end

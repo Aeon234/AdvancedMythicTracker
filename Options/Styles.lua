@@ -9,7 +9,6 @@ local definitions = {
 		geometry = "SIZED",
 		contentWidth = 200,
 		justify = "RIGHT",
-		-- Ticks on the timer bar are a Panel/Aeon feature; WarpDeplete's layout has none.
 		bar = { showTicks = false },
 		affixes = { widget = "TEXT", justify = "RIGHT" },
 		keyInfo = { combineLevel = true },
