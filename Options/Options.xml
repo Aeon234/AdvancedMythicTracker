@@ -8,4 +8,5 @@
     <Include file="Layout\Layout.xml" />
 
     <Script file="Chrome.lua" />
+    <Script file="Sidebar.lua" />
 </Ui>

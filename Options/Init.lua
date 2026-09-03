@@ -43,6 +43,10 @@ local AMT = select(2, ...)
 ---@field Hide fun()
 ---@field Toggle fun()
 ---@field IsShown fun(): boolean
+---@field Sidebar AMTOptionsSidebar
+---@field sidebar AMTOptionsSidebar?
+---@field NewSidebar fun(parent: Frame): AMTOptionsSidebar
+---@field OnPageSelected fun(page: AMTOptionsPage)
 local Options = {}
 AMT.Options = Options
 
