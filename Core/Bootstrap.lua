@@ -64,6 +64,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 
 		AMT.DB.Initialize()
 		AMT.Profiles.Initialize()
+		AMT.Render.SetInterval(AMT.DB.settings.updateInterval)
 		AMT.Frames.Initialize()
 
 		for module in Modules.Iterate() do

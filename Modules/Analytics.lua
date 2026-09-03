@@ -169,6 +169,10 @@ end
 function module:OnAbandonVote(event, votePassed)
 	local state = AMT.State.current
 
+	if not AMT.DB.settings.recordAbandons then
+		return
+	end
+
 	if not votePassed or not state.inChallenge or state.challengeCompleted then
 		return
 	end

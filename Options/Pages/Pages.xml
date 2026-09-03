@@ -1,3 +1,4 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Include file="Timer\Timer.xml" />
+    <Include file="Addon\Addon.xml" />
 </Ui>
