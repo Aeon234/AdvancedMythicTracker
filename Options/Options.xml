@@ -11,4 +11,6 @@
     <Script file="Sidebar.lua" />
     <Script file="Page.lua" />
     <Script file="Panel.lua" />
+
+    <Include file="Pages\Pages.xml" />
 </Ui>

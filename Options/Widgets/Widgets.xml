@@ -8,4 +8,5 @@
     <Script file="TextInput.lua" />
     <Script file="SegmentedSelector.lua" />
     <Script file="Button.lua" />
+    <Script file="Note.lua" />
 </Ui>

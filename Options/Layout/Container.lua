@@ -24,6 +24,7 @@ function Options.NewContainer(parent, labelWidth, spacing)
 	local container = setmetatable({
 		children = {},
 		widgets = {},
+		nested = {},
 		labelWidth = labelWidth or CONST.LABEL_WIDTH,
 		spacing = spacing or CONST.ROW_SPACING,
 	}, Container)

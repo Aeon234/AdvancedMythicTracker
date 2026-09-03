@@ -3,6 +3,7 @@ local AMT = select(2, ...)
 local PLACEHOLDER_HEIGHT = 120
 
 ---@class AMTFrames
+---@field unlocked boolean?
 ---@field root AMTDraggableMixin!
 ---@field background Texture!
 ---@field fill AMTBorder?
@@ -66,8 +67,14 @@ end
 
 ---@param unlocked boolean
 function Frames.SetUnlocked(unlocked)
+	Frames.unlocked = unlocked
 	Frames.root:SetUnlocked(unlocked)
 	Frames.root:SetShown(unlocked or Frames.shouldShow == true)
+end
+
+---@return boolean
+function Frames.IsUnlocked()
+	return Frames.unlocked == true
 end
 
 ---@param shown boolean
