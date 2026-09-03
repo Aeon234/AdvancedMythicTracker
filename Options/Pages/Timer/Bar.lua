@@ -65,5 +65,24 @@ Options.RegisterPage({
 		})
 
 		page:AddFontGroup(L["Timer Text"], "timer.text")
+
+		for tier = 1, 3 do
+			local prefix = "timer.thresholds." .. tier
+
+			local group = page:AddGroup({
+				title = L["Threshold %s"]:format("+" .. tier),
+				enabledPath = prefix .. ".enabled",
+			})
+
+			group.content:AddWidgets({
+				{
+					type = "color",
+					label = L["Ahead / Behind"],
+					paths = { prefix .. ".aheadColor", prefix .. ".behindColor" },
+				},
+			})
+
+			group.content:AddFontGroup(L["Text"], prefix .. ".text")
+		end
 	end,
 })

@@ -48,14 +48,11 @@ local function ShowFontPicker()
 				Options.NotifyValueChanged()
 			end)
 
-			-- Each row renders in the font it selects, same as the media dropdown's.
 			entry:AddInitializer(function(row)
-				local path = AMT.Media.Fetch("font", key)
+				local fontObject = AMT.Media.FontObject(key)
 
-				if row.fontString and path then
-					local _, size, flags = row.fontString:GetFont()
-
-					row.fontString:SetFont(path, size or 12, flags or "") ---@diagnostic disable-line: type-mismatch
+				if row.fontString and fontObject then
+					row.fontString:SetFontObject(fontObject)
 				end
 
 				return FONT_MENU_WIDTH, FONT_MENU_ROW_HEIGHT

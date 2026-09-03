@@ -115,7 +115,11 @@ function MediaDropdown:BuildMenu(rootDescription)
 				row.fontString:SetPoint("LEFT", row, "LEFT", ROW_TEXT_INSET, 0)
 
 				if isFont then
-					self:ApplyFont(row.fontString, key)
+					local fontObject = AMT.Media.FontObject(key)
+
+					if fontObject then
+						row.fontString:SetFontObject(fontObject)
+					end
 				end
 			end
 

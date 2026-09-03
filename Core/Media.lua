@@ -4,6 +4,7 @@ local LSM = LibStub("LibSharedMedia-3.0")
 
 ---@class AMTMedia
 ---@field LSM table
+---@field FontObject fun(name: string): table?
 local Media = {}
 AMT.Media = Media
 
@@ -44,4 +45,39 @@ end
 ---@return string?
 function Media.Fetch(mediaType, name)
 	return LSM:Fetch(mediaType, name)
+end
+
+---@type table<string, table>
+local fontObjects = {}
+
+local fontObjectCount = 0
+
+---@param name string
+---@return table? fontObject
+function Media.FontObject(name)
+	local existing = fontObjects[name]
+
+	if existing then
+		return existing
+	end
+
+	local path = LSM:Fetch("font", name)
+
+	if not path then
+		return nil
+	end
+
+	fontObjectCount = fontObjectCount + 1
+
+	local object = CreateFont("AdvancedMythicTrackerFont" .. fontObjectCount)
+
+	object:CopyFontObject(GameFontHighlight)
+
+	local _, size, flags = object:GetFont()
+
+	object:SetFont(path, size or 12, flags or "")
+
+	fontObjects[name] = object
+
+	return object
 end
