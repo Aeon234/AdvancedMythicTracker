@@ -11,20 +11,21 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@alias AMTOptionPredicate fun(): boolean
 
 ---@class AMTOptionInfo
----@field mediaType string? LibSharedMedia type for the media dropdown; defaults to "statusbar"
----@field type string registered widget name
----@field label string already localised
----@field path string? dotted, resolved against `scope`
----@field scope AMTBindingScope? defaults to "profile"
----@field get AMTOptionGetter? overrides `path`
----@field set AMTOptionSetter? overrides `path`
----@field disabled AMTOptionPredicate? greyed at ~40%, still visible
----@field hidden AMTOptionPredicate? removed from the flow; the container reflows
----@field dirty AMTDirtyKey? narrows D-52's mark-everything default
----@field values table[]? enum widgets: { storedKey, displayLabel } pairs
+---@field mediaType string? LSM type
+---@field type string widget name
+---@field label string
+---@field path string?
+---@field scope AMTBindingScope?
+---@field get AMTOptionGetter?
+---@field set AMTOptionSetter?
+---@field disabled AMTOptionPredicate? greyed at ~40%
+---@field hidden AMTOptionPredicate?
+---@field dirty AMTDirtyKey?
+---@field values table[]? { storedKey, displayLabel }
 ---@field min number?
 ---@field max number?
 ---@field step number?
+---@field hasOpacity boolean? show/hide alpha slider
 
 ---@class AMTOptionWidget
 ---@field frame Frame
