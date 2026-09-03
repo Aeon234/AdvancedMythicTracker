@@ -4,6 +4,9 @@ local L = AMT.L
 local Options = AMT.Options
 
 local DISPLAY = { MINIMAL = "Minimal", PANEL = "Panel", AEON = "Aeon" }
+local FONT_MENU_WIDTH = 220
+local FONT_MENU_ROW_HEIGHT = 20
+local FONT_MENU_EXTENT = 320
 
 StaticPopupDialogs["AMT_CONFIRM_STYLE"] = {
 	text = L["Switching to %s will reset every Timer customisation to that style's defaults.\n\nYou can undo this until you switch again, or export your profile first."],
@@ -17,6 +20,49 @@ StaticPopupDialogs["AMT_CONFIRM_STYLE"] = {
 	whileDead = true,
 	timeout = 0,
 }
+
+---@param node table
+---@param font string
+local function StampFontFamily(node, font)
+	for _, value in pairs(node) do
+		if type(value) == "table" then
+			if value.font ~= nil then
+				value.font = font
+			end
+
+			StampFontFamily(value, font)
+		end
+	end
+end
+
+local function ShowFontPicker()
+	MenuUtil.CreateContextMenu(nil, function(_, rootDescription)
+		rootDescription:SetScrollMode(FONT_MENU_EXTENT)
+		rootDescription:SetMinimumWidth(FONT_MENU_WIDTH)
+		rootDescription:SetMaximumWidth(FONT_MENU_WIDTH)
+
+		for _, key in ipairs(AMT.Media.List("font")) do
+			local entry = rootDescription:CreateButton(key, function()
+				StampFontFamily(AMT.Profiles.active.timer, key)
+				AMT.Profiles.Refresh()
+				Options.NotifyValueChanged()
+			end)
+
+			-- Each row renders in the font it selects, same as the media dropdown's.
+			entry:AddInitializer(function(row)
+				local path = AMT.Media.Fetch("font", key)
+
+				if row.fontString and path then
+					local _, size, flags = row.fontString:GetFont()
+
+					row.fontString:SetFont(path, size or 12, flags or "") ---@diagnostic disable-line: type-mismatch
+				end
+
+				return FONT_MENU_WIDTH, FONT_MENU_ROW_HEIGHT
+			end)
+		end
+	end)
+end
 
 ---@return table[]
 local function StyleValues()
@@ -70,6 +116,13 @@ Options.RegisterPage({
 			},
 
 			{ type = "slider", label = L["Overall Scale"], path = "timer.scale", min = 0.5, max = 2.0, step = 0.05 },
+
+			{
+				type = "button",
+				label = L["Fonts"],
+				text = L["Apply Font To All…"],
+				set = ShowFontPicker,
+			},
 
 			{
 				type = "checkbox",
