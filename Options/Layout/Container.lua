@@ -163,15 +163,17 @@ end
 
 ---@param label string
 ---@param prefix string dotted path to a table matching AMTTextStyle
+---@param hidden AMTOptionPredicate? applied to all three rows
 ---@return AMTOptionWidget[]
-function Container:AddFontGroup(label, prefix)
+function Container:AddFontGroup(label, prefix, hidden)
 	return self:AddWidgets({
-		{ type = "media", label = label, path = prefix .. ".font", mediaType = "font" },
-		{ type = "slider", label = L["Size"], path = prefix .. ".size", min = 6, max = 32, step = 1 },
+		{ type = "media", label = label, path = prefix .. ".font", mediaType = "font", hidden = hidden },
+		{ type = "slider", label = L["Size"], path = prefix .. ".size", min = 6, max = 32, step = 1, hidden = hidden },
 		{
 			type = "dropdown",
 			label = L["Outline"],
 			path = prefix .. ".outline",
+			hidden = hidden,
 			values = {
 				{ "", L["None"] },
 				{ "OUTLINE", L["Outline"] },

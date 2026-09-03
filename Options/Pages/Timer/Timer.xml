@@ -5,4 +5,5 @@
     <Script file="Objectives.lua" />
     <Script file="Splits.lua" />
     <Script file="Deaths.lua" />
+    <Script file="Affixes.lua" />
 </Ui>

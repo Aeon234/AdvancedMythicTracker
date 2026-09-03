@@ -122,7 +122,8 @@ end
 
 ---@param label string
 ---@param prefix string
+---@param hidden AMTOptionPredicate?
 ---@return AMTOptionWidget[]
-function PageView:AddFontGroup(label, prefix)
-	return self.container:AddFontGroup(label, prefix)
+function PageView:AddFontGroup(label, prefix, hidden)
+	return self.container:AddFontGroup(label, prefix, hidden)
 end
