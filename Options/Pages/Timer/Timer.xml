@@ -3,4 +3,5 @@
     <Script file="Bar.lua" />
     <Script file="Forces.lua" />
     <Script file="Objectives.lua" />
+    <Script file="Splits.lua" />
 </Ui>
