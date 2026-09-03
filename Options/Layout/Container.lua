@@ -11,6 +11,7 @@ local CONST = Options.CONST
 ---@field spacing number
 ---@field suspended boolean?
 ---@field onResized fun()?
+---@field nested table[]
 local Container = {}
 Container.__index = Container
 Options.Container = Container
@@ -73,12 +74,14 @@ function Container:AddChild(child)
 	return child
 end
 
----@param nested AMTOptionsContainer
----@return AMTOptionsContainer
+---@param nested AMTOptionsContainer|AMTOptionsGroup
+---@return AMTOptionsContainer|AMTOptionsGroup
 function Container:AddContainer(nested)
 	nested.onResized = function()
 		self:Layout()
 	end
+
+	self.nested[#self.nested + 1] = nested
 
 	self:AddChild(nested.frame)
 
@@ -132,6 +135,10 @@ function Container:Refresh()
 		widget:Update()
 	end
 
+	for _, nested in ipairs(self.nested) do
+		nested:Refresh()
+	end
+
 	self.suspended = false
 
 	self:Layout()
@@ -145,6 +152,7 @@ function Container:Clear()
 
 	self.children = {}
 	self.widgets = {}
+	self.nested = {}
 
 	self:Layout()
 end

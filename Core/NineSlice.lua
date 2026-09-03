@@ -157,3 +157,9 @@ function NineSlice.Apply(frame, textureName, cornerSize, layer, subLevel)
 
 	return setmetatable({ pieces = pieces, cornerSize = size }, Border)
 end
+
+---@param textureName string
+---@return string
+function NineSlice.Path(textureName)
+	return MEDIA_PATH .. textureName
+end

@@ -32,6 +32,8 @@ local AMT = select(2, ...)
 ---@field CreateActionButton fun(parent: Frame, onClick: fun()): Button, FontString, Texture, AMTBorder?
 ---@field Container AMTOptionsContainer
 ---@field NewContainer fun(parent: Frame, labelWidth: number?, spacing: number?): AMTOptionsContainer
+---@field Group AMTOptionsGroup
+---@field NewGroup fun(parent: Frame, config: AMTOptionsGroupConfig): AMTOptionsGroup
 local Options = {}
 AMT.Options = Options
 
