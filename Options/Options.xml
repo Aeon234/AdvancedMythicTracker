@@ -4,4 +4,6 @@
     <Script file="Registry.lua" />
     <Script file="Binding.lua" />
     <Script file="Styles.lua" />
+
+    <Include file="Widgets\Widgets.xml" />
 </Ui>
