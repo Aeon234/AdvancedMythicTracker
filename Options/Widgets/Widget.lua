@@ -20,7 +20,6 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field set AMTOptionSetter?
 ---@field disabled AMTOptionPredicate? greyed at ~40%
 ---@field hidden AMTOptionPredicate?
----@field dirty AMTDirtyKey?
 ---@field values table[]? { storedKey, displayLabel }
 ---@field min number?
 ---@field max number?
