@@ -1,6 +1,6 @@
 local AMT = select(2, ...)
-
 local L = AMT.L
+
 local Options = AMT.Options
 
 local DISPLAY = { MINIMAL = "Minimal", PANEL = "Panel", AEON = "Aeon" }
