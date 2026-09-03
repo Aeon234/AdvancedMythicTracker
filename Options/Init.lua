@@ -37,6 +37,12 @@ local AMT = select(2, ...)
 ---@field PageHeader AMTOptionsPageHeader
 ---@field NewPageHeader fun(parent: Frame, config: AMTOptionsPageHeaderConfig): AMTOptionsPageHeader
 ---@field NewDivider fun(parent: Frame, style: string?): Frame
+---@field GetChrome fun(): AMTOptionsChrome
+---@field BuildSidebar fun(host: Frame)
+---@field Show fun()
+---@field Hide fun()
+---@field Toggle fun()
+---@field IsShown fun(): boolean
 local Options = {}
 AMT.Options = Options
 

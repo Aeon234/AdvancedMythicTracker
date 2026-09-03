@@ -53,7 +53,9 @@ SlashCmdList.ADVANCEDMYTHICTRACKER = function(msg)
 		end
 	elseif command == "undo" then
 		AMT.Style.Undo()
-	else
+	elseif command == "version" then
 		AMT.Util.Print("v%s", AMT.version)
+	else
+		AMT.Options.Toggle()
 	end
 end

@@ -6,4 +6,6 @@
 
     <Include file="Widgets\Widgets.xml" />
     <Include file="Layout\Layout.xml" />
+
+    <Script file="Chrome.lua" />
 </Ui>
