@@ -387,3 +387,140 @@ function Profiles.Refresh()
 	AMT.State.MarkAllDirty()
 	AMT.Render.Flush()
 end
+
+---@return string[] names sorted, so the picker is stable across sessions
+function Profiles.List()
+	local names = {}
+
+	for name in pairs(AMT.DB.settings.profiles) do
+		names[#names + 1] = name
+	end
+
+	table.sort(names)
+
+	return names
+end
+
+---@param name string
+---@return boolean
+function Profiles.Exists(name)
+	return AMT.DB.settings.profiles[name] ~= nil
+end
+
+---@param name string
+---@return boolean valid
+local function ValidateNewName(name)
+	if not name or name:trim() == "" then
+		AMT.Util.Warn("a profile needs a name.")
+
+		return false
+	end
+
+	if Profiles.Exists(name) then
+		AMT.Util.Warn("a profile named %q already exists.", name)
+
+		return false
+	end
+
+	return true
+end
+
+---Create an empty profile at defaults and switch to it.
+---@param name string
+---@return boolean created
+function Profiles.New(name)
+	if not ValidateNewName(name) then
+		return false
+	end
+
+	Profiles.Create(name)
+	Profiles.Activate(name)
+
+	return true
+end
+
+---Duplicate a profile under a new name and switch to it.
+---@param source string
+---@param name string
+---@return boolean created
+function Profiles.Duplicate(source, name)
+	local settings = AMT.DB.settings
+
+	if not settings.profiles[source] or not ValidateNewName(name) then
+		return false
+	end
+
+	settings.profiles[name] = Util.Copy(settings.profiles[source])
+
+	Profiles.Activate(name)
+
+	return true
+end
+
+---@param from string
+---@param to string
+---@return boolean renamed
+function Profiles.Rename(from, to)
+	local settings = AMT.DB.settings
+
+	if not settings.profiles[from] or not ValidateNewName(to) then
+		return false
+	end
+
+	settings.profiles[to] = settings.profiles[from]
+	settings.profiles[from] = nil
+
+	for characterKey, name in pairs(settings.profileKeys) do
+		if name == from then
+			settings.profileKeys[characterKey] = to
+		end
+	end
+
+	if settings.defaultProfile == from then
+		settings.defaultProfile = to
+	end
+
+	if Profiles.activeName == from then
+		Profiles.activeName = to
+	end
+
+	return true
+end
+
+---@param name string
+---@return boolean deleted
+function Profiles.Delete(name)
+	local settings = AMT.DB.settings
+
+	if not settings.profiles[name] then
+		return false
+	end
+
+	local names = Profiles.List()
+
+	if #names <= 1 then
+		AMT.Util.Warn("the last profile cannot be deleted.")
+
+		return false
+	end
+
+	settings.profiles[name] = nil
+
+	for characterKey, assigned in pairs(settings.profileKeys) do
+		if assigned == name then
+			settings.profileKeys[characterKey] = nil
+		end
+	end
+
+	local remaining = Profiles.List()
+
+	if settings.defaultProfile == name then
+		settings.defaultProfile = remaining[1]
+	end
+
+	if Profiles.activeName == name then
+		Profiles.Activate(settings.defaultProfile)
+	end
+
+	return true
+end
