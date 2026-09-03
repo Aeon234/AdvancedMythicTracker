@@ -29,6 +29,7 @@ local addonName = ...
 ---@field NineSlice AMTNineSlice
 ---@field Splits AMTSplits
 ---@field Tooltip AMTTooltip
+---@field Animation AMTAnimation
 local AMT = select(2, ...)
 
 AMT.name = addonName

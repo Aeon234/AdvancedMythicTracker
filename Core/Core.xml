@@ -5,6 +5,7 @@
     <Script file="Locale.lua" />
     <Script file="Media.lua" />
     <Script file="NineSlice.lua" />
+    <Script file="Animation.lua" />
     <Script file="Events.lua" />
     <Script file="Module.lua" />
     <Script file="DB.lua" />

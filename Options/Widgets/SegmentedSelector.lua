@@ -62,7 +62,8 @@ end
 ---@param instant boolean?
 function Segmented:MoveThumb(x, instant)
 	if instant or not self.thumb:IsShown() then
-		self.thumb:SetScript("OnUpdate", nil)
+		AMT.Animation.Stop(self.thumb)
+
 		self.thumbX = x
 		self.thumb:SetPoint("TOPLEFT", self.track, "TOPLEFT", x, 0)
 
@@ -73,11 +74,12 @@ function Segmented:MoveThumb(x, instant)
 		return
 	end
 
-	self.thumbStartX = self.thumbX
-	self.thumbTargetX = x
-	self.thumbElapsed = 0
+	local from = self.thumbX
 
-	self.thumb:SetScript("OnUpdate", self.thumbUpdater)
+	AMT.Animation.Run(self.thumb, SLIDE_DURATION, function(eased)
+		self.thumbX = from + (x - from) * eased
+		self.thumb:SetPoint("TOPLEFT", self.track, "TOPLEFT", self.thumbX, 0)
+	end)
 end
 
 ---@param index integer
