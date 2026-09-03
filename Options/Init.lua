@@ -34,6 +34,9 @@ local AMT = select(2, ...)
 ---@field NewContainer fun(parent: Frame, labelWidth: number?, spacing: number?): AMTOptionsContainer
 ---@field Group AMTOptionsGroup
 ---@field NewGroup fun(parent: Frame, config: AMTOptionsGroupConfig): AMTOptionsGroup
+---@field PageHeader AMTOptionsPageHeader
+---@field NewPageHeader fun(parent: Frame, config: AMTOptionsPageHeaderConfig): AMTOptionsPageHeader
+---@field NewDivider fun(parent: Frame, style: string?): Frame
 local Options = {}
 AMT.Options = Options
 

@@ -1,4 +1,6 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Container.lua" />
     <Script file="Group.lua" />
+    <Script file="PageHeader.lua" />
+    <Script file="Divider.lua" />
 </Ui>
