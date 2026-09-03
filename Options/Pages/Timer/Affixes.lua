@@ -62,5 +62,40 @@ Options.RegisterPage({
 		page:AddFontGroup(L["Text"], "timer.affixes.text", function()
 			return not IsTextMode()
 		end)
+
+		local keyInfo = page:AddGroup({
+			title = L["Dungeon Name & Level"],
+			enabledPath = "timer.elements.keyInfoTitle.enabled",
+		})
+
+		keyInfo.content:AddWidgets({
+			{ type = "slider", label = L["Row Height"], path = "timer.keyInfo.height", min = 10, max = 32, step = 1 },
+
+			{ type = "checkbox", label = L["Show Key Level"], path = "timer.keyInfo.showLevel" },
+
+			{
+				type = "checkbox",
+				label = L["Combine With Name"],
+				path = "timer.keyInfo.combineLevel",
+				disabled = function()
+					return not Options.Get("timer.keyInfo.showLevel")
+				end,
+			},
+
+			{
+				type = "checkbox",
+				label = L["Colour By Rarity"],
+				path = "timer.keyInfo.colorLevel",
+				disabled = function()
+					return not Options.Get("timer.keyInfo.showLevel")
+				end,
+			},
+		})
+
+		keyInfo.content:AddFontGroup(L["Name"], "timer.keyInfo.text")
+
+		keyInfo.content:AddFontGroup(L["Level"], "timer.keyInfo.level", function()
+			return Options.Get("timer.keyInfo.combineLevel") == true or not Options.Get("timer.keyInfo.showLevel")
+		end)
 	end,
 })
