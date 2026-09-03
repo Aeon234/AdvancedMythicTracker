@@ -113,6 +113,8 @@ function Widget:SetValue(value)
 		Options.Set(info.path, value, info.scope)
 	end
 
+	self:Update()
+
 	Options.NotifyValueChanged()
 end
 

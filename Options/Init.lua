@@ -16,6 +16,19 @@ local AMT = select(2, ...)
 ---@class AMTOptions
 ---@field Styles AMTStyles
 ---@field CONST AMTOptionsConstants
+---@field Widget AMTOptionWidget
+---@field Get fun(path: string, scope: AMTBindingScope?): any
+---@field Set fun(path: string, value: any, scope: AMTBindingScope?): boolean
+---@field RegisterCategory fun(definition: AMTOptionsCategory)
+---@field RegisterPage fun(definition: AMTOptionsPage)
+---@field GetCategories fun(): AMTOptionsCategory[]
+---@field GetPages fun(categoryID: string): AMTOptionsPage[]
+---@field GetPage fun(id: string): AMTOptionsPage?
+---@field GetFirstPage fun(): AMTOptionsPage?
+---@field NewWidgetPrototype fun(widgetType: string): AMTOptionWidget
+---@field NewWidget fun(widgetType: string, parent: Frame, labelWidth: number?): AMTOptionWidget?
+---@field NotifyValueChanged fun()
+---@field CreateCheckboxControl fun(parent: Frame, onClick: fun()): Button, Texture, AMTBorder?
 local Options = {}
 AMT.Options = Options
 
