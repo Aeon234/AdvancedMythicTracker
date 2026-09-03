@@ -38,3 +38,10 @@ end
 function Media.List(mediaType)
 	return LSM:List(mediaType)
 end
+
+---@param mediaType string
+---@param name string
+---@return string?
+function Media.Fetch(mediaType, name)
+	return LSM:Fetch(mediaType, name)
+end

@@ -11,6 +11,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@alias AMTOptionPredicate fun(): boolean
 
 ---@class AMTOptionInfo
+---@field mediaType string? LibSharedMedia type for the media dropdown; defaults to "statusbar"
 ---@field type string registered widget name
 ---@field label string already localised
 ---@field path string? dotted, resolved against `scope`

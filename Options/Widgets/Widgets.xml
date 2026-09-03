@@ -4,4 +4,5 @@
     <Script file="Checkbox.lua" />
     <Script file="Slider.lua" />
     <Script file="Dropdown.lua" />
+    <Script file="MediaDropdown.lua" />
 </Ui>
