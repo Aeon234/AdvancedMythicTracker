@@ -24,7 +24,6 @@ function Note:Create(parent)
 	self.note:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)
 	self.note:SetJustifyH("LEFT")
 	self.note:SetWordWrap(true)
-	self.note:SetTextColor(MUTED_ORANGE[1], MUTED_ORANGE[2], MUTED_ORANGE[3])
 end
 
 function Note:Update()
@@ -34,9 +33,13 @@ function Note:Update()
 		return
 	end
 
-	self.note:SetText(info.text or info.label or "")
-	self.frame:SetHeight(math.max(self.note:GetStringHeight(), MIN_HEIGHT))
+	local text = (info.get or info.path) and self:GetValue() or info.text
 
-	-- The label column stays empty: a note is the row, not an annotation on one.
+	self.note:SetText(text ~= nil and tostring(text) or "")
+
+	local color = info.color or MUTED_ORANGE
+
+	self.note:SetTextColor(color[1], color[2], color[3])
+	self.frame:SetHeight(math.max(self.note:GetStringHeight(), MIN_HEIGHT))
 	self.label:SetText("")
 end

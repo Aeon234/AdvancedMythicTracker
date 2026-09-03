@@ -9,14 +9,19 @@ local RED = { 1, 0.2, 0.2, 1 }
 ---@field row Frame
 ---@field icon Texture
 ---@field text AMTTextMixin
+---@field SKULL string
 local module = AMT.Modules.New("Deaths")
+
+module.SKULL = SKULL
 
 function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("keyInfo"))
 	self.element:SetMouseMotionEnabled(true)
 
 	self.element:SetScript("OnEnter", function()
-		AMT.Tooltip.ShowDeaths(self.element)
+		if AMT.Profiles.active.timer.deaths.tooltip then
+			AMT.Tooltip.ShowDeaths(self.element)
+		end
 	end)
 
 	self.element:SetScript("OnLeave", function()

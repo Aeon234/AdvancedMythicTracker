@@ -117,6 +117,7 @@ local PROFILE_VERSION = 1
 ---@field red boolean
 ---@field justify "LEFT"|"CENTER"|"RIGHT"
 ---@field text AMTTextStyle
+---@field tooltip boolean
 
 ---@class AMTTimerProfile
 ---@field style "MINIMAL"|"PANEL"|"AEON"
@@ -240,6 +241,7 @@ local profileDefaults = {
 			red = false,
 			justify = "RIGHT",
 			text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			tooltip = true,
 		},
 		forces = {
 			bar = {
