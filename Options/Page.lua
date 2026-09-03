@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Options = AMT.Options
 
@@ -117,4 +118,29 @@ end
 ---@return AMTOptionsPageView?
 function Options.GetCurrentPage()
 	return current
+end
+
+---@param label string
+---@param prefix string dotted path to a table matching AMTTextStyle
+function PageView:AddFontGroup(label, prefix)
+	self:AddWidgets({
+		{ type = "media", label = label, path = prefix .. ".font", mediaType = "font" },
+		{ type = "slider", label = L["Size"], path = prefix .. ".size", min = 6, max = 32, step = 1 },
+		{
+			type = "dropdown",
+			label = L["Outline"],
+			path = prefix .. ".outline",
+			values = {
+				{ "", L["None"] },
+				{ "OUTLINE", L["Outline"] },
+				{ "THICKOUTLINE", L["Thick outline"] },
+				{ "MONOCHROME", L["Monochrome"] },
+				{ "MONOCHROME, OUTLINE", L["Monochrome outline"] },
+				{ "MONOCHROME, THICKOUTLINE", L["Monochrome thick outline"] },
+				{ "SLUG", L["Slug"] },
+				{ "SLUG, OUTLINE", L["Slug outline"] },
+				{ "SLUG, THICKOUTLINE", L["Slug thick outline"] },
+			},
+		},
+	})
 end

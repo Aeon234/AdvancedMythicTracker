@@ -28,6 +28,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field numeric boolean? reject anything non-numeric
 ---@field text string? button text
 ---@field icon string? button icon texture
+---@field paths string[]? colour swatch: several swatches on one row, one per path
 
 ---@class AMTOptionWidget
 ---@field frame Frame
