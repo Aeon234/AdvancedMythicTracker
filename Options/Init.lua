@@ -30,6 +30,8 @@ local AMT = select(2, ...)
 ---@field NotifyValueChanged fun()
 ---@field CreateCheckboxControl fun(parent: Frame, onClick: fun()): Button, Texture, AMTBorder?
 ---@field CreateActionButton fun(parent: Frame, onClick: fun()): Button, FontString, Texture, AMTBorder?
+---@field Container AMTOptionsContainer
+---@field NewContainer fun(parent: Frame, labelWidth: number?, spacing: number?): AMTOptionsContainer
 local Options = {}
 AMT.Options = Options
 

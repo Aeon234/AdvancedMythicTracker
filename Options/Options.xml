@@ -5,4 +5,5 @@
     <Script file="Styles.lua" />
 
     <Include file="Widgets\Widgets.xml" />
+    <Include file="Layout\Layout.xml" />
 </Ui>
