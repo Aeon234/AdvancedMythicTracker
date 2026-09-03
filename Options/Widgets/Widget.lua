@@ -26,6 +26,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field max number?
 ---@field step number?
 ---@field hasOpacity boolean? show/hide alpha slider
+---@field numeric boolean? reject anything non-numeric
 
 ---@class AMTOptionWidget
 ---@field frame Frame

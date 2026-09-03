@@ -6,4 +6,5 @@
     <Script file="Dropdown.lua" />
     <Script file="MediaDropdown.lua" />
     <Script file="ColorSwatch.lua" />
+    <Script file="TextInput.lua" />
 </Ui>
