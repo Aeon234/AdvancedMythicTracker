@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 ---@class AMTTimerModule : AMTModule
 ---@field element Frame
@@ -182,7 +183,7 @@ function module:RenderPBCompare()
 		return
 	end
 
-	self.pbCompare:SetFormatted("%s %s", AMT.L["PB"], AMT.Util.FormatTime(target / 1000))
+	self.pbCompare:SetFormatted("%s %s", L["PB"], AMT.Util.FormatTime(target / 1000))
 	self.pbCompare:SetColor(settings.text.color)
 	self.pbCompare:Show()
 end

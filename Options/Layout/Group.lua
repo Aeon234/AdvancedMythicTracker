@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Options = AMT.Options
 local CONST = Options.CONST
@@ -172,7 +173,7 @@ function Options.NewGroup(parent, config)
 		local label = control:CreateFontString(nil, "ARTWORK", "GameFontNormal")
 
 		label:SetPoint("LEFT", control, "RIGHT", CHECKBOX_LABEL_GAP, 0)
-		label:SetText(AMT.L["Enabled"])
+		label:SetText(L["Enabled"])
 		label:SetTextColor(1, 1, 1)
 
 		local reserve = label:GetStringWidth() + CHECKBOX_LABEL_GAP

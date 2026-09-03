@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 ---@class AMTTooltip
 local Tooltip = {}
@@ -29,7 +30,7 @@ function Tooltip.ShowDeaths(owner)
 	local unnamed = state.deathCount - #state.deaths
 
 	if unnamed > 0 then
-		GameTooltip:AddLine(("%s: %d"):format(AMT.L["Unnamed deaths"], unnamed), 0.7, 0.7, 0.7)
+		GameTooltip:AddLine(("%s: %d"):format(L["Unnamed deaths"], unnamed), 0.7, 0.7, 0.7)
 	end
 
 	GameTooltip:Show()

@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 ---@class AMTRunRecord
 ---@field mapID integer
@@ -71,7 +72,7 @@ function module:RecordBest()
 
 	map[level] = record
 
-	AMT.Util.Print("%s %s", AMT.L["New personal best:"], AMT.Util.FormatTime(record.finishMS / 1000, 1))
+	AMT.Util.Print("%s %s", L["New personal best:"], AMT.Util.FormatTime(record.finishMS / 1000, 1))
 
 	return true
 end
