@@ -76,6 +76,7 @@ local PROFILE_VERSION = 1
 ---@field decimals integer
 ---@field spacedSlash boolean
 ---@field completedColor number[]
+---@field showRemaining boolean
 
 -- Timer Objectives
 ---@class AMTObjectivesProfile
@@ -259,6 +260,7 @@ local profileDefaults = {
 			},
 			decimals = 2,
 			spacedSlash = false,
+			showRemaining = false,
 			completedColor = { 0.2, 0.8, 0.2, 1 },
 		},
 		objectives = {

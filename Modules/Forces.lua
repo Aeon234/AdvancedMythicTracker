@@ -61,7 +61,9 @@ function module:Render()
 	self.bar:SetValues(state.currentCount, state.totalCount)
 	self.bar:SetColor(state.forcesCompleted and profile.completedColor or profile.bar.color)
 
-	self.count:SetText(state.currentCount .. separator .. state.totalCount)
+	local shown = profile.showRemaining and (state.totalCount - state.currentCount) or state.currentCount
+
+	self.count:SetText(shown .. separator .. state.totalCount)
 	self.count:SetShown(profile.count.enabled)
 
 	self.percent:SetFormatted(self.percentFormat, state.currentPercent * 100)

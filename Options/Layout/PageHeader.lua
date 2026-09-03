@@ -8,7 +8,7 @@ local MIN_HEIGHT = 40
 local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 
 ---@class AMTOptionsPageHeaderConfig
----@field title string
+---@field title string?
 ---@field description string?
 ---@field divider string? thin|accent
 ---@field actionText string?
@@ -48,7 +48,7 @@ function Options.NewPageHeader(parent, config)
 	header.title = header.frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 	header.title:SetPoint("TOPLEFT", header.frame, "TOPLEFT", 0, 0)
 	header.title:SetJustifyH("LEFT")
-	header.title:SetText(config.title:upper())
+	header.title:SetText((config.title or ""):upper())
 	header.title:SetTextColor(GOLD_R, GOLD_G, GOLD_B)
 
 	header.description = header.frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")

@@ -1,4 +1,5 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="General.lua" />
     <Script file="Bar.lua" />
+    <Script file="Forces.lua" />
 </Ui>

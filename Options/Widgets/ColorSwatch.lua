@@ -19,13 +19,7 @@ end
 
 ---@return string[]
 function ColorSwatch:GetPaths()
-	local info = self.info
-
-	if not info then
-		return {}
-	end
-
-	return info.paths or { info.path }
+	return self.info and self.info.paths or {}
 end
 
 ---@param index integer
@@ -167,13 +161,14 @@ function ColorSwatch:Create(parent)
 end
 
 function ColorSwatch:Update()
-	if not Options.Widget.Update(self) then
+	local info = Options.Widget.Update(self)
+	if not info then
 		return
 	end
 
-	local paths = self:GetPaths()
+	local count = info.paths and #info.paths or 1
 
-	for index = 1, #paths do
+	for index = 1, count do
 		local control = self:AcquireSwatch(index)
 		local r, g, b, a = self:ReadColor(index)
 
@@ -185,7 +180,7 @@ function ColorSwatch:Update()
 		control:Show()
 	end
 
-	for index = #paths + 1, #self.controls do
+	for index = count + 1, #self.controls do
 		self.controls[index]:Hide()
 	end
 end

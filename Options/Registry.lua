@@ -12,12 +12,12 @@ local ORPHAN_ORDER = 9000
 
 ---@class AMTOptionsPage
 ---@field id string
----@field parent string a category id
+---@field parent string category ID
 ---@field order integer
----@field name string display only
----@field icon string? nil renders a text-only row
----@field Build fun(page: AMTOptionsPage) runs on first visit, never at load
----@field frame Frame? built lazily by Options/Page.lua
+---@field name string
+---@field icon string?
+---@field Build fun(page: AMTOptionsPageView)
+---@field frame Frame?
 ---@field built boolean?
 
 ---@type table<string, AMTOptionsCategory>

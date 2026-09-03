@@ -141,7 +141,7 @@ function Options.GetChrome()
 
 	scrollBar:SetInterpolateScroll(true)
 
-	scroll:SetPanExtent(CONST.SCROLL_PAN_EXTENT)
+	scroll:SetPanExtent(CONST.SCROLL_PAN_EXTENT) ---@diagnostic disable-line: undefined-field
 
 	chrome.scroll = scroll
 	chrome.scrollBar = scrollBar

@@ -4,6 +4,8 @@ local L = AMT.L
 local Options = AMT.Options
 local CONST = Options.CONST
 
+---@alias AMTOptionsNestable AMTOptionsContainer|AMTOptionsGroup|AMTOptionsPageHeader
+
 ---@class AMTOptionsContainer
 ---@field frame Frame
 ---@field children Frame[]
@@ -12,7 +14,7 @@ local CONST = Options.CONST
 ---@field spacing number
 ---@field suspended boolean?
 ---@field onResized fun()?
----@field nested table[]
+---@field nested AMTOptionsNestable[]
 local Container = {}
 Container.__index = Container
 Options.Container = Container
@@ -76,8 +78,8 @@ function Container:AddChild(child)
 	return child
 end
 
----@param nested AMTOptionsContainer|AMTOptionsGroup
----@return AMTOptionsContainer|AMTOptionsGroup
+---@param nested AMTOptionsNestable
+---@return AMTOptionsNestable
 function Container:AddContainer(nested)
 	nested.onResized = function()
 		self:Layout()
