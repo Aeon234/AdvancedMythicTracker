@@ -7,4 +7,5 @@
     <Script file="ColorSwatch.lua" />
     <Script file="TextInput.lua" />
     <Script file="SegmentedSelector.lua" />
+    <Script file="Button.lua" />
 </Ui>

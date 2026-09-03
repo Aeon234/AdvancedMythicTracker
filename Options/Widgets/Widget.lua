@@ -27,6 +27,8 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field step number?
 ---@field hasOpacity boolean? show/hide alpha slider
 ---@field numeric boolean? reject anything non-numeric
+---@field text string? button text
+---@field icon string? button icon texture
 
 ---@class AMTOptionWidget
 ---@field frame Frame
@@ -68,14 +70,14 @@ function Widget:Bind(info)
 	self:Update()
 end
 
----@return boolean visible
+---@return AMTOptionInfo? info
 function Widget:Update()
 	local info = self.info
 
 	if not info or (info.hidden and info.hidden()) then
 		self.frame:Hide()
 
-		return false
+		return nil
 	end
 
 	self.frame:Show()
@@ -83,7 +85,7 @@ function Widget:Update()
 	self.disabled = info.disabled ~= nil and info.disabled()
 	self.frame:SetAlpha(self.disabled and DISABLED_ALPHA or 1)
 
-	return true
+	return info
 end
 
 ---@return any

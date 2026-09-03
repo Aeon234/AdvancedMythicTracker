@@ -29,6 +29,7 @@ local AMT = select(2, ...)
 ---@field NewWidget fun(widgetType: string, parent: Frame, labelWidth: number?): AMTOptionWidget?
 ---@field NotifyValueChanged fun()
 ---@field CreateCheckboxControl fun(parent: Frame, onClick: fun()): Button, Texture, AMTBorder?
+---@field CreateActionButton fun(parent: Frame, onClick: fun()): Button, FontString, Texture, AMTBorder?
 local Options = {}
 AMT.Options = Options
 

@@ -213,13 +213,15 @@ function Segmented:Create(parent)
 end
 
 function Segmented:Update()
-	if not Options.Widget.Update(self) then
+	local info = Options.Widget.Update(self)
+
+	if not info then
 		return
 	end
 
-	local values = (self.info and self.info.values) or {}
+	local values = info.values or {}
 
-	if self.valuesRef ~= self.info.values then
+	if self.valuesRef ~= info.values then
 		self:Rebuild()
 	end
 
