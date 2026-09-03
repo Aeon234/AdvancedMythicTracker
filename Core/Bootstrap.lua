@@ -3,6 +3,10 @@ local AMT = select(2, ...)
 local Modules = AMT.Modules
 
 local function StartChallenge()
+	if AMT.Demo.IsActive() then
+		AMT.Demo.Exit()
+	end
+
 	AMT.State.Reset()
 	AMT.State.current.inChallenge = true
 

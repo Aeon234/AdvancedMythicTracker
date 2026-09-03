@@ -50,6 +50,7 @@ local AMT = select(2, ...)
 ---@field PageView AMTOptionsPageView
 ---@field GetCurrentPage fun(): AMTOptionsPageView?
 ---@field settingsCategory table?
+---@field RefreshToggles fun()
 local Options = {}
 AMT.Options = Options
 
