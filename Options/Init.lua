@@ -47,6 +47,8 @@ local AMT = select(2, ...)
 ---@field sidebar AMTOptionsSidebar?
 ---@field NewSidebar fun(parent: Frame): AMTOptionsSidebar
 ---@field OnPageSelected fun(page: AMTOptionsPage)
+---@field PageView AMTOptionsPageView
+---@field GetCurrentPage fun(): AMTOptionsPageView?
 local Options = {}
 AMT.Options = Options
 
