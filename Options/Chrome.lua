@@ -102,11 +102,12 @@ function Options.GetChrome()
 	return chrome
 end
 
+---@return boolean opened
 function Options.Show()
 	if InCombatLockdown() then
 		AMT.Util.Warn("the options window cannot be opened in combat.")
 
-		return
+		return false
 	end
 
 	local window = Options.GetChrome().frame
@@ -114,6 +115,8 @@ function Options.Show()
 	window:ClearAllPoints()
 	window:SetPoint(RESET_POINT, UIParent, RESET_POINT, RESET_X, RESET_Y)
 	window:Show()
+
+	return true
 end
 
 function Options.Hide()

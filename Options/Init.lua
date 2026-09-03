@@ -39,7 +39,7 @@ local AMT = select(2, ...)
 ---@field NewDivider fun(parent: Frame, style: string?): Frame
 ---@field GetChrome fun(): AMTOptionsChrome
 ---@field BuildSidebar fun(host: Frame)
----@field Show fun()
+---@field Show fun(): boolean
 ---@field Hide fun()
 ---@field Toggle fun()
 ---@field IsShown fun(): boolean
@@ -49,6 +49,7 @@ local AMT = select(2, ...)
 ---@field OnPageSelected fun(page: AMTOptionsPage)
 ---@field PageView AMTOptionsPageView
 ---@field GetCurrentPage fun(): AMTOptionsPageView?
+---@field settingsCategory table?
 local Options = {}
 AMT.Options = Options
 

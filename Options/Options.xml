@@ -10,4 +10,5 @@
     <Script file="Chrome.lua" />
     <Script file="Sidebar.lua" />
     <Script file="Page.lua" />
+    <Script file="Panel.lua" />
 </Ui>
