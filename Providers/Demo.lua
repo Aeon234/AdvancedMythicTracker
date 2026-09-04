@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local State = AMT.State
 
@@ -222,7 +223,7 @@ end
 ---@param animated boolean?
 function Demo.Enter(animated)
 	if State.current.inChallenge then
-		AMT.Util.Warn("preview is unavailable during a key.")
+		AMT.Util.Warn(L["preview is unavailable during a key."])
 
 		return
 	end

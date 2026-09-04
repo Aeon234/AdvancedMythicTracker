@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local PRESERVED = { "position", "scale" }
 
@@ -23,7 +24,7 @@ function Style.Apply(key)
 	local override = AMT.Options.Styles.GetOverride(key)
 
 	if not override then
-		AMT.Util.Warn("unknown style %q.", tostring(key))
+		AMT.Util.Warn(L["unknown style %q."], tostring(key))
 
 		return false
 	end
@@ -64,7 +65,7 @@ function Style.Undo()
 	local backup = profile.__preTimerStyleBackup
 
 	if not backup then
-		AMT.Util.Warn("there is no style change to undo.")
+		AMT.Util.Warn(L["there is no style change to undo."])
 
 		return false
 	end

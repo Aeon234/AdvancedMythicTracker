@@ -12,7 +12,7 @@ function module:OnInitialize()
 	local icon = LibStub("LibDBIcon-1.0", true)
 
 	if not broker or not icon then
-		AMT.Util.Warn("the minimap icon needs LibDataBroker-1.1 and LibDBIcon-1.0.")
+		AMT.Util.Warn(L["the minimap icon needs LibDataBroker-1.1 and LibDBIcon-1.0."])
 
 		return
 	end

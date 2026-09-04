@@ -195,7 +195,7 @@ end
 ---@return boolean opened
 function Options.Show()
 	if InCombatLockdown() then
-		AMT.Util.Warn("the options window cannot be opened in combat.")
+		AMT.Util.Warn(L["the options window cannot be opened in combat."])
 
 		return false
 	end

@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Util = AMT.Util
 
@@ -55,7 +56,7 @@ function DB.Initialize()
 	local stored = AdvancedMythicTrackerDB.version
 
 	if stored and stored > SCHEMA_VERSION then
-		AMT.Util.Warn("settings were saved by a newer version and may not load correctly.")
+		AMT.Util.Warn(L["settings were saved by a newer version and may not load correctly."])
 	end
 
 	Util.MergeDefaults(AdvancedMythicTrackerDB, defaults)

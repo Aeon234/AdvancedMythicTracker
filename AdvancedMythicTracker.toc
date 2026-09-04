@@ -7,7 +7,6 @@
 ## SavedVariables: AdvancedMythicTrackerDB
 
 ## IconTexture: 4352494
-## OptionalDeps: 
 
 ## X-Curse-Project-ID: 1037826
 ## X-Wago-ID:
@@ -27,6 +26,7 @@
 Libs\embeds.xml
 
 Core\Core.xml
+Locales\Locales.xml
 State\State.xml
 Providers\Providers.xml
 UI\UI.xml

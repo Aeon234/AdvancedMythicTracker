@@ -44,13 +44,14 @@ AMT.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or ERROR_CAPS
 SLASH_ADVANCEDMYTHICTRACKER1 = "/amt"
 
 SlashCmdList.ADVANCEDMYTHICTRACKER = function(msg)
+	local L = AMT.L
 	local command, argument = (msg or ""):lower():match("^%s*(%S*)%s*(%S*)")
 
 	if command == "demo" then
 		AMT.Demo.Toggle(argument == "live")
 	elseif command == "style" then
 		if AMT.Style.Apply(argument:upper()) then
-			AMT.Util.Print("style set to %s.", argument:upper())
+			AMT.Util.Print(L["style set to %s."], argument:upper())
 		end
 	elseif command == "undo" then
 		AMT.Style.Undo()

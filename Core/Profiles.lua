@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Util = AMT.Util
 local Modules = AMT.Modules
@@ -412,13 +413,13 @@ end
 ---@return boolean valid
 local function ValidateNewName(name)
 	if not name or name:trim() == "" then
-		AMT.Util.Warn("a profile needs a name.")
+		AMT.Util.Warn(L["a profile needs a name."])
 
 		return false
 	end
 
 	if Profiles.Exists(name) then
-		AMT.Util.Warn("a profile named %q already exists.", name)
+		AMT.Util.Warn(L["a profile named %q already exists."], name)
 
 		return false
 	end
@@ -499,7 +500,7 @@ function Profiles.Delete(name)
 	local names = Profiles.List()
 
 	if #names <= 1 then
-		AMT.Util.Warn("the last profile cannot be deleted.")
+		AMT.Util.Warn(L["the last profile cannot be deleted."])
 
 		return false
 	end
@@ -532,7 +533,7 @@ local function ExportLibs()
 	local deflate = LibStub("LibDeflate", true)
 
 	if not serializer or not deflate then
-		AMT.Util.Warn("profile import and export need LibSerialize and LibDeflate.")
+		AMT.Util.Warn(L["profile import and export need LibSerialize and LibDeflate."])
 
 		return nil, nil
 	end
@@ -575,7 +576,7 @@ function Profiles.Decode(encoded)
 	local decoded = deflate:DecodeForPrint(encoded)
 
 	if not decoded then
-		AMT.Util.Warn("that does not look like an export string.")
+		AMT.Util.Warn(L["that does not look like an export string."])
 
 		return nil
 	end
@@ -583,7 +584,7 @@ function Profiles.Decode(encoded)
 	local decompressed = deflate:DecompressDeflate(decoded)
 
 	if not decompressed then
-		AMT.Util.Warn("that export string is corrupt or incomplete.")
+		AMT.Util.Warn(L["that export string is corrupt or incomplete."])
 
 		return nil
 	end
@@ -591,25 +592,25 @@ function Profiles.Decode(encoded)
 	local ok, payload = serializer:Deserialize(decompressed)
 
 	if not ok or type(payload) ~= "table" then
-		AMT.Util.Warn("that export string could not be read.")
+		AMT.Util.Warn(L["that export string could not be read."])
 
 		return nil
 	end
 
 	if payload.addon ~= AMT.name then
-		AMT.Util.Warn("that export string is from a different addon.")
+		AMT.Util.Warn(L["that export string is from a different addon."])
 
 		return nil
 	end
 
 	if payload.format ~= EXPORT_FORMAT then
-		AMT.Util.Warn("that export string is from an incompatible version.")
+		AMT.Util.Warn(L["that export string is from an incompatible version."])
 
 		return nil
 	end
 
 	if type(payload.profile) ~= "table" or type(payload.name) ~= "string" then
-		AMT.Util.Warn("that export string is missing a profile.")
+		AMT.Util.Warn(L["that export string is missing a profile."])
 
 		return nil
 	end

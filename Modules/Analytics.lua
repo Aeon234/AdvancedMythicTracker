@@ -58,7 +58,7 @@ function module:RecordBest()
 	local seasonID, mapID, level = state.seasonID, state.mapID, state.level
 
 	if not seasonID or not mapID or level <= 0 then
-		AMT.Util.Warn("finished a key with incomplete identity; personal best was not stored.")
+		AMT.Util.Warn(L["finished a key with incomplete identity; personal best was not stored."])
 
 		return false
 	end
