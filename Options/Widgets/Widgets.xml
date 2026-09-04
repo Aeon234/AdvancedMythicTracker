@@ -9,4 +9,5 @@
     <Script file="SegmentedSelector.lua" />
     <Script file="Button.lua" />
     <Script file="Note.lua" />
+    <Script file="TextArea.lua" />
 </Ui>

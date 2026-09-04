@@ -32,6 +32,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field paths string[]? colour swatch: several swatches on one row, one per path
 ---@field color number[]?
 ---@field GetValues AMTOptionValuesProvider?
+---@field readOnly boolean?
 
 ---@class AMTOptionWidget
 ---@field frame Frame
