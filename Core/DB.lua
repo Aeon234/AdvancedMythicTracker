@@ -16,6 +16,7 @@ local SCHEMA_VERSION = 1
 ---@field defaultProfile string
 ---@field updateInterval number
 ---@field recordAbandons boolean
+---@field minimapIcon table
 
 ---@class AMTRecords
 ---@field version integer
@@ -28,6 +29,7 @@ local defaults = {
 		profiles = {},
 		profileKeys = {},
 		defaultProfile = "Default",
+		minimapIcon = { hide = false },
 		updateInterval = 0.1,
 		recordAbandons = true,
 	},
