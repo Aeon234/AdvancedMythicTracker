@@ -5,6 +5,7 @@ local Modules = AMT.Modules
 
 -- Incase I need to force Profile Upgrades
 local PROFILE_VERSION = 1
+local EXPORT_FORMAT = 1
 
 ---@class AMTLayoutElementSettings
 ---@field enabled boolean
@@ -439,7 +440,6 @@ function Profiles.New(name)
 	return true
 end
 
----Duplicate a profile under a new name and switch to it.
 ---@param source string
 ---@param name string
 ---@return boolean created
@@ -523,4 +523,110 @@ function Profiles.Delete(name)
 	end
 
 	return true
+end
+
+---@return table? serializer
+---@return table? deflate
+local function ExportLibs()
+	local serializer = LibStub("LibSerialize", true)
+	local deflate = LibStub("LibDeflate", true)
+
+	if not serializer or not deflate then
+		AMT.Util.Warn("profile import and export need LibSerialize and LibDeflate.")
+
+		return nil, nil
+	end
+
+	return serializer, deflate
+end
+
+---@param name string
+---@return string? encoded
+function Profiles.Export(name)
+	local profile = AMT.DB.settings.profiles[name]
+	local serializer, deflate = ExportLibs()
+
+	if not profile or not serializer or not deflate then
+		return nil
+	end
+
+	local payload = {
+		format = EXPORT_FORMAT,
+		addon = AMT.name,
+		name = name,
+		profile = profile,
+	}
+
+	local serialized = serializer:Serialize(payload)
+	local compressed = deflate:CompressDeflate(serialized, { level = 9 })
+
+	return deflate:EncodeForPrint(compressed)
+end
+
+---@param encoded string
+---@return table? payload
+function Profiles.Decode(encoded)
+	local serializer, deflate = ExportLibs()
+
+	if not serializer or not deflate then
+		return nil
+	end
+
+	local decoded = deflate:DecodeForPrint(encoded)
+
+	if not decoded then
+		AMT.Util.Warn("that does not look like an export string.")
+
+		return nil
+	end
+
+	local decompressed = deflate:DecompressDeflate(decoded)
+
+	if not decompressed then
+		AMT.Util.Warn("that export string is corrupt or incomplete.")
+
+		return nil
+	end
+
+	local ok, payload = serializer:Deserialize(decompressed)
+
+	if not ok or type(payload) ~= "table" then
+		AMT.Util.Warn("that export string could not be read.")
+
+		return nil
+	end
+
+	if payload.addon ~= AMT.name then
+		AMT.Util.Warn("that export string is from a different addon.")
+
+		return nil
+	end
+
+	if payload.format ~= EXPORT_FORMAT then
+		AMT.Util.Warn("that export string is from an incompatible version.")
+
+		return nil
+	end
+
+	if type(payload.profile) ~= "table" or type(payload.name) ~= "string" then
+		AMT.Util.Warn("that export string is missing a profile.")
+
+		return nil
+	end
+
+	return payload
+end
+
+---@param payload table from Profiles.Decode
+---@return string name
+function Profiles.ApplyImport(payload)
+	local imported = Util.Copy(payload.profile)
+
+	Util.MergeDefaults(imported, profileDefaults)
+
+	AMT.DB.settings.profiles[payload.name] = imported
+
+	Profiles.Activate(payload.name)
+
+	return payload.name
 end
