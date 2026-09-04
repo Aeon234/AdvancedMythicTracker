@@ -162,6 +162,6 @@ function Options.GetFirstPage()
 	return nil
 end
 
-Options.RegisterCategory({ id = "timer", order = 10, name = L["Timer"] })
-Options.RegisterCategory({ id = "addon", order = 20, name = L["Addon"] })
+Options.RegisterCategory({ id = "settings", order = 10, name = L["Settings"] })
+Options.RegisterCategory({ id = "timer", order = 20, name = L["Timer"] })
 Options.RegisterCategory({ id = "profiles", order = 30, name = L["Profiles"] })
