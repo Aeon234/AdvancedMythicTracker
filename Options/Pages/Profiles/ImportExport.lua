@@ -45,7 +45,7 @@ Options.RegisterPage({
 			},
 		})
 
-		local input = page:AddWidget({ type = "textarea", label = L["Import"] })
+		local input = page:AddWidget({ type = "textarea", label = L["Import"] }) --[[@as AMTTextAreaWidget?]]
 
 		page:AddWidgets({
 			{

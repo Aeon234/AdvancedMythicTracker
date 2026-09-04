@@ -6,8 +6,16 @@ local CONST = Options.CONST
 local BOX_HEIGHT = 120
 local TEXT_INSET = 6
 
+---@class AMTScrollingEditBox : Frame
+---@field GetInputText fun(self: AMTScrollingEditBox): string?
+---@field SetText fun(self: AMTScrollingEditBox, text: string)
+---@field SetEnabled fun(self: AMTScrollingEditBox, enabled: boolean)
+---@field SetFontObject fun(self: AMTScrollingEditBox, fontName: string)
+---@field GetEditBox fun(self: AMTScrollingEditBox): EditBox
+---@field RegisterCallback fun(self: AMTScrollingEditBox, event: any, callback: function, owner: any)
+
 ---@class AMTTextAreaWidget : AMTOptionWidget
----@field control Frame
+---@field control AMTScrollingEditBox
 ---@field hover AMTBorder?
 ---@field readOnlyText string?
 local TextArea = Options.NewWidgetPrototype("textarea")
@@ -44,7 +52,7 @@ function TextArea:Create(parent)
 		hover:SetShown(false)
 	end
 
-	local control = CreateFrame("Frame", nil, shell, "ScrollingEditBoxTemplate")
+	local control = CreateFrame("Frame", nil, shell, "ScrollingEditBoxTemplate") --[[@as AMTScrollingEditBox]]
 
 	control:SetPoint("TOPLEFT", shell, "TOPLEFT", TEXT_INSET, -TEXT_INSET)
 	control:SetPoint("BOTTOMRIGHT", shell, "BOTTOMRIGHT", -TEXT_INSET, TEXT_INSET)

@@ -58,7 +58,13 @@ function module:AutoGossip()
 		return
 	end
 
-	C_GossipInfo.SelectOption(options[1].gossipOptionID)
+	local optionID = options[1].gossipOptionID
+
+	if not optionID then
+		return
+	end
+
+	C_GossipInfo.SelectOption(optionID)
 end
 
 function module:OnEnable()
