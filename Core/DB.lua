@@ -17,6 +17,7 @@ local SCHEMA_VERSION = 1
 ---@field updateInterval number
 ---@field recordAbandons boolean
 ---@field minimapIcon table
+---@field qol table
 
 ---@class AMTRecords
 ---@field version integer
@@ -32,6 +33,7 @@ local defaults = {
 		minimapIcon = { hide = false },
 		updateInterval = 0.1,
 		recordAbandons = true,
+		qol = { autoSlotKeystone = true, autoGossip = true },
 	},
 	records = {
 		version = SCHEMA_VERSION,
