@@ -81,4 +81,6 @@ end
 function Frames.SetShown(shown)
 	Frames.shouldShow = shown
 	Frames.root:SetShown(shown)
+
+	AMT.ObjectiveTracker.SetHidden(shown)
 end

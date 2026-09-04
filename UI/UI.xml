@@ -9,4 +9,5 @@
     <Script file="Tooltip.lua" />
     <Script file="Layout.lua" />
     <Script file="Style.lua" />
+    <Script file="ObjectiveTracker.lua" />
 </Ui>
