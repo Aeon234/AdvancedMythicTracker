@@ -12,6 +12,8 @@ externals:
   Libs/LibDeflate:
     url: https://github.com/SafeteeWoW/LibDeflate
     tag: latest
+  Libs/LibDataBroker-1.1: https://repos.wowace.com/wow/libdatabroker-1-1/trunk
+  Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
 
 ignore:
   - .pkgmeta
