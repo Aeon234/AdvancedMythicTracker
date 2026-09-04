@@ -9,6 +9,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@alias AMTOptionGetter fun(): any
 ---@alias AMTOptionSetter fun(value: any)
 ---@alias AMTOptionPredicate fun(): boolean
+---@alias AMTOptionValuesProvider fun(): table[]
 
 ---@class AMTOptionInfo
 ---@field mediaType string? LSM type
@@ -30,6 +31,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field icon string? button icon texture
 ---@field paths string[]? colour swatch: several swatches on one row, one per path
 ---@field color number[]?
+---@field GetValues AMTOptionValuesProvider?
 
 ---@class AMTOptionWidget
 ---@field frame Frame

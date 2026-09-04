@@ -25,11 +25,13 @@ function Dropdown:Create(parent)
 	control:SetupMenu(function(_, rootDescription)
 		local info = self.info
 
-		if not info or not info.values then
+		local values = info and (info.GetValues and info.GetValues() or info.values)
+
+		if not values then
 			return
 		end
 
-		for _, entry in ipairs(info.values) do
+		for _, entry in ipairs(values) do
 			local key = entry[1]
 
 			rootDescription:CreateRadio(entry[2], function()
