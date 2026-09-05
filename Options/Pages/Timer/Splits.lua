@@ -19,6 +19,7 @@ Options.RegisterPage({
 				type = "dropdown",
 				label = L["Dungeon PB"],
 				path = "timer.splits.overall",
+				tooltip = L["When to show your best time for this dungeon and key level. Start & Finish hides it during the run."],
 				values = {
 					{ "ALWAYS", L["Always"] },
 					{ "COUNTDOWN_AND_AFTER", L["Start & Finish"] },
@@ -30,12 +31,14 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Boss Splits"],
 				path = "timer.splits.boss",
+				tooltip = L["When to show each boss's time against your best run."],
 				values = { { "ALWAYS", L["Always"] }, { "AFTER", L["On Finish"] } },
 			},
 
 			{
 				type = "color",
 				label = L["Ahead / Even / Behind"],
+				tooltip = L["Split colour when you are faster than, level with, or slower than your best run."],
 				paths = {
 					"timer.splits.aheadColor",
 					"timer.splits.equalColor",
@@ -47,6 +50,7 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Decimals"],
 				path = "timer.splits.decimals",
+				tooltip = L["Fractions of a second shown on split times."],
 				values = { { 0, "0" }, { 1, "1" }, { 2, "2" } },
 			},
 		})

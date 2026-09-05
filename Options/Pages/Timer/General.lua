@@ -173,12 +173,21 @@ Options.RegisterPage({
 				text = L["Selecting a style resets every Timer customisation. Other features are untouched."],
 			},
 
-			{ type = "slider", label = L["Overall Scale"], path = "timer.scale", min = 0.5, max = 2.0, step = 0.05 },
+			{
+				type = "slider",
+				label = L["Overall Scale"],
+				path = "timer.scale",
+				min = 0.5,
+				max = 2.0,
+				step = 0.05,
+				tooltip = L["Scales the whole timer frame. Element sizes stay relative to each other."],
+			},
 
 			{
 				type = "button",
 				label = L["Fonts"],
 				text = L["Apply Font To All…"],
+				tooltip = L["Change all the texts at same time. Size, outline and colour keep their own values."],
 				set = ShowFontPicker,
 			},
 
@@ -186,6 +195,7 @@ Options.RegisterPage({
 				type = "button",
 				label = L["Textures"],
 				text = L["Apply Texture To All…"],
+				tooltip = L["Change all the textures at same time."],
 				set = ShowTexturePicker,
 			},
 

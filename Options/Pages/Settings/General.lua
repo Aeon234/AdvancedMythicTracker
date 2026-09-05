@@ -20,6 +20,7 @@ Options.RegisterPage({
 				label = L["Auto-Slot Keystone"],
 				scope = "account",
 				path = "qol.autoSlotKeystone",
+				tooltip = L["Automatically slot in your key into the Keystone Interface."],
 			},
 
 			{
@@ -33,6 +34,7 @@ Options.RegisterPage({
 			{
 				type = "checkbox",
 				label = L["Minimap Icon"],
+				tooltip = L["Shows the minimap button for Advanced Mythic Tracker."],
 				get = function()
 					---@type AMTMinimapIconModule?
 					local minimap = AMT.Modules.Get("MinimapIcon")

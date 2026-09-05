@@ -99,7 +99,6 @@ function Splits.ForcesDiffMS()
 	return state.forcesCompletedAtMS - record.forcesMS
 end
 
----The PB finish time, shown as a target before the key starts (D-44).
 ---@return integer? finishMS
 function Splits.TargetMS()
 	local record = Splits.GetCurrentBest()

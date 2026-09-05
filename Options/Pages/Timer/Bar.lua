@@ -10,7 +10,7 @@ Options.RegisterPage({
 	name = L["Timer Bar"],
 	Build = function(page)
 		page:SetHeader({
-			description = L["The timer bar's texture, size, colours and text."],
+			description = L["The timer bar's texture, size, colors and text."],
 			divider = "thin",
 		})
 
@@ -23,21 +23,29 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Count Direction"],
 				path = "timer.direction",
+				tooltip = L["Up counts elapsed time, down counts time remaining."],
 				values = { { "UP", L["Up"] }, { "DOWN", L["Down"] } },
 			},
 
-			{ type = "checkbox", label = L["Space Around Slash"], path = "timer.spacedSlash" },
+			{
+				type = "checkbox",
+				label = L["Space Around Slash"],
+				path = "timer.spacedSlash",
+				tooltip = L["Adds spaces around the slash between the elapsed time and the limit."],
+			},
 
 			{
 				type = "segmented",
 				label = L["Decimals"],
 				path = "timer.decimals",
+				tooltip = L["Fractions of a second shown on the timer text at the end of the dungeon."],
 				values = { { 0, "0" }, { 1, "1" }, { 2, "2" }, { 3, "3" } },
 			},
 
 			{
 				type = "color",
 				label = L["Depleted / +1 / +2 / +3"],
+				tooltip = L["Bar color at each upgrade tier, left to right."],
 				paths = {
 					"timer.bar.tierColors.1",
 					"timer.bar.tierColors.2",
@@ -70,6 +78,7 @@ Options.RegisterPage({
 					type = "segmented",
 					label = L["Marks"],
 					path = prefix .. ".marks",
+					tooltip = L["Whether this threshold draws a tick on the bar, its time as text, or both."],
 					values = { { "TICK", L["Tick"] }, { "TEXT", L["Text"] }, { "BOTH", L["Both"] } },
 				}
 
@@ -87,6 +96,7 @@ Options.RegisterPage({
 			widgets[#widgets + 1] = {
 				type = "color",
 				label = L["Ahead / Behind"],
+				tooltip = L["Threshold text color when you are inside or past that time."],
 				paths = { prefix .. ".aheadColor", prefix .. ".behindColor" },
 			}
 

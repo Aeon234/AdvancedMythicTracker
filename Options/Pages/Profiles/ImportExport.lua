@@ -32,6 +32,7 @@ Options.RegisterPage({
 			{
 				type = "textarea",
 				label = L["Export"],
+				tooltip = L["Encodes Timer settings only. Personal bests, run history and account settings are not included."],
 				readOnly = true,
 				get = function()
 					return AMT.Profiles.Export(AMT.Profiles.activeName) or ""
@@ -45,7 +46,11 @@ Options.RegisterPage({
 			},
 		})
 
-		local input = page:AddWidget({ type = "textarea", label = L["Import"] }) --[[@as AMTTextAreaWidget?]]
+		local input = page:AddWidget({
+			type = "textarea",
+			label = L["Import"],
+			tooltip = L["Paste an exported string here, then use the button below."],
+		}) --[[@as AMTTextAreaWidget?]]
 
 		page:AddWidgets({
 			{

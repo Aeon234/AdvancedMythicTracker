@@ -31,6 +31,7 @@ Options.RegisterPage({
 			{
 				type = "segmented",
 				label = L["Count Format"],
+				tooltip = L["Absolute count, percent, or both."],
 				values = { { "COUNT", L["Count"] }, { "PERCENT", L["Percent"] }, { "BOTH", L["Both"] } },
 				get = function()
 					local count = Options.Get("timer.forces.count.enabled")
@@ -54,6 +55,7 @@ Options.RegisterPage({
 				type = "checkbox",
 				label = L["Show Remaining"],
 				path = "timer.forces.showRemaining",
+				tooltip = L["Counts down what is left instead of up from zero."],
 				disabled = function()
 					return not Options.Get("timer.forces.count.enabled")
 				end,
@@ -63,6 +65,7 @@ Options.RegisterPage({
 				type = "checkbox",
 				label = L["Space Around Slash"],
 				path = "timer.forces.spacedSlash",
+				tooltip = L["Adds spaces around the slash between the current and total counts."],
 				disabled = function()
 					return not Options.Get("timer.forces.count.enabled")
 				end,
@@ -71,6 +74,7 @@ Options.RegisterPage({
 			{
 				type = "segmented",
 				label = L["Percent Decimals"],
+				tooltip = L["Fractions of a percent shown on the forces count."],
 				path = "timer.forces.decimals",
 				values = { { 0, "0" }, { 1, "1" }, { 2, "2" } },
 				disabled = function()

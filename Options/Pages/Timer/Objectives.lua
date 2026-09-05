@@ -34,7 +34,12 @@ Options.RegisterPage({
 				step = 1,
 			},
 
-			{ type = "checkbox", label = L["Show Boss Icons"], path = "timer.objectives.icon" },
+			{
+				type = "checkbox",
+				label = L["Show Boss Icons"],
+				path = "timer.objectives.icon",
+				tooltip = L["Checkmark on bosses killed, question mark on bosses remaining."],
+			},
 
 			{
 				type = "slider",
@@ -48,7 +53,12 @@ Options.RegisterPage({
 				end,
 			},
 
-			{ type = "checkbox", label = L["Show Completion Times"], path = "timer.objectives.showTime" },
+			{
+				type = "checkbox",
+				label = L["Show Completion Times"],
+				path = "timer.objectives.showTime",
+				tooltip = L["Shows the time each boss died, beside its row."],
+			},
 
 			{
 				type = "color",

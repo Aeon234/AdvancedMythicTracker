@@ -20,6 +20,7 @@ Options.RegisterPage({
 				label = L["Record Abandoned Runs"],
 				scope = "account",
 				path = "recordAbandons",
+				tooltip = L["Counts keys you left early in run history. Personal bests are unaffected."],
 			},
 		})
 	end,

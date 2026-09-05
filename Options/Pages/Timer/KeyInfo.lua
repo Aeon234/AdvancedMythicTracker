@@ -53,7 +53,7 @@ Options.RegisterPage({
 				type = "checkbox",
 				label = L["Combine Into A Single Line"],
 				path = "timer.keyInfo.inline",
-				tooltip = L["Lay the name, affixes and deaths across one row instead of stacking them."],
+				tooltip = L["Combines the name, affixes and deaths into a single row."],
 			},
 
 			{
@@ -87,6 +87,7 @@ Options.RegisterPage({
 				type = "segmented",
 				label = SHOW,
 				path = "timer.keyInfo.show",
+				tooltip = L["Show the key level, the dungeon name, or both."],
 				values = { { "LEVEL", LEVEL }, { "NAME", NAME }, { "BOTH", L["Both"] } },
 			},
 
@@ -94,6 +95,7 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Order"],
 				path = "timer.keyInfo.order",
+				tooltip = L["Which comes first when both are shown."],
 				values = { { "LEVEL_FIRST", L["Level First"] }, { "NAME_FIRST", L["Name First"] } },
 				hidden = function()
 					return Options.Get("timer.keyInfo.show") ~= "BOTH"
@@ -129,6 +131,7 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Widget"],
 				path = "timer.affixes.widget",
+				tooltip = L["Icons, or full affix names joined by a separator."],
 				values = { { "ICON", L["Icons"] }, { "TEXT", L["Text"] } },
 			},
 
@@ -156,6 +159,7 @@ Options.RegisterPage({
 				type = "text",
 				label = L["Separator"],
 				path = "timer.affixes.separator",
+				tooltip = L["Text placed between affix names."],
 				hidden = function()
 					return not IsTextMode()
 				end,
@@ -215,7 +219,12 @@ Options.RegisterPage({
 				end,
 			},
 
-			{ type = "checkbox", label = L["Show Tooltip"], path = "timer.deaths.tooltip" },
+			{
+				type = "checkbox",
+				label = L["Show Tooltip"],
+				path = "timer.deaths.tooltip",
+				tooltip = L["Hovering the death count lists who died and when."],
+			},
 		})
 
 		deaths.content:AddFontGroup(L["Text"], "timer.deaths.text")
