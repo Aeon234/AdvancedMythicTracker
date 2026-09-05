@@ -79,6 +79,8 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			Modules.Enable(module)
 		end
 
+		AMT.Profiles.Refresh()
+
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")
 		self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 		self:RegisterEvent("PLAYER_DIFFICULTY_CHANGED")
