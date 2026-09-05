@@ -22,6 +22,27 @@ function ColorSwatch:GetTooltipRegions()
 	return self.controls
 end
 
+---Each swatch is its own setting, so each carries its own tooltip anchored on itself.
+---@param region table
+---@return string? text
+---@return table anchor
+function ColorSwatch:GetTooltipFor(region)
+	local info = self.info
+	local tooltips = info and info.tooltips
+
+	if not tooltips then
+		return Options.Widget.GetTooltipFor(self, region)
+	end
+
+	for index, control in ipairs(self.controls) do
+		if control == region then
+			return tooltips[index] or info.tooltip, control
+		end
+	end
+
+	return info.tooltip, self:GetTooltipAnchor()
+end
+
 ---@return string[]
 function ColorSwatch:GetPaths()
 	return self.info and self.info.paths or {}

@@ -45,7 +45,12 @@ Options.RegisterPage({
 			{
 				type = "color",
 				label = L["Depleted / +1 / +2 / +3"],
-				tooltip = L["Bar color at each upgrade tier, left to right."],
+				tooltips = {
+					L["Bar color once the key can no longer be timed."],
+					L["Bar color while the run is on pace to time the key."],
+					L["Bar color while the run is on pace for a two-chest."],
+					L["Bar color while the run is on pace for a three-chest."],
+				},
 				paths = {
 					"timer.bar.tierColors.1",
 					"timer.bar.tierColors.2",
@@ -96,7 +101,10 @@ Options.RegisterPage({
 			widgets[#widgets + 1] = {
 				type = "color",
 				label = L["Ahead / Behind"],
-				tooltip = L["Threshold text color when you are inside or past that time."],
+				tooltips = {
+					L["Threshold text color while you are inside this threshold's time."],
+					L["Threshold text color once this threshold's time has passed."],
+				},
 				paths = { prefix .. ".aheadColor", prefix .. ".behindColor" },
 			}
 

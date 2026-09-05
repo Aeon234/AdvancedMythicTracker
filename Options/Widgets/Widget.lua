@@ -39,6 +39,7 @@ local TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B = 0.7, 0.7, 0.7
 ---@field labelWidth number? row item: own label column; omit for a bare control
 ---@field align string? row item: LEFT (default) or RIGHT
 ---@field tooltip string?
+---@field tooltips string[]? colour swatch: one per path, falling back to `tooltip`
 
 ---@class AMTOptionWidget
 ---@field frame Frame
@@ -84,12 +85,47 @@ function Widget:GetTooltipRegions()
 	return self.control and { self.control } or {}
 end
 
+---The rightmost shown region, so a multi-control widget anchors past all of its own controls
+---instead of overlapping them. Segments and swatches are pooled, so trailing ones may be hidden.
+---@return table
+function Widget:GetTooltipAnchor()
+	local regions = self:GetTooltipRegions()
+
+	for index = #regions, 1, -1 do
+		if regions[index]:IsShown() then
+			return regions[index]
+		end
+	end
+
+	return self.frame
+end
+
+---Answers the text and anchor for one hooked region. Widgets whose regions mean different things
+---override this; everything else shows one tooltip for the whole row.
+---@param region table
+---@return string? text
+---@return table anchor
+function Widget:GetTooltipFor(region)
+	return self.info and self.info.tooltip or nil, self:GetTooltipAnchor()
+end
+
 ---@param widget AMTOptionWidget
----@param owner table
-local function ShowTooltip(widget, owner)
+---@param region table the hooked region the pointer entered
+local function ShowTooltip(widget, region)
 	local info = widget.info
 
-	if not info or not info.tooltip then
+	if not info then
+		return
+	end
+
+	local text, owner = widget:GetTooltipFor(region)
+
+	if not text then
+		return
+	end
+
+	-- One tooltip per hover: crossing between a widget's own controls must not re-anchor or redraw it.
+	if GameTooltip:IsShown() and GameTooltip:GetOwner() == owner then
 		return
 	end
 
@@ -100,7 +136,7 @@ local function ShowTooltip(widget, owner)
 		GameTooltip:AddLine(info.label, HIGHLIGHT_FONT_COLOR:GetRGB())
 	end
 
-	GameTooltip:AddLine(info.tooltip, TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B, true)
+	GameTooltip:AddLine(text, TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B, true)
 	GameTooltip:Show()
 end
 

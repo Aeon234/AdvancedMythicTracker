@@ -38,7 +38,11 @@ Options.RegisterPage({
 			{
 				type = "color",
 				label = L["Ahead / Even / Behind"],
-				tooltip = L["Split colour when you are faster than, level with, or slower than your best run."],
+				tooltips = {
+					L["Split color when you are faster than your best run."],
+					L["Split color when you match your best run exactly."],
+					L["Split color when you are slower than your best run."],
+				},
 				paths = {
 					"timer.splits.aheadColor",
 					"timer.splits.equalColor",
