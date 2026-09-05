@@ -2,6 +2,7 @@ local AMT = select(2, ...)
 
 local ICON_DONE = [[Interface\RaidFrame\ReadyCheck-Ready]]
 local ICON_PENDING = [[Interface\RaidFrame\ReadyCheck-Waiting]]
+local ROW_GAP = 4
 
 ---@class AMTObjectiveRow : Frame
 ---@field icon Texture
@@ -39,6 +40,8 @@ function module:AcquireRow(index)
 	row.icon = row:CreateTexture(nil, "ARTWORK")
 	row.icon:SetPoint("LEFT", row, "LEFT", 0, 0)
 	row.name = AMT.Mixins.NewText(row)
+	row.name:SetWordWrap(false)
+	row.name:SetJustifyH("LEFT")
 	row.time = AMT.Mixins.NewText(row)
 	row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
@@ -63,7 +66,7 @@ function module:StyleRow(row)
 	row.name:ClearAllPoints()
 
 	if profile.icon then
-		row.name:SetPoint("LEFT", row.icon, "RIGHT", 4, 0)
+		row.name:SetPoint("LEFT", row.icon, "RIGHT", ROW_GAP, 0)
 	else
 		row.name:SetPoint("LEFT", row, "LEFT", 0, 0)
 	end
@@ -97,7 +100,35 @@ function module:RenderSplit(row, diffMS)
 	row.split:SetColor(AMT.Util.SplitColor(profile, AMT.Splits.Classify(diffMS)))
 	row.split:Show()
 
-	row.time:SetPoint("RIGHT", row.split, "LEFT", -4, 0)
+	row.time:SetPoint("RIGHT", row.split, "LEFT", -ROW_GAP, 0)
+end
+
+---@param row AMTObjectiveRow
+function module:FitName(row)
+	local profile = AMT.Profiles.active.timer.objectives
+	local available = self.element:GetWidth()
+
+	if available <= 0 then
+		row.name:SetWidth(0)
+
+		return
+	end
+
+	local reserved = 0
+
+	if profile.icon then
+		reserved = reserved + profile.iconSize + ROW_GAP
+	end
+
+	if row.time:IsShown() then
+		reserved = reserved + row.time:GetStringWidth() + ROW_GAP
+	end
+
+	if row.split:IsShown() then
+		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
+	end
+
+	row.name:SetWidth(math.max(available - reserved, 1))
 end
 
 function module:OnProfileChanged()
@@ -136,6 +167,7 @@ function module:Render()
 		end
 
 		self:RenderSplit(row, showSplits and AMT.Splits.BossDiffMS(index) or nil)
+		self:FitName(row)
 
 		row:Show()
 

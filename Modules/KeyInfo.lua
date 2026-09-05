@@ -24,6 +24,7 @@ function module:OnInitialize()
 
 	self.dungeonName = AMT.Mixins.NewText(self.titleRow)
 	self.dungeonName:SetWordWrap(false)
+	self.dungeonName:SetJustifyH("LEFT")
 	self.level = AMT.Mixins.NewText(self.titleRow)
 
 	self.element.GetContentWidth = function()

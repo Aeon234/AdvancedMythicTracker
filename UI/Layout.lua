@@ -152,16 +152,6 @@ local function ApplyInline(groupKey, width)
 	local boxWidth = width
 	local origin = 0
 
-	if profile.geometry ~= "SPAN" then
-		boxWidth = math.min(profile.contentWidth, width)
-
-		if profile.justify == "RIGHT" then
-			origin = width - boxWidth
-		elseif profile.justify == "CENTER" then
-			origin = (width - boxWidth) / 2
-		end
-	end
-
 	---@type table<string, string[]>
 	local buckets = { LEFT = {}, CENTER = {}, RIGHT = {} }
 	local shown = 0
@@ -280,7 +270,7 @@ local function ApplyGroup(groupKey, width)
 					local point = JUSTIFY_POINTS[profile.justify] or "TOPRIGHT"
 
 					frame:SetPoint(point, group, point, nudge[1], top)
-					frame:SetWidth(profile.contentWidth)
+					frame:SetWidth(width)
 				end
 
 				frame:Show()

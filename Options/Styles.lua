@@ -7,7 +7,6 @@ local definitions = {
 	MINIMAL = {
 		background = { enabled = false },
 		geometry = "SIZED",
-		contentWidth = 200,
 		justify = "RIGHT",
 		thresholds = { [2] = { marks = "TEXT" }, [3] = { marks = "TEXT" } },
 		affixes = { widget = "TEXT", justify = "RIGHT" },

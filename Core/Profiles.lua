@@ -114,7 +114,6 @@ local EXPORT_FORMAT = 1
 ---@field scale number
 ---@field width number
 ---@field geometry "SPAN"|"SIZED"
----@field contentWidth number
 ---@field justify "LEFT"|"CENTER"|"RIGHT"
 ---@field position AMTFramePosition
 ---@field order AMTLayoutOrder
@@ -148,7 +147,6 @@ local profileDefaults = {
 		scale = 1.0,
 		width = 320,
 		geometry = "SPAN",
-		contentWidth = 200,
 		justify = "RIGHT",
 		position = { anchor = "RIGHT", x = 0, y = -10 },
 		order = {

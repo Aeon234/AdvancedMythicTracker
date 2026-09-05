@@ -184,6 +184,16 @@ Options.RegisterPage({
 			},
 
 			{
+				type = "slider",
+				label = L["Width"],
+				path = "timer.width",
+				min = 200,
+				max = 600,
+				step = 5,
+				tooltip = L["Width of the timer frame."],
+			},
+
+			{
 				type = "button",
 				label = L["Fonts"],
 				text = L["Apply Font To All…"],
@@ -198,7 +208,6 @@ Options.RegisterPage({
 				tooltip = L["Change all the textures at same time."],
 				set = ShowTexturePicker,
 			},
-
 
 			{
 				type = "segmented",
