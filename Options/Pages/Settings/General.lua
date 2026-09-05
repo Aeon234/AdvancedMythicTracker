@@ -4,10 +4,10 @@ local L = AMT.L
 local Options = AMT.Options
 
 Options.RegisterPage({
-	id = "settings.general",
-	parent = "settings",
+	id = "addon.behaviour",
+	parent = "addon",
 	order = 10,
-	name = GENERAL,
+	name = L["Behaviour"],
 	Build = function(page)
 		page:SetHeader({
 			description = L["Account-wide addon behaviour. These settings are shared by every profile."],

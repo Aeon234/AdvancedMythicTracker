@@ -14,13 +14,3 @@ desktop.ini
 .vscode/
 
 /Libs/
-
-# Claude.
-CLAUDE.md
-/docs/
-/Scripts/
-.claude/settings.local.json
-.superpowers/
-
-todo.txt
-Modules/_Test.lua
