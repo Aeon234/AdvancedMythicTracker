@@ -19,6 +19,7 @@ local addonName = ...
 ---@field Pull AMTPull
 ---@field Providers AMTProviders
 ---@field Media AMTMedia
+---@field Apply fun(texture: Texture, mediaType: string, name: string): boolean
 ---@field Mixins AMTMixins
 ---@field Frames AMTFrames
 ---@field Layout AMTLayout
