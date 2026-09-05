@@ -14,6 +14,7 @@ local AMT = select(2, ...)
 ---@field SCROLL_PAN_EXTENT number
 ---@field FONT_TITLE string
 ---@field FONT_GROUP_TITLE string
+---@field FONT_HEADING string
 ---@field FONT_ROW string
 ---@field FONT_BODY string
 ---@field FONT_SMALL string

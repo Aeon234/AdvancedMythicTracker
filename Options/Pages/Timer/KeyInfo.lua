@@ -189,6 +189,8 @@ Options.RegisterPage({
 				values = { { "SKULL", L["Icon"] }, { "TEXT", L["Text"] }, { "NONE", L["None"] } },
 			},
 
+			{ type = "note", label = "", get = PreviewText, color = PREVIEW_WHITE },
+
 			{
 				type = "slider",
 				label = L["Icon Size"],
@@ -217,9 +219,5 @@ Options.RegisterPage({
 		})
 
 		deaths.content:AddFontGroup(L["Text"], "timer.deaths.text")
-
-		deaths.content:AddWidgets({
-			{ type = "note", label = "", get = PreviewText, color = PREVIEW_WHITE },
-		})
 	end,
 })
