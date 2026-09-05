@@ -3,6 +3,7 @@ local addonName = ...
 
 ---@class AMT
 ---@field name string
+---@field title string
 ---@field version string
 ---@field DB AMTDB
 ---@field Util AMTUtil
@@ -34,6 +35,7 @@ local addonName = ...
 local AMT = select(2, ...)
 
 AMT.name = addonName
+AMT.title = C_AddOns.GetAddOnMetadata(addonName, "Title") or ERROR_CAPS
 AMT.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or ERROR_CAPS
 
 -- AMT API exposed to other addons. Here just in case in future I want to expose anything.

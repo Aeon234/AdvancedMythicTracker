@@ -16,7 +16,7 @@ local title = canvas:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
 
 title:SetPoint("TOPLEFT", canvas, "TOPLEFT", CONST.PANEL_PADDING, -CONST.PANEL_PADDING)
 title:SetJustifyH("LEFT")
-title:SetText(AMT.name)
+title:SetText(AMT.title)
 
 local version = canvas:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
 
@@ -43,7 +43,7 @@ button:SetPoint("TOPLEFT", description, "BOTTOMLEFT", 0, -BUTTON_GAP)
 label:SetPoint("CENTER")
 label:SetText(L["Open Configuration"])
 
-local category = Settings.RegisterCanvasLayoutCategory(canvas, AMT.name)
+local category = Settings.RegisterCanvasLayoutCategory(canvas, AMT.title)
 
 category.ID = AMT.name
 
