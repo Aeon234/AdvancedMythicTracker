@@ -35,15 +35,12 @@ end
 ---@param texture Texture
 ---@param key string?
 function MediaDropdown:ApplyMedia(texture, key)
-	local path = key and AMT.Media.Fetch(self:GetMediaType(), key)
-
-	if not path then
+	if not key or not AMT.Media.Apply(texture, self:GetMediaType(), key) then
 		texture:Hide()
 
 		return
 	end
 
-	texture:SetTexture(path)
 	texture:SetHorizTile(false)
 	texture:SetVertTile(false)
 	texture:Show()

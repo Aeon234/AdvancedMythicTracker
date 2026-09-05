@@ -16,23 +16,42 @@ Options.RegisterPage({
 
 		page:AddWidgets({
 			{
-				type = "slider",
-				label = L["Update Interval"],
+				type = "checkbox",
+				label = L["Auto-Slot Keystone"],
 				scope = "account",
-				path = "updateInterval",
-				min = 0.1,
-				max = 3.0,
-				step = 0.1,
-				set = function(value)
-					Options.Set("updateInterval", value, "account")
-					AMT.Render.SetInterval(value)
-				end,
+				path = "qol.autoSlotKeystone",
+			},
+
+			{
+				type = "checkbox",
+				label = L["Auto-Confirm Dungeon Dialogue"],
+				scope = "account",
+				path = "qol.autoGossip",
 			},
 
 			{
 				type = "note",
 				label = "",
-				text = L["Lower values update the timer more smoothly at a small cost in performance."],
+				text = L["Only fires on dialogue offering a single option. Hold Ctrl to suppress it."],
+			},
+
+			{
+				type = "checkbox",
+				label = L["Show Minimap Icon"],
+				get = function()
+					---@type AMTMinimapIconModule?
+					local minimap = AMT.Modules.Get("MinimapIcon")
+
+					return minimap ~= nil and minimap:IsShown()
+				end,
+				set = function(value)
+					---@type AMTMinimapIconModule?
+					local minimap = AMT.Modules.Get("MinimapIcon")
+
+					if minimap then
+						minimap:SetShown(value == true)
+					end
+				end,
 			},
 		})
 	end,
