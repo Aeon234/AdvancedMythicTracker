@@ -6,7 +6,7 @@ local Options = AMT.Options
 Options.RegisterPage({
 	id = "timer.bar",
 	parent = "timer",
-	order = 30,
+	order = 40,
 	name = L["Timer Bar"],
 	Build = function(page)
 		page:SetHeader({
@@ -39,7 +39,7 @@ Options.RegisterPage({
 
 			{
 				type = "color",
-				label = L["Mark Colour"],
+				label = L["Mark Color"],
 				path = "timer.bar.tickColor",
 				hasOpacity = true,
 				disabled = function()

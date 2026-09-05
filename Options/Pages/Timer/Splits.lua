@@ -6,7 +6,7 @@ local Options = AMT.Options
 Options.RegisterPage({
 	id = "timer.splits",
 	parent = "timer",
-	order = 60,
+	order = 70,
 	name = L["Splits"],
 	Build = function(page)
 		page:SetHeader({

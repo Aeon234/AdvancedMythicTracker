@@ -6,7 +6,7 @@ local Options = AMT.Options
 Options.RegisterPage({
 	id = "timer.objectives",
 	parent = "timer",
-	order = 50,
+	order = 60,
 	name = L["Objectives"],
 	Build = function(page)
 		page:SetHeader({

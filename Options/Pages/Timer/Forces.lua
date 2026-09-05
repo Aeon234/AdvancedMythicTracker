@@ -6,7 +6,7 @@ local Options = AMT.Options
 Options.RegisterPage({
 	id = "timer.forces",
 	parent = "timer",
-	order = 40,
+	order = 50,
 	name = L["Enemy Forces"],
 	Build = function(page)
 		page:SetHeader({

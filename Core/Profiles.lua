@@ -11,6 +11,7 @@ local EXPORT_FORMAT = 1
 ---@class AMTLayoutElementSettings
 ---@field enabled boolean
 ---@field nudge number[] {x, y}
+---@field slot "LEFT"|"CENTER"|"RIGHT"
 
 ---@class AMTLayoutOrder
 ---@field groups AMTLayoutGroupKey[]
@@ -42,9 +43,9 @@ local EXPORT_FORMAT = 1
 -- Timer Key Info
 ---@class AMTKeyInfoProfile
 ---@field height number
----@field showLevel boolean
----@field combineLevel boolean
----@field colorLevel boolean
+---@field inline boolean
+---@field show "LEVEL"|"NAME"|"BOTH"
+---@field order "LEVEL_FIRST"|"NAME_FIRST"
 ---@field text AMTTextStyle
 ---@field level AMTTextStyle
 
@@ -116,7 +117,6 @@ local EXPORT_FORMAT = 1
 ---@field iconSize number
 ---@field penalty boolean
 ---@field brackets "PAREN"|"SQUARE"
----@field red boolean
 ---@field justify "LEFT"|"CENTER"|"RIGHT"
 ---@field text AMTTextStyle
 ---@field tooltip boolean
@@ -219,9 +219,9 @@ local profileDefaults = {
 		},
 		keyInfo = {
 			height = 18,
-			showLevel = true,
-			combineLevel = false,
-			colorLevel = true,
+			inline = false,
+			show = "BOTH",
+			order = "LEVEL_FIRST",
 			text = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			level = { font = "Friz Quadrata TT", size = 14, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 		},
@@ -240,7 +240,6 @@ local profileDefaults = {
 			iconSize = 12,
 			penalty = true,
 			brackets = "PAREN",
-			red = false,
 			justify = "RIGHT",
 			text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			tooltip = true,

@@ -11,7 +11,6 @@ local definitions = {
 		justify = "RIGHT",
 		bar = { showTicks = false },
 		affixes = { widget = "TEXT", justify = "RIGHT" },
-		keyInfo = { combineLevel = true },
 	},
 
 	PANEL = {},

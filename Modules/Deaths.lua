@@ -2,13 +2,13 @@ local AMT = select(2, ...)
 
 local SKULL = [[Interface\TargetingFrame\UI-RaidTargetingIcon_8]]
 local ICON_GAP = 4
-local RED = { 1, 0.2, 0.2, 1 }
 
 ---@class AMTDeathsModule : AMTModule
 ---@field element Frame
 ---@field row Frame
 ---@field icon Texture
 ---@field text AMTTextMixin
+---@field width number
 ---@field SKULL string
 local module = AMT.Modules.New("Deaths")
 
@@ -34,8 +34,13 @@ function module:OnInitialize()
 	self.icon:SetPoint("LEFT", self.row, "LEFT", 0, 0)
 
 	self.text = AMT.Mixins.NewText(self.row)
+	self.width = 0
 
-	AMT.Layout.RegisterElement("keyInfo", "deaths", self.element)
+	self.element.GetContentWidth = function()
+		return self.width
+	end
+
+	AMT.Layout.RegisterElement("keyInfo", "deaths", self.element, "RIGHT")
 
 	AMT.Render.Register("deaths", function()
 		self:Render()
@@ -56,6 +61,17 @@ end
 
 function module:OnProfileChanged()
 	self:ApplyStyle()
+end
+
+---@param width number
+function module:SetContentWidth(width)
+	if self.width == width then
+		return
+	end
+
+	self.width = width
+
+	AMT.State.MarkDirty("layout")
 end
 
 ---@return string
@@ -87,6 +103,7 @@ function module:Render()
 
 	if text == "" then
 		self.row:Hide()
+		self:SetContentWidth(0)
 		AMT.Layout.SetCollapsed("deaths", true)
 
 		return
@@ -97,7 +114,6 @@ function module:Render()
 	local showIcon = profile.label == "SKULL"
 
 	self.text:SetText(text)
-	self.text:SetColor(profile.red and RED or profile.text.color)
 
 	self.text:ClearAllPoints()
 
@@ -112,6 +128,7 @@ function module:Render()
 
 	local width = self.text:GetStringWidth() + (showIcon and profile.iconSize + ICON_GAP or 0)
 
+	self:SetContentWidth(width)
 	self.row:SetSize(width, profile.height)
 	self.row:ClearAllPoints()
 	self.row:SetPoint(profile.justify, self.element, profile.justify, 0, 0)

@@ -163,7 +163,7 @@ end
 
 ---@param label string
 ---@param prefix string dotted path to a table matching AMTTextStyle
----@param hidden AMTOptionPredicate? applied to all three rows
+---@param hidden AMTOptionPredicate? applied to every row
 ---@return AMTOptionWidget[]
 function Container:AddFontGroup(label, prefix, hidden)
 	return self:AddWidgets({
@@ -186,5 +186,6 @@ function Container:AddFontGroup(label, prefix, hidden)
 				{ "SLUG, THICKOUTLINE", L["Slug thick outline"] },
 			},
 		},
+		{ type = "color", label = COLOR, path = prefix .. ".color", hasOpacity = true, hidden = hidden },
 	})
 end

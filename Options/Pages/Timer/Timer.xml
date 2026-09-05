@@ -1,9 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="General.lua" />
+    <Script file="KeyInfo.lua" />
     <Script file="Bar.lua" />
     <Script file="Forces.lua" />
     <Script file="Objectives.lua" />
     <Script file="Splits.lua" />
-    <Script file="Deaths.lua" />
-    <Script file="Affixes.lua" />
 </Ui>

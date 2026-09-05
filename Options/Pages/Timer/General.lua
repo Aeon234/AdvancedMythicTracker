@@ -190,7 +190,7 @@ Options.RegisterPage({
 
 			{
 				type = "color",
-				label = L["Background Colour"],
+				label = L["Background Color"],
 				path = "timer.background.color",
 				hidden = function()
 					return CurrentStyle() ~= "AEON"
