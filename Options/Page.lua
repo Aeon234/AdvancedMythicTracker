@@ -3,6 +3,8 @@ local L = AMT.L
 
 local Options = AMT.Options
 
+local PREVIEW_CATEGORY = "timer"
+
 ---@class AMTOptionsPageView
 ---@field definition AMTOptionsPage
 ---@field container AMTOptionsContainer
@@ -27,6 +29,7 @@ function PageView:SetHeader(config)
 	end
 
 	config.title = config.title or self.definition.name
+	config.previewToggles = self.definition.parent == PREVIEW_CATEGORY
 
 	self.header = Options.NewPageHeader(self.container.frame, config)
 

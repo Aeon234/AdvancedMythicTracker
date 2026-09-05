@@ -90,7 +90,7 @@ Options.RegisterPage({
 			onAction = function()
 				AMT.Style.Undo()
 			end,
-			actionDisabled = function()
+			actionHidden = function()
 				return not AMT.Style.CanUndo()
 			end,
 		})

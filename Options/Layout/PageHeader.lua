@@ -1,10 +1,14 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Options = AMT.Options
 
 local TITLE_GAP = 6
 local DIVIDER_GAP = 2
 local MIN_HEIGHT = 40
+local TOGGLE_GROUP_GAP = 16
+local TOGGLE_LABEL_GAP = 8
+local TOGGLE_ROW_DROP = 4
 local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 
 ---@class AMTOptionsPageHeaderConfig
@@ -14,13 +18,18 @@ local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 ---@field actionText string?
 ---@field actionIcon string?
 ---@field onAction fun()?
----@field actionDisabled AMTOptionPredicate?
+---@field actionHidden AMTOptionPredicate?
+---@field previewToggles boolean?
 
 ---@class AMTOptionsPageHeader
 ---@field frame Frame
 ---@field title FontString
 ---@field description FontString
 ---@field action Button?
+---@field previewCheck Button?
+---@field previewTick Texture?
+---@field animateCheck Button?
+---@field animateTick Texture?
 ---@field config AMTOptionsPageHeaderConfig
 ---@field onResized fun()?
 local PageHeader = {}
@@ -28,13 +37,72 @@ PageHeader.__index = PageHeader
 Options.PageHeader = PageHeader
 
 function PageHeader:Refresh()
-	if not self.action then
+	if self.action then
+		local predicate = self.config.actionHidden
+
+		self.action:SetShown(predicate == nil or not predicate())
+	end
+
+	if not (self.previewCheck and self.previewTick and self.animateCheck and self.animateTick) then
 		return
 	end
 
-	local predicate = self.config.actionDisabled
+	local inKey = AMT.State.current.inChallenge
 
-	self.action:SetEnabled(predicate == nil or not predicate())
+	self.previewTick:SetShown(AMT.Demo.IsActive())
+	self.previewCheck:SetEnabled(not inKey)
+
+	self.animateTick:SetShown(Options.IsPreviewAnimated())
+	self.animateCheck:SetEnabled(not inKey)
+end
+
+---@param header AMTOptionsPageHeader
+local function BuildPreviewToggles(header)
+	local previewCheck, previewTick = Options.CreateCheckboxControl(header.frame, function()
+		AMT.Demo.Toggle(Options.IsPreviewAnimated())
+		Options.NotifyValueChanged()
+	end)
+
+	local previewLabel = previewCheck:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+
+	previewLabel:SetPoint("LEFT", previewCheck, "RIGHT", TOGGLE_LABEL_GAP, 0)
+	previewLabel:SetText(L["Preview"])
+	previewLabel:SetTextColor(1, 1, 1)
+
+	local animateCheck, animateTick = Options.CreateCheckboxControl(header.frame, function()
+		local animated = not Options.IsPreviewAnimated()
+
+		Options.SetPreviewAnimated(animated)
+
+		if AMT.Demo.IsActive() then
+			AMT.Demo.Toggle(animated)
+		end
+
+		Options.NotifyValueChanged()
+	end)
+
+	local animateLabel = animateCheck:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+
+	animateLabel:SetPoint("LEFT", animateCheck, "RIGHT", TOGGLE_LABEL_GAP, 0)
+	animateLabel:SetText(L["Animate preview"])
+	animateLabel:SetTextColor(1, 1, 1)
+
+	local animateInset = TOGGLE_GROUP_GAP + animateLabel:GetStringWidth() + TOGGLE_LABEL_GAP
+
+	animateCheck:SetPoint("TOPRIGHT", header.frame, "TOPRIGHT", -animateInset, -TOGGLE_ROW_DROP)
+
+	previewCheck:SetPoint(
+		"RIGHT",
+		animateCheck,
+		"LEFT",
+		-(TOGGLE_GROUP_GAP + previewLabel:GetStringWidth() + TOGGLE_LABEL_GAP),
+		0
+	)
+
+	header.previewCheck = previewCheck
+	header.previewTick = previewTick
+	header.animateCheck = animateCheck
+	header.animateTick = animateTick
 end
 
 ---@param parent Frame
@@ -72,7 +140,7 @@ function Options.NewPageHeader(parent, config)
 
 	if config.actionText then
 		local action, label, icon = Options.CreateActionButton(header.frame, function()
-			if config.onAction and action:IsEnabled() then
+			if config.onAction then
 				config.onAction()
 			end
 
@@ -90,9 +158,13 @@ function Options.NewPageHeader(parent, config)
 		end
 
 		header.action = action
-
-		header:Refresh()
 	end
+
+	if config.previewToggles then
+		BuildPreviewToggles(header)
+	end
+
+	header:Refresh()
 
 	return header
 end
