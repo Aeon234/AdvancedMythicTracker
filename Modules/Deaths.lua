@@ -31,7 +31,6 @@ function module:OnInitialize()
 	self.row = CreateFrame("Frame", nil, self.element)
 
 	self.icon = self.row:CreateTexture(nil, "ARTWORK")
-	self.icon:SetPoint("LEFT", self.row, "LEFT", 0, 0)
 
 	self.text = AMT.Mixins.NewText(self.row)
 	self.width = 0
@@ -81,7 +80,7 @@ function module:FormatText()
 	local text = ""
 
 	if profile.label == "TEXT" then
-		text = ("%s %d"):format(DEATHS, state.deathCount)
+		text = ("%d %s"):format(state.deathCount, DEATHS)
 	elseif profile.label == "SKULL" then
 		text = tostring(state.deathCount)
 	end
@@ -89,7 +88,8 @@ function module:FormatText()
 	if profile.penalty and state.deathTimeLost > 0 then
 		local open = profile.brackets == "SQUARE" and "[" or "("
 		local close = profile.brackets == "SQUARE" and "]" or ")"
-		local penalty = ("%s-%ds%s"):format(open, state.deathTimeLost, close)
+		local sign = AMT.Profiles.active.timer.direction == "UP" and "+" or "-"
+		local penalty = ("%s%s%ds%s"):format(open, sign, state.deathTimeLost, close)
 
 		text = text ~= "" and (text .. " " .. penalty) or penalty
 	end
@@ -116,13 +116,10 @@ function module:Render()
 	self.text:SetText(text)
 
 	self.text:ClearAllPoints()
+	self.text:SetPoint("LEFT", self.row, "LEFT", 0, 0)
 
-	if showIcon then
-		self.text:SetPoint("LEFT", self.icon, "RIGHT", ICON_GAP, 0)
-	else
-		self.text:SetPoint("LEFT", self.row, "LEFT", 0, 0)
-	end
-
+	self.icon:ClearAllPoints()
+	self.icon:SetPoint("LEFT", self.text, "RIGHT", ICON_GAP, 0)
 	self.icon:SetTexture(SKULL)
 	self.icon:SetShown(showIcon)
 

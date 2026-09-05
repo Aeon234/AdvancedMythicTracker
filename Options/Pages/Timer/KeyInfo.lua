@@ -34,7 +34,7 @@ local function PreviewText()
 		return text
 	end
 
-	return ("|T%s:0|t %s"):format(module.SKULL, text)
+	return ("%s |T%s:0|t"):format(text, module.SKULL)
 end
 
 Options.RegisterPage({
