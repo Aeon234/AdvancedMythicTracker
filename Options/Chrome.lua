@@ -41,6 +41,7 @@ function Options.GetChrome()
 
 	frame:SetMovable(true)
 	frame:EnableMouse(true)
+	frame:SetClampedToScreen(true)
 	frame:RegisterForDrag("LeftButton")
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
