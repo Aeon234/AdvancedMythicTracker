@@ -4,9 +4,10 @@ local L = AMT.L
 local Options = AMT.Options
 
 local DISPLAY = { MINIMAL = "Minimal", PANEL = "Panel", AEON = "Aeon" }
-local FONT_MENU_WIDTH = 220
-local FONT_MENU_ROW_HEIGHT = 20
-local FONT_MENU_EXTENT = 320
+local MEDIA_MENU_WIDTH = 220
+local MEDIA_MENU_ROW_HEIGHT = 20
+local MEDIA_MENU_EXTENT = 320
+local MEDIA_ROW_TEXT_INSET = 2
 local STYLE_WIDTH = 200
 local UNDO_WIDTH = 160
 
@@ -24,41 +25,72 @@ StaticPopupDialogs["AMT_CONFIRM_STYLE"] = {
 }
 
 ---@param node table
----@param font string
-local function StampFontFamily(node, font)
+---@param field string
+---@param media string
+local function StampMedia(node, field, media)
 	for _, value in pairs(node) do
 		if type(value) == "table" then
-			if value.font ~= nil then
-				value.font = font
+			if value[field] ~= nil then
+				value[field] = media
 			end
 
-			StampFontFamily(value, font)
+			StampMedia(value, field, media)
 		end
 	end
 end
 
-local function ShowFontPicker()
+---@param field string
+---@param mediaType string
+---@param decorate fun(row: table, key: string)
+local function ShowMediaPicker(field, mediaType, decorate)
 	MenuUtil.CreateContextMenu(nil, function(_, rootDescription)
-		rootDescription:SetScrollMode(FONT_MENU_EXTENT)
-		rootDescription:SetMinimumWidth(FONT_MENU_WIDTH)
-		rootDescription:SetMaximumWidth(FONT_MENU_WIDTH)
+		rootDescription:SetScrollMode(MEDIA_MENU_EXTENT)
+		rootDescription:SetMinimumWidth(MEDIA_MENU_WIDTH)
+		rootDescription:SetMaximumWidth(MEDIA_MENU_WIDTH)
 
-		for _, key in ipairs(AMT.Media.List("font")) do
+		for _, key in ipairs(AMT.Media.List(mediaType)) do
 			local entry = rootDescription:CreateButton(key, function()
-				StampFontFamily(AMT.Profiles.active.timer, key)
+				StampMedia(AMT.Profiles.active.timer, field, key)
 				AMT.Profiles.Refresh()
 				Options.NotifyValueChanged()
 			end)
 
 			entry:AddInitializer(function(row)
-				local fontObject = AMT.Media.FontObject(key)
+				decorate(row, key)
 
-				if row.fontString and fontObject then
-					row.fontString:SetFontObject(fontObject)
-				end
-
-				return FONT_MENU_WIDTH, FONT_MENU_ROW_HEIGHT
+				return MEDIA_MENU_WIDTH, MEDIA_MENU_ROW_HEIGHT
 			end)
+		end
+	end)
+end
+
+local function ShowFontPicker()
+	ShowMediaPicker("font", "font", function(row, key)
+		local fontObject = AMT.Media.FontObject(key)
+
+		if row.fontString and fontObject then
+			row.fontString:SetFontObject(fontObject)
+		end
+	end)
+end
+
+local function ShowTexturePicker()
+	ShowMediaPicker("texture", "statusbar", function(row, key)
+		local bar = row:AttachTexture()
+
+		bar:SetDrawLayer("BACKGROUND")
+		bar:SetPoint("TOPLEFT", row, "TOPLEFT", 0, -1)
+		bar:SetPoint("BOTTOMRIGHT", row, "BOTTOMRIGHT", 0, 1)
+
+		if AMT.Media.Apply(bar, "statusbar", key) then
+			bar:SetHorizTile(false)
+			bar:SetVertTile(false)
+		else
+			bar:Hide()
+		end
+
+		if row.fontString then
+			row.fontString:SetPoint("LEFT", row, "LEFT", MEDIA_ROW_TEXT_INSET, 0)
 		end
 	end)
 end
@@ -153,6 +185,13 @@ Options.RegisterPage({
 				label = L["Fonts"],
 				text = L["Apply Font To All…"],
 				set = ShowFontPicker,
+			},
+
+			{
+				type = "button",
+				label = L["Textures"],
+				text = L["Apply Texture To All…"],
+				set = ShowTexturePicker,
 			},
 
 			{
