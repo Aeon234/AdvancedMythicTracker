@@ -9,7 +9,7 @@ local definitions = {
 		geometry = "SIZED",
 		contentWidth = 200,
 		justify = "RIGHT",
-		bar = { showTicks = false },
+		thresholds = { [2] = { marks = "TEXT" }, [3] = { marks = "TEXT" } },
 		affixes = { widget = "TEXT", justify = "RIGHT" },
 	},
 

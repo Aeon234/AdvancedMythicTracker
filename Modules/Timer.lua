@@ -62,23 +62,27 @@ function module:ApplyStyle()
 end
 
 function module:RefreshMarks()
-	local bar = AMT.Profiles.active.timer.bar
+	local thresholds = AMT.Profiles.active.timer.thresholds
 	local limits = AMT.State.current.timeLimits
-	local tickColor = bar.tickColor or { 1, 1, 1, 0.5 }
 
 	if not limits[1] or limits[1] <= 0 then
-		self.bar:SetTicks({}, tickColor)
+		self.bar:SetTicks({})
 
 		return
 	end
 
-	local fractions = {}
+	local marks = {}
 
+	-- Tier 1 is the bar's own length, so it has no tick to draw.
 	for tier = 2, #limits do
-		fractions[#fractions + 1] = limits[tier] / limits[1]
+		local settings = thresholds[tier]
+
+		if settings and settings.enabled and settings.marks ~= "TEXT" then
+			marks[#marks + 1] = { fraction = limits[tier] / limits[1], color = settings.tickColor }
+		end
 	end
 
-	self.bar:SetTicks(bar.showTicks and fractions or {}, tickColor)
+	self.bar:SetTicks(marks)
 
 	for index, text in ipairs(self.thresholds) do
 		self.bar:AttachAtFraction(text, limits[index] / limits[1])
@@ -114,7 +118,7 @@ function module:RenderThresholds()
 		local settings = profile.thresholds[index]
 		local limit = limits[index]
 
-		if not settings.enabled or not limit then
+		if not settings.enabled or settings.marks == "TICK" or not limit then
 			text:Hide()
 		elseif state.challengeCompleted then
 			local achieved = (state.upgradeLevels or 0) >= index

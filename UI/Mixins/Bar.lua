@@ -22,8 +22,6 @@ local SLOT_ANCHORS = {
 ---@field background number[]? {r, g, b, a} background
 ---@field height number
 ---@field tierColors number[][]? four {r,g,b,a} for timer
----@field showTicks boolean?
----@field tickColor number[]?
 
 ---@class AMTBarMixin : StatusBar
 ---@field background Texture
@@ -125,28 +123,33 @@ function Bar:SetColor(color)
 	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
 end
 
----@param fractions number[]
----@param color number[]
-function Bar:SetTicks(fractions, color)
+---@class AMTBarTick
+---@field fraction number 0-1
+---@field color number[] {r, g, b, a}
+
+---@param marks AMTBarTick[]
+function Bar:SetTicks(marks)
 	local width = self:GetWidth()
 
 	wipe(self.tickFractions)
 
-	for index = 1, #fractions do
-		self.tickFractions[index] = fractions[index]
+	for index = 1, #marks do
+		self.tickFractions[index] = marks[index].fraction
 	end
 
-	for index = 1, math.max(#fractions, #self.ticks) do
+	for index = 1, math.max(#marks, #self.ticks) do
 		local tick = self.ticks[index]
 
-		if index <= #fractions then
+		if index <= #marks then
 			if not tick then
 				tick = self:CreateTexture(nil, "OVERLAY")
 				tick:SetWidth(1)
 				self.ticks[index] = tick
 			end
 
-			local offset = width * fractions[index]
+			local mark = marks[index]
+			local color = mark.color
+			local offset = width * mark.fraction
 
 			tick:SetColorTexture(color[1], color[2], color[3], color[4])
 			tick:ClearAllPoints()

@@ -35,18 +35,6 @@ Options.RegisterPage({
 				values = { { 0, "0" }, { 1, "1" }, { 2, "2" }, { 3, "3" } },
 			},
 
-			{ type = "checkbox", label = L["Show Threshold Marks"], path = "timer.bar.showTicks" },
-
-			{
-				type = "color",
-				label = L["Mark Color"],
-				path = "timer.bar.tickColor",
-				hasOpacity = true,
-				disabled = function()
-					return not Options.Get("timer.bar.showTicks")
-				end,
-			},
-
 			{
 				type = "color",
 				label = L["Depleted / +1 / +2 / +3"],
@@ -75,15 +63,38 @@ Options.RegisterPage({
 				enabledPath = prefix .. ".enabled",
 			})
 
-			group.content:AddWidgets({
-				{
-					type = "color",
-					label = L["Ahead / Behind"],
-					paths = { prefix .. ".aheadColor", prefix .. ".behindColor" },
-				},
-			})
+			local widgets = {}
 
-			group.content:AddFontGroup(L["Text"], prefix .. ".text")
+			if tier > 1 then
+				widgets[#widgets + 1] = {
+					type = "segmented",
+					label = L["Marks"],
+					path = prefix .. ".marks",
+					values = { { "TICK", L["Tick"] }, { "TEXT", L["Text"] }, { "BOTH", L["Both"] } },
+				}
+
+				widgets[#widgets + 1] = {
+					type = "color",
+					label = L["Tick Color"],
+					path = prefix .. ".tickColor",
+					hasOpacity = true,
+					disabled = function()
+						return Options.Get(prefix .. ".marks") == "TEXT"
+					end,
+				}
+			end
+
+			widgets[#widgets + 1] = {
+				type = "color",
+				label = L["Ahead / Behind"],
+				paths = { prefix .. ".aheadColor", prefix .. ".behindColor" },
+			}
+
+			group.content:AddWidgets(widgets)
+
+			group.content:AddFontGroup(L["Text"], prefix .. ".text", function()
+				return Options.Get(prefix .. ".marks") == "TICK"
+			end)
 		end
 	end,
 })

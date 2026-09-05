@@ -22,6 +22,8 @@ local EXPORT_FORMAT = 1
 
 ---@class AMTThresholdSettings
 ---@field enabled boolean
+---@field marks "TICK"|"TEXT"|"BOTH"
+---@field tickColor number[]
 ---@field aheadColor number[]
 ---@field behindColor number[]
 ---@field text AMTTextStyle
@@ -173,8 +175,6 @@ local profileDefaults = {
 				{ 1, 1, 0, 1 },
 				{ 128 / 255, 1, 0, 1 },
 			},
-			showTicks = true,
-			tickColor = { 1, 1, 1, 0.5 },
 		},
 		text = {
 			font = "Friz Quadrata TT",
@@ -186,18 +186,24 @@ local profileDefaults = {
 		thresholds = {
 			{
 				enabled = true,
+				marks = "TEXT",
+				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },
 				behindColor = { 1, 0, 0, 1 },
 				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			{
 				enabled = true,
+				marks = "BOTH",
+				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },
 				behindColor = { 1, 0, 0, 1 },
 				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			{
 				enabled = true,
+				marks = "BOTH",
+				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },
 				behindColor = { 1, 0, 0, 1 },
 				text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
