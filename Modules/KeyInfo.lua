@@ -5,7 +5,7 @@ local TITLE_GAP = 4
 ---@class AMTKeyInfoModule : AMTModule
 ---@field element Frame
 ---@field titleRow Frame
----@field name AMTTextMixin
+---@field dungeonName AMTTextMixin
 ---@field level AMTTextMixin
 ---@field affixElement Frame
 ---@field affixRow Frame
@@ -20,7 +20,7 @@ function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("keyInfo"))
 	self.titleRow = CreateFrame("Frame", nil, self.element)
 
-	self.name = AMT.Mixins.NewText(self.titleRow)
+	self.dungeonName = AMT.Mixins.NewText(self.titleRow)
 	self.level = AMT.Mixins.NewText(self.titleRow)
 
 	self.element.GetContentWidth = function()
@@ -53,7 +53,7 @@ function module:ApplyStyle()
 	local affixes = timer.affixes
 
 	self.element:SetHeight(profile.height)
-	self.name:ApplyStyle(profile.text)
+	self.dungeonName:ApplyStyle(profile.text)
 	self.level:ApplyStyle(profile.level)
 
 	self.affixElement:SetHeight(affixes.height)
@@ -188,9 +188,9 @@ function module:LayoutTitle()
 
 	if profile.order == "LEVEL_FIRST" then
 		parts[1] = self.level:IsShown() and self.level or nil
-		parts[#parts + 1] = self.name:IsShown() and self.name or nil
+		parts[#parts + 1] = self.dungeonName:IsShown() and self.dungeonName or nil
 	else
-		parts[1] = self.name:IsShown() and self.name or nil
+		parts[1] = self.dungeonName:IsShown() and self.dungeonName or nil
 		parts[#parts + 1] = self.level:IsShown() and self.level or nil
 	end
 
@@ -232,8 +232,8 @@ function module:Render()
 
 	mapName = mapName or UNKNOWN
 
-	self.name:SetText(mapName)
-	self.name:SetShown(profile.show ~= "LEVEL")
+	self.dungeonName:SetText(mapName)
+	self.dungeonName:SetShown(profile.show ~= "LEVEL")
 
 	self.level:SetText(levelText)
 	self.level:SetShown(profile.show ~= "NAME" and levelText ~= "")
