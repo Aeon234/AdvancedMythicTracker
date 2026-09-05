@@ -1,4 +1,4 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="General.lua" />
-    <Script file="Analytics.lua" />
+    <!-- Removing Analytics.lua until Dashboard -->
 </Ui>

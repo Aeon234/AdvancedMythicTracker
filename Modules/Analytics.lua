@@ -16,7 +16,8 @@ local L = AMT.L
 ---@class AMTAnalyticsModule : AMTModule
 local module = AMT.Modules.New("Analytics")
 
--- Following MPlusTimer's 10s delay. Reloe says immediate read will result in nil data or inaccurate data.
+-- Following MPlusTimer's 10s delay; Reloe says an
+-- immediate read returns nil or inaccurate data.
 local LOGIN_DELAY = 10
 local COMPLETION_DELAY = 2
 
@@ -194,22 +195,8 @@ function module:OnAbandonVote(event, votePassed)
 	byLevel[state.level] = (byLevel[state.level] or 0) + 1
 end
 
-function module:OnEnable()
-	AMT.Events.Register("PLAYER_ENTERING_WORLD", self, function()
-		C_Timer.After(LOGIN_DELAY, function()
-			module:RefreshHistory()
-		end)
-	end)
-end
-
-function module:OnChallengeStart()
-	AMT.Events.RegisterChallenge("INSTANCE_ABANDON_VOTE_FINISHED", self, self.OnAbandonVote)
-end
-
+-- Run history and abandon counts are dormant until the v2 dashboard (D-15, D-48). RecordBest is not
+-- part of that deferral: TIMER -> Splits diffs against the PBs it writes.
 function module:OnChallengeComplete()
 	self:RecordBest()
-
-	C_Timer.After(COMPLETION_DELAY, function()
-		self:RefreshHistory()
-	end)
 end
