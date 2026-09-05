@@ -131,16 +131,11 @@ Options.RegisterPage({
 				min = 0.1,
 				max = 3.0,
 				step = 0.1,
+				tooltip = L["Lower values update the timer more smoothly at a small cost in performance."],
 				set = function(value)
 					Options.Set("updateInterval", value, "account")
 					AMT.Render.SetInterval(value)
 				end,
-			},
-
-			{
-				type = "note",
-				label = "",
-				text = L["Lower values update the timer more smoothly at a small cost in performance."],
 			},
 
 			{
