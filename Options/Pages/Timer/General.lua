@@ -7,6 +7,8 @@ local DISPLAY = { MINIMAL = "Minimal", PANEL = "Panel", AEON = "Aeon" }
 local FONT_MENU_WIDTH = 220
 local FONT_MENU_ROW_HEIGHT = 20
 local FONT_MENU_EXTENT = 320
+local STYLE_WIDTH = 200
+local UNDO_WIDTH = 160
 
 StaticPopupDialogs["AMT_CONFIRM_STYLE"] = {
 	text = L["Switching to %s will reset every Timer customisation to that style's defaults.\n\nYou can undo this until you switch again, or export your profile first."],
@@ -86,24 +88,36 @@ Options.RegisterPage({
 		page:SetHeader({
 			description = L["Overall look and placement of the timer."],
 			divider = "thin",
-			actionText = L["Undo style change"],
-			onAction = function()
-				AMT.Style.Undo()
-			end,
-			actionHidden = function()
-				return not AMT.Style.CanUndo()
-			end,
 		})
 
 		page:AddWidgets({
 			{
-				type = "dropdown",
+				type = "row",
 				label = L["Style"],
-				values = StyleValues(),
-				get = CurrentStyle,
-				set = function(value)
-					StaticPopup_Show("AMT_CONFIRM_STYLE", L[DISPLAY[value] or value], nil, value)
-				end,
+				items = {
+					{
+						type = "dropdown",
+						width = STYLE_WIDTH,
+						values = StyleValues(),
+						get = CurrentStyle,
+						set = function(value)
+							StaticPopup_Show("AMT_CONFIRM_STYLE", L[DISPLAY[value] or value], nil, value)
+						end,
+					},
+
+					{
+						type = "button",
+						width = UNDO_WIDTH,
+						align = "RIGHT",
+						text = L["Undo style change"],
+						set = function()
+							AMT.Style.Undo()
+						end,
+						hidden = function()
+							return not AMT.Style.CanUndo()
+						end,
+					},
+				},
 			},
 
 			{

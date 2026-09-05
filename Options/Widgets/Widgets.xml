@@ -10,4 +10,5 @@
     <Script file="Button.lua" />
     <Script file="Note.lua" />
     <Script file="TextArea.lua" />
+    <Script file="Row.lua" />
 </Ui>

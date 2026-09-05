@@ -14,7 +14,7 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@class AMTOptionInfo
 ---@field mediaType string? LSM type
 ---@field type string widget name
----@field label string
+---@field label string?
 ---@field path string?
 ---@field scope AMTBindingScope?
 ---@field get AMTOptionGetter?
@@ -33,6 +33,10 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field color number[]?
 ---@field GetValues AMTOptionValuesProvider?
 ---@field readOnly boolean?
+---@field items AMTOptionInfo[]? row children (D-58)
+---@field width number? row item: total width, label included
+---@field labelWidth number? row item: own label column; omit for a bare control
+---@field align string? row item: LEFT (default) or RIGHT
 
 ---@class AMTOptionWidget
 ---@field frame Frame
@@ -51,6 +55,10 @@ end
 
 ---@return number
 function Widget:GetControlOffset()
+	if self.labelWidth <= 0 then
+		return 0
+	end
+
 	return self.labelWidth + CONST.LABEL_GAP
 end
 
