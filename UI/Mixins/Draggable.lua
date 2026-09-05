@@ -11,7 +11,6 @@ local AMT = select(2, ...)
 ---@field y number
 
 ---@class AMTDraggableMixin : Frame
----@field dragHighlight Texture
 ---@field OnPositionChanged fun(self: AMTDraggableMixin, position: AMTFramePosition)?
 local Draggable = {}
 AMT.Mixins.Draggable = Draggable
@@ -23,10 +22,6 @@ local function ScaleRatio(frame)
 end
 
 function Draggable:OnLoad()
-	self.dragHighlight = self:CreateTexture(nil, "BACKGROUND")
-	self.dragHighlight:SetAllPoints()
-	self.dragHighlight:SetColorTexture(0, 0, 0, 0)
-
 	self:SetClampedToScreen(true)
 	self:RegisterForDrag("LeftButton")
 
@@ -42,7 +37,6 @@ end
 function Draggable:SetUnlocked(unlocked)
 	self:SetMovable(unlocked)
 	self:EnableMouse(unlocked)
-	self.dragHighlight:SetColorTexture(0, 0, 0, unlocked and 0.3 or 0)
 end
 
 function Draggable:SavePosition()

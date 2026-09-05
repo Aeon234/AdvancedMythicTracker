@@ -199,16 +199,6 @@ Options.RegisterPage({
 				set = ShowTexturePicker,
 			},
 
-			{
-				type = "checkbox",
-				label = L["Unlock Frame"],
-				get = function()
-					return AMT.Frames.IsUnlocked()
-				end,
-				set = function(value)
-					AMT.Frames.SetUnlocked(value == true)
-				end,
-			},
 
 			{
 				type = "segmented",

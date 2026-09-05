@@ -50,6 +50,26 @@ Options.RegisterPage({
 					end
 				end,
 			},
+
+			{
+				type = "checkbox",
+				label = L["Addon Compartment Icon"],
+				tooltip = L["Shows the addon compartment entry for Advanced Mythic Tracker."],
+				get = function()
+					---@type AMTAddonCompartmentModule?
+					local compartment = AMT.Modules.Get("AddonCompartment")
+
+					return compartment ~= nil and compartment:IsShown()
+				end,
+				set = function(value)
+					---@type AMTAddonCompartmentModule?
+					local compartment = AMT.Modules.Get("AddonCompartment")
+
+					if compartment then
+						compartment:SetShown(value == true)
+					end
+				end,
+			},
 		})
 	end,
 })

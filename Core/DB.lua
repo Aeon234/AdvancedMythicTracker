@@ -18,6 +18,7 @@ local SCHEMA_VERSION = 1
 ---@field updateInterval number
 ---@field recordAbandons boolean
 ---@field minimapIcon table
+---@field addonCompartment boolean
 ---@field qol table
 
 ---@class AMTRecords
@@ -32,6 +33,7 @@ local defaults = {
 		profileKeys = {},
 		defaultProfile = "Default",
 		minimapIcon = { hide = false },
+		addonCompartment = true,
 		updateInterval = 0.1,
 		recordAbandons = true,
 		qol = { autoSlotKeystone = true, autoGossip = true },

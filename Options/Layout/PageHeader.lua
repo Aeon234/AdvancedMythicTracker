@@ -20,13 +20,15 @@ local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 ---@field actionIcon string?
 ---@field onAction fun()?
 ---@field actionHidden AMTOptionPredicate?
----@field previewToggles boolean?
+---@field headerToggles boolean?
 
 ---@class AMTOptionsPageHeader
 ---@field frame Frame
 ---@field title FontString
 ---@field description FontString
 ---@field action Button?
+---@field unlockCheck Button?
+---@field unlockTick Texture?
 ---@field previewCheck Button?
 ---@field previewTick Texture?
 ---@field animateCheck Button?
@@ -50,6 +52,10 @@ function PageHeader:Refresh()
 
 	local inKey = AMT.State.current.inChallenge
 
+	if self.unlockTick then
+		self.unlockTick:SetShown(AMT.Frames.IsUnlocked())
+	end
+
 	self.previewTick:SetShown(AMT.Demo.IsActive())
 	self.previewCheck:SetEnabled(not inKey)
 
@@ -58,7 +64,24 @@ function PageHeader:Refresh()
 end
 
 ---@param header AMTOptionsPageHeader
-local function BuildPreviewToggles(header)
+local function BuildHeaderToggles(header)
+	local unlockCheck, unlockTick = Options.CreateCheckboxControl(header.frame, function()
+		local unlocked = not AMT.Frames.IsUnlocked()
+
+		if unlocked and not AMT.Demo.IsActive() and not AMT.State.current.inChallenge then
+			AMT.Demo.Enter(Options.IsPreviewAnimated())
+		end
+
+		AMT.Frames.SetUnlocked(unlocked)
+		Options.NotifyValueChanged()
+	end)
+
+	local unlockLabel = unlockCheck:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
+
+	unlockLabel:SetPoint("LEFT", unlockCheck, "RIGHT", TOGGLE_LABEL_GAP, 0)
+	unlockLabel:SetText(L["Unlock Frame"])
+	unlockLabel:SetTextColor(1, 1, 1)
+
 	local previewCheck, previewTick = Options.CreateCheckboxControl(header.frame, function()
 		AMT.Demo.Toggle(Options.IsPreviewAnimated())
 		Options.NotifyValueChanged()
@@ -96,6 +119,16 @@ local function BuildPreviewToggles(header)
 		0
 	)
 
+	unlockCheck:SetPoint(
+		"RIGHT",
+		previewCheck,
+		"LEFT",
+		-(TOGGLE_GROUP_GAP + unlockLabel:GetStringWidth() + TOGGLE_LABEL_GAP),
+		0
+	)
+
+	header.unlockCheck = unlockCheck
+	header.unlockTick = unlockTick
 	header.previewCheck = previewCheck
 	header.previewTick = previewTick
 	header.animateCheck = animateCheck
@@ -157,8 +190,8 @@ function Options.NewPageHeader(parent, config)
 		header.action = action
 	end
 
-	if config.previewToggles then
-		BuildPreviewToggles(header)
+	if config.headerToggles then
+		BuildHeaderToggles(header)
 	end
 
 	header:Refresh()

@@ -29,7 +29,7 @@ function PageView:SetHeader(config)
 	end
 
 	config.title = config.title or self.definition.name
-	config.previewToggles = self.definition.parent == PREVIEW_CATEGORY
+	config.headerToggles = self.definition.parent == PREVIEW_CATEGORY
 
 	self.header = Options.NewPageHeader(self.container.frame, config)
 
@@ -90,6 +90,11 @@ end
 
 ---@param page AMTOptionsPage
 function Options.OnPageSelected(page)
+	-- Unlock is scoped to its toggle being on screen; the header only carries it on Timer pages.
+	if page.parent ~= PREVIEW_CATEGORY and AMT.Frames.IsUnlocked() then
+		AMT.Frames.SetUnlocked(false)
+	end
+
 	local chrome = Options.GetChrome()
 	local view = views[page.id]
 

@@ -53,6 +53,13 @@ function Options.GetChrome()
 		return false
 	end
 
+	-- Every hide path lands here, so an unlocked frame can never outlive the window that unlocked it.
+	frame:SetScript("OnHide", function()
+		if AMT.Frames.IsUnlocked() then
+			AMT.Frames.SetUnlocked(false)
+		end
+	end)
+
 	chrome.animate = false
 
 	local version = frame:CreateFontString(nil, "ARTWORK", CONST.FONT_SMALL)

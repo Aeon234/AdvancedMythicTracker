@@ -6,4 +6,5 @@
     <Script file="Deaths.lua" />
     <Script file="Analytics.lua" />
     <Script file="MinimapIcon.lua" />
+    <Script file="AddonCompartment.lua" />
 </Ui>
