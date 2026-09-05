@@ -24,17 +24,7 @@ end
 local function PreviewText()
 	local module = AMT.Modules.Get("Deaths") --[[@as AMTDeathsModule]]
 
-	if not module then
-		return ""
-	end
-
-	local text = module:FormatText()
-
-	if text == "" or Options.Get("timer.deaths.label") ~= "SKULL" then
-		return text
-	end
-
-	return ("%s |T%s:0|t"):format(text, module.SKULL)
+	return module and module:FormatText() or ""
 end
 
 Options.RegisterPage({
@@ -193,19 +183,20 @@ Options.RegisterPage({
 				values = { { "SKULL", L["Icon"] }, { "TEXT", L["Text"] }, { "NONE", L["None"] } },
 			},
 
-			{ type = "note", label = "", get = PreviewText, color = PREVIEW_WHITE },
-
 			{
 				type = "slider",
-				label = L["Icon Size"],
-				path = "timer.deaths.iconSize",
-				min = 8,
-				max = 24,
+				label = L["Icon Offset"],
+				path = "timer.deaths.iconOffset",
+				min = -6,
+				max = 6,
 				step = 1,
+				tooltip = L["Nudges the skull icon up or down."],
 				hidden = function()
 					return Options.Get("timer.deaths.label") ~= "SKULL"
 				end,
 			},
+
+			{ type = "note", label = "", get = PreviewText, color = PREVIEW_WHITE },
 
 			{ type = "checkbox", label = L["Show Penalty"], path = "timer.deaths.penalty" },
 

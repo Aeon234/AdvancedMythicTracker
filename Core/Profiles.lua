@@ -102,7 +102,7 @@ local EXPORT_FORMAT = 1
 ---@class AMTDeathsProfile
 ---@field height number
 ---@field label "SKULL"|"TEXT"|"NONE"
----@field iconSize number
+---@field iconOffset number
 ---@field penalty boolean
 ---@field brackets "PAREN"|"SQUARE"
 ---@field justify "LEFT"|"CENTER"|"RIGHT"
@@ -229,7 +229,7 @@ local profileDefaults = {
 		deaths = {
 			height = 16,
 			label = "SKULL",
-			iconSize = 12,
+			iconOffset = 2,
 			penalty = true,
 			brackets = "PAREN",
 			justify = "RIGHT",
