@@ -127,7 +127,7 @@ function Slider:Create(parent)
 
 	input:SetPoint("TOPLEFT", box, "TOPLEFT", 4, 0)
 	input:SetPoint("BOTTOMRIGHT", box, "BOTTOMRIGHT", -4, 0)
-	input:SetFontObject("GameFontHighlightSmall")
+	input:SetFontObject(CONST.FONT_SMALL)
 	input:SetJustifyH("CENTER")
 	input:SetAutoFocus(false)
 	input:SetMaxLetters(8)

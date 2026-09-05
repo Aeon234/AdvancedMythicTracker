@@ -29,7 +29,7 @@ function Options.CreateActionButton(parent, onClick)
 		hover:SetShown(false)
 	end
 
-	local label = control:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local label = control:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
 
 	label:SetTextColor(1, 1, 1)
 

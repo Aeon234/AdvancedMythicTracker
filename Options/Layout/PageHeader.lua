@@ -2,6 +2,7 @@ local AMT = select(2, ...)
 local L = AMT.L
 
 local Options = AMT.Options
+local CONST = Options.CONST
 
 local TITLE_GAP = 6
 local DIVIDER_GAP = 2
@@ -63,7 +64,7 @@ local function BuildPreviewToggles(header)
 		Options.NotifyValueChanged()
 	end)
 
-	local previewLabel = previewCheck:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local previewLabel = previewCheck:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
 
 	previewLabel:SetPoint("LEFT", previewCheck, "RIGHT", TOGGLE_LABEL_GAP, 0)
 	previewLabel:SetText(L["Preview"])
@@ -77,7 +78,7 @@ local function BuildPreviewToggles(header)
 		Options.NotifyValueChanged()
 	end)
 
-	local animateLabel = animateCheck:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local animateLabel = animateCheck:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
 
 	animateLabel:SetPoint("LEFT", animateCheck, "RIGHT", TOGGLE_LABEL_GAP, 0)
 	animateLabel:SetText(L["Animate preview"])
@@ -109,13 +110,13 @@ function Options.NewPageHeader(parent, config)
 
 	header.frame = CreateFrame("Frame", nil, parent)
 
-	header.title = header.frame:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+	header.title = header.frame:CreateFontString(nil, "ARTWORK", CONST.FONT_TITLE)
 	header.title:SetPoint("TOPLEFT", header.frame, "TOPLEFT", 0, 0)
 	header.title:SetJustifyH("LEFT")
 	header.title:SetText((config.title or ""):upper())
 	header.title:SetTextColor(GOLD_R, GOLD_G, GOLD_B)
 
-	header.description = header.frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	header.description = header.frame:CreateFontString(nil, "ARTWORK", CONST.FONT_SMALL)
 	header.description:SetPoint("TOPLEFT", header.title, "BOTTOMLEFT", 0, -TITLE_GAP)
 	header.description:SetJustifyH("LEFT")
 	header.description:SetText(config.description or "")

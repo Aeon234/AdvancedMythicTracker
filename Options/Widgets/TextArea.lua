@@ -56,7 +56,7 @@ function TextArea:Create(parent)
 
 	control:SetPoint("TOPLEFT", shell, "TOPLEFT", TEXT_INSET, -TEXT_INSET)
 	control:SetPoint("BOTTOMRIGHT", shell, "BOTTOMRIGHT", -TEXT_INSET, TEXT_INSET)
-	control:SetFontObject("GameFontHighlightSmall")
+	control:SetFontObject(CONST.FONT_SMALL)
 
 	self.control = control
 	self.hover = hover

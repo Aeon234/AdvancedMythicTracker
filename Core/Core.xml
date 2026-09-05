@@ -4,6 +4,7 @@
     <Script file="Util.lua" />
     <Script file="Locale.lua" />
     <Script file="Media.lua" />
+    <Script file="Fonts.lua" />
     <Script file="NineSlice.lua" />
     <Script file="Animation.lua" />
     <Script file="Events.lua" />

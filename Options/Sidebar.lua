@@ -97,7 +97,7 @@ function Sidebar:CreateRow(page, offsetY)
 	icon:SetSize(ICON_SIZE, ICON_SIZE)
 	icon:SetPoint("LEFT", button, "LEFT", ICON_GAP, 0)
 
-	local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	local label = button:CreateFontString(nil, "OVERLAY", CONST.FONT_ROW)
 
 	label:SetJustifyH("LEFT")
 	label:SetPoint("RIGHT", button, "RIGHT", -ICON_GAP, 0)
@@ -144,7 +144,7 @@ function Sidebar:Build()
 				offsetY = offsetY + SECTION_GAP
 			end
 
-			local header = self.content:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
+			local header = self.content:CreateFontString(nil, "ARTWORK", CONST.FONT_HEADING)
 
 			header:SetJustifyH("LEFT")
 			header:SetPoint("TOPLEFT", self.content, "TOPLEFT", ICON_GAP, -offsetY - HEADER_DROP)

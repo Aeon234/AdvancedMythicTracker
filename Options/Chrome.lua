@@ -55,7 +55,7 @@ function Options.GetChrome()
 
 	chrome.animate = false
 
-	local version = frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	local version = frame:CreateFontString(nil, "ARTWORK", CONST.FONT_SMALL)
 
 	version:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -CLOSE_RESERVE, -TITLE_TEXT_DROP)
 	version:SetText(("v%s"):format(AMT.version))

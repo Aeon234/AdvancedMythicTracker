@@ -12,6 +12,11 @@ local AMT = select(2, ...)
 ---@field ROW_SPACING number
 ---@field CORNER_SIZE number
 ---@field SCROLL_PAN_EXTENT number
+---@field FONT_TITLE string
+---@field FONT_GROUP_TITLE string
+---@field FONT_ROW string
+---@field FONT_BODY string
+---@field FONT_SMALL string
 
 ---@class AMTOptions
 ---@field Styles AMTStyles
@@ -66,5 +71,12 @@ Options.CONST = {
 	LABEL_GAP = 12,
 	ROW_SPACING = 12,
 	CORNER_SIZE = 16,
-	SCROLL_PAN_EXTENT = 60,
+	SCROLL_PAN_EXTENT = 100,
+
+	FONT_TITLE = "AMTFontTitle",
+	FONT_GROUP_TITLE = "AMTFontGroupTitle",
+	FONT_HEADING = "AMTFontHeading",
+	FONT_ROW = "AMTFontRow",
+	FONT_BODY = "AMTFontBody",
+	FONT_SMALL = "AMTFontSmall",
 }

@@ -1,6 +1,7 @@
 local AMT = select(2, ...)
 
 local Options = AMT.Options
+local CONST = Options.CONST
 
 local MIN_HEIGHT = 16
 local MUTED_ORANGE = { 1, 0.65, 0.2 }
@@ -18,7 +19,7 @@ end
 function Note:Create(parent)
 	Options.Widget.Create(self, parent)
 
-	self.note = self.frame:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+	self.note = self.frame:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
 
 	self.note:SetPoint("TOPLEFT", self.frame, "TOPLEFT", self:GetControlOffset(), 0)
 	self.note:SetPoint("RIGHT", self.frame, "RIGHT", 0, 0)

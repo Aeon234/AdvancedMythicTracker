@@ -150,7 +150,7 @@ function Options.NewGroup(parent, config)
 		hover:SetShown(false)
 	end
 
-	local title = header:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+	local title = header:CreateFontString(nil, "ARTWORK", CONST.FONT_GROUP_TITLE)
 
 	title:SetPoint("LEFT", header, "LEFT", HEADER_INSET, 0)
 	title:SetText(config.title)
@@ -170,7 +170,7 @@ function Options.NewGroup(parent, config)
 			Options.NotifyValueChanged()
 		end)
 
-		local label = control:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+		local label = control:CreateFontString(nil, "ARTWORK", CONST.FONT_BODY)
 
 		label:SetPoint("LEFT", control, "RIGHT", CHECKBOX_LABEL_GAP, 0)
 		label:SetText(L["Enabled"])

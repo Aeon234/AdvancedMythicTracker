@@ -63,7 +63,7 @@ function TextInput:Create(parent)
 
 	input:SetPoint("TOPLEFT", shell, "TOPLEFT", 5, 0)
 	input:SetPoint("BOTTOMRIGHT", shell, "BOTTOMRIGHT", -5, 0)
-	input:SetFontObject("GameFontHighlightSmall")
+	input:SetFontObject(CONST.FONT_SMALL)
 	input:SetJustifyH("CENTER")
 	input:SetAutoFocus(false)
 	input:SetMaxLetters(12)

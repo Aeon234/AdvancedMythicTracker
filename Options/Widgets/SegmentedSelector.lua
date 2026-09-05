@@ -107,12 +107,10 @@ function Segmented:AcquireSegment(index)
 		hover:SetShown(false)
 	end
 
-	local label = button:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+	local label = button:CreateFontString(nil, "OVERLAY", CONST.FONT_SMALL)
 
 	label:SetPoint("CENTER")
 	label:SetTextColor(1, 1, 1)
-	label:SetShadowOffset(1, -1)
-	label:SetShadowColor(0, 0, 0, 1)
 
 	button:SetScript("OnEnter", function()
 		if hover then
