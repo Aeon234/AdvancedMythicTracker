@@ -14,17 +14,10 @@ local BOSS_INTERVAL = 150
 local DEATH_INTERVAL = 90
 local DEATH_PENALTY = 5
 
+local MAX_AFFIXES = 4
 local FALLBACK_AFFIX_IDS = { 152 }
 
 local BOSS_NAMES = {
-	-- "Rhahk'zor",
-	-- "Miner Johnson",
-	-- "Sneed’s Shredder",
-	-- "Gilnid",
-	-- "Mr. Smite",
-	-- "Captain Greenskin",
-	-- "Edwin VanCleef",
-	-- "Cookie",
 	"Interrogator Vishas",
 	"Houndmaster Loksey",
 	"Arcanist Doan",
@@ -71,6 +64,10 @@ local function LoadKey()
 
 	if affixes then
 		for index, affix in ipairs(affixes) do
+			if index > MAX_AFFIXES then
+				break
+			end
+
 			state.affixIDs[index] = affix.id
 
 			if affix.id == AMT.Challenge.PERIL_AFFIX_ID then

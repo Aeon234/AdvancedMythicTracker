@@ -17,7 +17,7 @@ end
 
 ---@return boolean
 local function IsTextMode()
-	return Options.Get("timer.affixes.widget") == "TEXT"
+	return not IsInline() and Options.Get("timer.affixes.widget") == "TEXT"
 end
 
 ---@return string
@@ -121,6 +121,7 @@ Options.RegisterPage({
 				type = "segmented",
 				label = L["Widget"],
 				path = "timer.affixes.widget",
+				hidden = IsInline,
 				tooltip = L["Icons, or full affix names joined by a separator."],
 				values = { { "ICON", L["Icons"] }, { "TEXT", L["Text"] } },
 			},

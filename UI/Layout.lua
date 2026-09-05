@@ -55,9 +55,7 @@ local function SeedElement(elementKey)
 		profile.elements[elementKey] = settings
 	end
 
-	if not settings.slot then
-		settings.slot = elements[elementKey].slot
-	end
+	settings.slot = elements[elementKey].slot
 end
 
 ---@param groupKey AMTLayoutGroupKey
@@ -100,6 +98,48 @@ function Layout.SetCollapsed(elementKey, isCollapsed)
 	collapsed[elementKey] = isCollapsed
 
 	AMT.State.MarkDirty("layout")
+end
+
+---@param bucket string[]
+---@return number[] widths
+---@return number total
+local function Measure(bucket)
+	local widths = {}
+	local total = math.max(#bucket - 1, 0) * ELEMENT_SPACING
+
+	for index, elementKey in ipairs(bucket) do
+		local frame = elements[elementKey].frame
+		local content = frame.GetContentWidth and frame:GetContentWidth() or frame:GetWidth()
+
+		widths[index] = content
+		total = total + content
+	end
+
+	return widths, total
+end
+
+---Hands a run's overflow to the first member willing to shrink for it.
+---@param bucket string[]
+---@param overflow number
+---@return boolean shrank
+local function Budget(bucket, overflow)
+	if overflow <= 0 then
+		return false
+	end
+
+	for _, elementKey in ipairs(bucket) do
+		local frame = elements[elementKey].frame
+
+		if frame.SetContentBudget then
+			local natural = frame.GetContentWidth and frame:GetContentWidth() or frame:GetWidth()
+
+			frame:SetContentBudget(math.max(natural - overflow, 0))
+
+			return true
+		end
+	end
+
+	return false
 end
 
 ---@param groupKey AMTLayoutGroupKey
@@ -147,17 +187,39 @@ local function ApplyInline(groupKey, width)
 		return 0
 	end
 
+	---@type table<string, number[]>
+	local widths = {}
+	---@type table<string, number>
+	local totals = {}
+
 	for slot, bucket in pairs(buckets) do
-		local widths = {}
-		local total = math.max(#bucket - 1, 0) * ELEMENT_SPACING
-
-		for index, elementKey in ipairs(bucket) do
+		for _, elementKey in ipairs(bucket) do
 			local frame = elements[elementKey].frame
-			local content = frame.GetContentWidth and frame:GetContentWidth() or frame:GetWidth()
 
-			widths[index] = content
-			total = total + content
+			if frame.SetContentBudget then
+				frame:SetContentBudget(nil)
+			end
 		end
+
+		widths[slot], totals[slot] = Measure(bucket)
+	end
+
+	for slot, bucket in pairs(buckets) do
+		local spare = boxWidth
+
+		for other, total in pairs(totals) do
+			if other ~= slot and total > 0 then
+				spare = spare - total - ELEMENT_SPACING
+			end
+		end
+
+		if Budget(bucket, totals[slot] - spare) then
+			widths[slot], totals[slot] = Measure(bucket)
+		end
+	end
+
+	for slot, bucket in pairs(buckets) do
+		local total = totals[slot]
 
 		local x = origin
 
@@ -172,11 +234,11 @@ local function ApplyInline(groupKey, width)
 			local frame = elements[elementKey].frame
 
 			frame:ClearAllPoints()
-			frame:SetSize(math.max(widths[index], 1), rowHeight)
+			frame:SetSize(math.max(widths[slot][index], 1), rowHeight)
 			frame:SetPoint("LEFT", group, "LEFT", x + settings.nudge[1], settings.nudge[2])
 			frame:Show()
 
-			x = x + widths[index] + ELEMENT_SPACING
+			x = x + widths[slot][index] + ELEMENT_SPACING
 		end
 	end
 

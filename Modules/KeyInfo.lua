@@ -1,6 +1,7 @@
 local AMT = select(2, ...)
 
 local TITLE_GAP = 4
+local ICON_INSET = 6 / 64
 
 ---@class AMTKeyInfoModule : AMTModule
 ---@field element Frame
@@ -12,6 +13,7 @@ local TITLE_GAP = 4
 ---@field affixIcons Texture[]
 ---@field affixText AMTTextMixin
 ---@field widths table<string, number>
+---@field titleBudget number?
 local module = AMT.Modules.New("KeyInfo")
 
 module.widths = {}
@@ -21,10 +23,21 @@ function module:OnInitialize()
 	self.titleRow = CreateFrame("Frame", nil, self.element)
 
 	self.dungeonName = AMT.Mixins.NewText(self.titleRow)
+	self.dungeonName:SetWordWrap(false)
 	self.level = AMT.Mixins.NewText(self.titleRow)
 
 	self.element.GetContentWidth = function()
 		return self.widths.keyInfoTitle or 0
+	end
+
+	self.element.SetContentBudget = function(_, budget)
+		if self.titleBudget == budget then
+			return
+		end
+
+		self.titleBudget = budget
+
+		self:LayoutTitle()
 	end
 
 	AMT.Layout.RegisterElement("keyInfo", "keyInfoTitle", self.element, "LEFT")
@@ -38,7 +51,7 @@ function module:OnInitialize()
 		return self.widths.keyInfoAffixes or 0
 	end
 
-	AMT.Layout.RegisterElement("keyInfo", "keyInfoAffixes", self.affixElement, "CENTER")
+	AMT.Layout.RegisterElement("keyInfo", "keyInfoAffixes", self.affixElement, "LEFT")
 
 	AMT.Render.Register("keyInfo", function()
 		self:Render()
@@ -61,6 +74,7 @@ function module:ApplyStyle()
 	self.affixText:ClearAllPoints()
 	self.affixText:SetPoint(affixes.justify, self.affixElement, affixes.justify, 0, 0)
 
+	self:LayoutTitle()
 	self:RenderAffixes()
 
 	AMT.State.MarkDirty("layout")
@@ -110,7 +124,7 @@ function module:RenderAffixes()
 	local profile = AMT.Profiles.active.timer.affixes
 	local ids = AMT.State.current.affixIDs
 
-	if profile.widget == "TEXT" then
+	if profile.widget == "TEXT" and not AMT.Profiles.active.timer.keyInfo.inline then
 		local parts = {}
 
 		for _, affixID in ipairs(ids) do
@@ -147,6 +161,7 @@ function module:RenderAffixes()
 			local icon = self:AcquireAffixIcon(shown)
 
 			icon:SetTexture(fileID)
+			icon:SetTexCoord(ICON_INSET, 1 - ICON_INSET, ICON_INSET, 1 - ICON_INSET)
 			icon:SetSize(size, size)
 			icon:ClearAllPoints()
 
@@ -194,7 +209,24 @@ function module:LayoutTitle()
 		parts[#parts + 1] = self.level:IsShown() and self.level or nil
 	end
 
-	local width = 0
+	local budget = self.titleBudget
+	local fixed = (#parts - 1) * TITLE_GAP
+
+	if self.level:IsShown() then
+		fixed = fixed + self.level:GetStringWidth()
+	end
+
+	local cap = budget and math.max(budget - fixed, 1) or 0
+
+	self.dungeonName:SetWidth(cap)
+
+	local nameWidth = self.dungeonName:IsShown() and self.dungeonName:GetStringWidth() or 0
+
+	if budget then
+		nameWidth = math.min(nameWidth, cap)
+	end
+
+	local width = fixed + nameWidth
 	local previous
 
 	for _, part in ipairs(parts) do
@@ -202,13 +234,10 @@ function module:LayoutTitle()
 
 		if previous then
 			part:SetPoint("LEFT", previous, "RIGHT", TITLE_GAP, 0)
-
-			width = width + TITLE_GAP
 		else
 			part:SetPoint("LEFT", self.titleRow, "LEFT", 0, 0)
 		end
 
-		width = width + part:GetStringWidth()
 		previous = part
 	end
 

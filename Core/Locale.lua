@@ -18,6 +18,7 @@ local affixNameFilters = {
 		"Challenger's",
 		"Bargain:",
 		"Eternus's",
+		"Lindormi's",
 		"Trial:",
 		"Dusk",
 		"of",
