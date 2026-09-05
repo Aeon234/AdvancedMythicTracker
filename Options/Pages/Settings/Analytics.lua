@@ -4,8 +4,8 @@ local L = AMT.L
 local Options = AMT.Options
 
 Options.RegisterPage({
-	id = "addon.analytics",
-	parent = "addon",
+	id = "settings.analytics",
+	parent = "settings",
 	order = 20,
 	name = L["Analytics"],
 	Build = function(page)

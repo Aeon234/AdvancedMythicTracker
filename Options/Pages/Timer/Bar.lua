@@ -15,6 +15,7 @@ Options.RegisterPage({
 		})
 
 		page:AddWidgets({
+			{ type = "checkbox", label = L["Enabled"], path = "timer.elements.timerBar.enabled" },
 			{ type = "media", label = L["Bar Texture"], path = "timer.bar.texture", mediaType = "statusbar" },
 			{ type = "slider", label = L["Bar Height"], path = "timer.bar.height", min = 8, max = 48, step = 1 },
 
