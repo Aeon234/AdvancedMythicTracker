@@ -37,7 +37,7 @@ Options.RegisterPage({
 
 			{
 				type = "checkbox",
-				label = L["Show Minimap Icon"],
+				label = L["Minimap Icon"],
 				get = function()
 					---@type AMTMinimapIconModule?
 					local minimap = AMT.Modules.Get("MinimapIcon")
