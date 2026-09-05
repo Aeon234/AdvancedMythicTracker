@@ -233,7 +233,7 @@ function Demo.Enter(animated)
 	end
 
 	active = true
-	animating = animated == true
+	animating = false
 	startedAt = GetTime()
 
 	State.Reset()
@@ -241,11 +241,11 @@ function Demo.Enter(animated)
 	AMT.Providers.active.LoadKey()
 	AMT.Frames.SetShown(true)
 
-	if animating then
-		AMT.Render.StartTicker()
-	else
-		Populate()
-		AMT.Render.Flush()
+	Populate()
+	AMT.Render.Flush()
+
+	if animated == true then
+		Demo.SetAnimated(true)
 	end
 end
 
@@ -265,17 +265,35 @@ function Demo.Exit()
 	AMT.Render.Flush()
 end
 
+---@param animated boolean
+function Demo.SetAnimated(animated)
+	if not active or animating == animated then
+		return
+	end
+
+	animating = animated
+
+	if not animating then
+		AMT.Render.StopTicker()
+
+		return
+	end
+
+	-- Resume from the snapshot's elapsed so the HUD carries on instead of restarting at zero.
+	startedAt = GetTime() - State.current.elapsed / TIME_SCALE
+
+	Tick()
+	AMT.Render.Flush()
+	AMT.Render.StartTicker()
+end
+
 ---@param animated boolean?
 function Demo.Toggle(animated)
-	local wantAnimated = animated == true
-	local wasActive = active
-	local wasAnimating = animating
-
-	if wasActive then
+	if active then
 		Demo.Exit()
+
+		return
 	end
 
-	if not wasActive or wasAnimating ~= wantAnimated then
-		Demo.Enter(wantAnimated)
-	end
+	Demo.Enter(animated == true)
 end

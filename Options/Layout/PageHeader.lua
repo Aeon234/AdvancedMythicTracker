@@ -73,11 +73,7 @@ local function BuildPreviewToggles(header)
 		local animated = not Options.IsPreviewAnimated()
 
 		Options.SetPreviewAnimated(animated)
-
-		if AMT.Demo.IsActive() then
-			AMT.Demo.Toggle(animated)
-		end
-
+		AMT.Demo.SetAnimated(animated)
 		Options.NotifyValueChanged()
 	end)
 

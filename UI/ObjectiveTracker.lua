@@ -8,22 +8,22 @@ local hidden = false
 local hooked = false
 
 local function EnsureHook()
-	if hooked or not ScenarioObjectiveTracker then
+	if hooked or not ObjectiveTrackerFrame then
 		return
 	end
 
 	hooked = true
 
-	hooksecurefunc(ScenarioObjectiveTracker, "Show", function()
+	hooksecurefunc(ObjectiveTrackerFrame, "Show", function()
 		if hidden then
-			ScenarioObjectiveTracker:Hide()
+			ObjectiveTrackerFrame:Hide()
 		end
 	end)
 end
 
 ---@param value boolean
 function Tracker.SetHidden(value)
-	if not ScenarioObjectiveTracker then
+	if not ObjectiveTrackerFrame then
 		return
 	end
 
@@ -36,16 +36,12 @@ function Tracker.SetHidden(value)
 	hidden = value
 
 	if hidden then
-		ScenarioObjectiveTracker:Hide()
+		ObjectiveTrackerFrame:Hide()
 
 		return
 	end
 
-	ScenarioObjectiveTracker:Show()
-
-	if ObjectiveTrackerFrame then
-		ObjectiveTrackerFrame:Update()
-	end
+	ObjectiveTrackerFrame:Update()
 end
 
 ---@return boolean
