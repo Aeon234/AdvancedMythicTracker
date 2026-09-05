@@ -40,6 +40,11 @@ function Segmented:GetControlHeight()
 	return TRACK_HEIGHT
 end
 
+---@return table[]
+function Segmented:GetTooltipRegions()
+	return self.segments
+end
+
 ---@param elapsed number
 function Segmented:OnThumbUpdate(elapsed)
 	self.thumbElapsed = (self.thumbElapsed or 0) + elapsed

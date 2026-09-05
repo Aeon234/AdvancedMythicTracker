@@ -17,6 +17,11 @@ function TextInput:GetControlHeight()
 	return BOX_HEIGHT
 end
 
+---@return table[]
+function TextInput:GetTooltipRegions()
+	return { self.input }
+end
+
 function TextInput:Commit()
 	local raw = self.input:GetText()
 

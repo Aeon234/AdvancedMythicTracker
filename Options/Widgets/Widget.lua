@@ -5,6 +5,7 @@ local CONST = Options.CONST
 
 local DISABLED_ALPHA = 0.4
 local DEFAULT_CONTROL_HEIGHT = 22
+local TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B = 0.7, 0.7, 0.7
 
 ---@alias AMTOptionGetter fun(): any
 ---@alias AMTOptionSetter fun(value: any)
@@ -33,10 +34,11 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field color number[]?
 ---@field GetValues AMTOptionValuesProvider?
 ---@field readOnly boolean?
----@field items AMTOptionInfo[]? row children (D-58)
+---@field items AMTOptionInfo[]? row children
 ---@field width number? row item: total width, label included
 ---@field labelWidth number? row item: own label column; omit for a bare control
 ---@field align string? row item: LEFT (default) or RIGHT
+---@field tooltip string?
 
 ---@class AMTOptionWidget
 ---@field frame Frame
@@ -44,6 +46,8 @@ local DEFAULT_CONTROL_HEIGHT = 22
 ---@field labelWidth number
 ---@field info AMTOptionInfo?
 ---@field disabled boolean?
+---@field tooltipHooked boolean?
+---@field control table?
 local Widget = {}
 Widget.__index = Widget
 Options.Widget = Widget
@@ -74,12 +78,67 @@ function Widget:Create(parent)
 	self.label:SetWordWrap(false)
 end
 
+---@return table[]
+function Widget:GetTooltipRegions()
+	return self.control and { self.control } or {}
+end
+
+---@param widget AMTOptionWidget
+---@param owner table
+local function ShowTooltip(widget, owner)
+	local info = widget.info
+
+	if not info or not info.tooltip then
+		return
+	end
+
+	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+	GameTooltip:ClearLines()
+
+	if info.label and info.label ~= "" then
+		GameTooltip:AddLine(info.label, HIGHLIGHT_FONT_COLOR:GetRGB())
+	end
+
+	GameTooltip:AddLine(info.tooltip, TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B, true)
+	GameTooltip:Show()
+end
+
+---@param widget AMTOptionWidget
+local function HideTooltip(widget)
+	for _, region in ipairs(widget:GetTooltipRegions()) do
+		if region:IsMouseOver() then
+			return
+		end
+	end
+
+	GameTooltip:Hide()
+end
+
+function Widget:EnsureTooltip()
+	if self.tooltipHooked then
+		return
+	end
+
+	self.tooltipHooked = true
+
+	for _, region in ipairs(self:GetTooltipRegions()) do
+		region:HookScript("OnEnter", function()
+			ShowTooltip(self, region)
+		end)
+
+		region:HookScript("OnLeave", function()
+			HideTooltip(self)
+		end)
+	end
+end
+
 ---@param info AMTOptionInfo
 function Widget:Bind(info)
 	self.info = info
 	self.label:SetText(info.label or "")
 
 	self:Update()
+	self:EnsureTooltip()
 end
 
 ---@return AMTOptionInfo? info

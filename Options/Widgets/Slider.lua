@@ -38,6 +38,11 @@ function Slider:GetControlHeight()
 	return INPUT_HEIGHT
 end
 
+---@return table[]
+function Slider:GetTooltipRegions()
+	return { self.slider, self.input }
+end
+
 ---@return number min
 ---@return number max
 ---@return number step

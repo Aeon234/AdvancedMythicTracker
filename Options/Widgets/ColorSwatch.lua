@@ -17,6 +17,11 @@ function ColorSwatch:GetControlHeight()
 	return SWATCH_SIZE
 end
 
+---@return table[]
+function ColorSwatch:GetTooltipRegions()
+	return self.controls
+end
+
 ---@return string[]
 function ColorSwatch:GetPaths()
 	return self.info and self.info.paths or {}

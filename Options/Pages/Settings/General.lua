@@ -27,12 +27,7 @@ Options.RegisterPage({
 				label = L["Auto-Confirm Dungeon Dialogue"],
 				scope = "account",
 				path = "qol.autoGossip",
-			},
-
-			{
-				type = "note",
-				label = "",
-				text = L["Only fires on dialogue offering a single option. Hold Ctrl to suppress it."],
+				tooltip = L["Only fires on dialogue offering a single option. Hold Ctrl to suppress it."],
 			},
 
 			{
