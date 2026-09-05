@@ -24,7 +24,7 @@ Options.RegisterPage({
 
 			{
 				type = "checkbox",
-				label = L["Auto-Confirm Dungeon Dialogue"],
+				label = L["Auto-Accept Gossip"],
 				scope = "account",
 				path = "qol.autoGossip",
 				tooltip = L["Only fires on dialogue offering a single option. Hold Ctrl to suppress it."],
