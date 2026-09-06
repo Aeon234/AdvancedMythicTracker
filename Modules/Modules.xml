@@ -1,9 +1,9 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Timer.lua" />
+    <Script file="Deaths.lua" />
     <Script file="KeyInfo.lua" />
     <Script file="Forces.lua" />
     <Script file="Objectives.lua" />
-    <Script file="Deaths.lua" />
     <Script file="Analytics.lua" />
     <Script file="MinimapIcon.lua" />
     <Script file="AddonCompartment.lua" />

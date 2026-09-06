@@ -42,12 +42,6 @@ end
 ---@param elementKey string
 ---@param profile AMTTimerProfile
 local function SeedElement(elementKey, profile)
-	local order = profile.order[elements[elementKey].group]
-
-	if order and not tContains(order, elementKey) then
-		order[#order + 1] = elementKey
-	end
-
 	local settings = profile.elements[elementKey]
 
 	if not settings then
@@ -87,7 +81,23 @@ end
 function Layout.Seed(profile)
 	profile = profile or AMT.Profiles.active.timer
 
+	-- Rebuilt rather than appended to: nothing can reorder a group until the layout page ships, so a
+	-- stored order is only ever a stale default.
+	for groupKey in pairs(groups) do
+		local order = profile.order[groupKey]
+
+		if order then
+			wipe(order)
+		end
+	end
+
 	for _, elementKey in ipairs(registrationOrder) do
+		local order = profile.order[elements[elementKey].group]
+
+		if order then
+			order[#order + 1] = elementKey
+		end
+
 		SeedElement(elementKey, profile)
 	end
 end

@@ -79,6 +79,7 @@ frame:SetScript("OnEvent", function(self, event, ...)
 			Modules.Enable(module)
 		end
 
+		AMT.Layout.Seed()
 		AMT.Profiles.Refresh()
 
 		self:RegisterEvent("PLAYER_ENTERING_WORLD")

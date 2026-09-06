@@ -41,8 +41,6 @@ function module:OnInitialize()
 		self:LayoutTitle()
 	end
 
-	AMT.Layout.RegisterElement("keyInfo", "keyInfoTitle", self.element, "LEFT")
-
 	self.affixElement = CreateFrame("Frame", nil, AMT.Layout.GetGroup("keyInfo"))
 	self.affixRow = CreateFrame("Frame", nil, self.affixElement)
 	self.affixIcons = {}
@@ -52,7 +50,9 @@ function module:OnInitialize()
 		return self.widths.keyInfoAffixes or 0
 	end
 
+	-- Registration order is the stacked top-to-bottom order: affixes sit above the name.
 	AMT.Layout.RegisterElement("keyInfo", "keyInfoAffixes", self.affixElement, "LEFT")
+	AMT.Layout.RegisterElement("keyInfo", "keyInfoTitle", self.element, "LEFT")
 
 	AMT.Render.Register("keyInfo", function()
 		self:Render()
