@@ -117,6 +117,8 @@ function module:Render()
 	self:SetContentWidth(width)
 	self.row:SetSize(width, profile.height)
 	self.row:ClearAllPoints()
-	self.row:SetPoint(profile.justify, self.element, profile.justify, 0, 0)
+	local justify = AMT.Profiles.active.timer.justify
+
+	self.row:SetPoint(justify, self.element, justify, 0, 0)
 	self.row:Show()
 end

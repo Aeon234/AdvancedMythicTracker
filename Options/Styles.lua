@@ -8,8 +8,10 @@ local definitions = {
 		background = { enabled = false },
 		geometry = "SIZED",
 		justify = "RIGHT",
+		clock = { placement = "ABOVE", slot = "RIGHT" },
+		keyInfo = { inline = false },
 		thresholds = { [2] = { marks = "TEXT" }, [3] = { marks = "TEXT" } },
-		affixes = { widget = "TEXT", justify = "RIGHT" },
+		affixes = { widget = "TEXT" },
 	},
 
 	PANEL = {},

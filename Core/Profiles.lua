@@ -42,7 +42,6 @@ local EXPORT_FORMAT = 1
 ---@class AMTAffixesProfile
 ---@field height number
 ---@field widget "ICON"|"TEXT"
----@field justify "LEFT"|"CENTER"|"RIGHT"
 ---@field iconSize number
 ---@field spacing number
 ---@field separator string
@@ -116,7 +115,6 @@ local EXPORT_FORMAT = 1
 ---@field iconOffset number
 ---@field penalty boolean
 ---@field brackets "PAREN"|"SQUARE"
----@field justify "LEFT"|"CENTER"|"RIGHT"
 ---@field text AMTTextStyle
 ---@field tooltip boolean
 
@@ -237,7 +235,6 @@ local profileDefaults = {
 		affixes = {
 			height = 18,
 			widget = "ICON",
-			justify = "RIGHT",
 			iconSize = 16,
 			spacing = 2,
 			separator = " - ",
@@ -249,7 +246,6 @@ local profileDefaults = {
 			iconOffset = 2,
 			penalty = true,
 			brackets = "PAREN",
-			justify = "RIGHT",
 			text = { font = "Friz Quadrata TT", size = 13, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			tooltip = true,
 		},

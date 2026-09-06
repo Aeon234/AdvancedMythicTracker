@@ -24,7 +24,7 @@ function module:OnInitialize()
 
 	self.dungeonName = AMT.Mixins.NewText(self.titleRow)
 	self.dungeonName:SetWordWrap(false)
-	self.dungeonName:SetJustifyH("LEFT")
+
 	self.level = AMT.Mixins.NewText(self.titleRow)
 
 	self.element.GetContentWidth = function()
@@ -73,7 +73,7 @@ function module:ApplyStyle()
 	self.affixElement:SetHeight(affixes.height)
 	self.affixText:ApplyStyle(affixes.text)
 	self.affixText:ClearAllPoints()
-	self.affixText:SetPoint(affixes.justify, self.affixElement, affixes.justify, 0, 0)
+	self.affixText:SetPoint(timer.justify, self.affixElement, timer.justify, 0, 0)
 
 	self:LayoutTitle()
 	self:RenderAffixes()
@@ -194,7 +194,9 @@ function module:RenderAffixes()
 	self:SetContentWidth("keyInfoAffixes", width)
 	self.affixRow:SetSize(width, size)
 	self.affixRow:ClearAllPoints()
-	self.affixRow:SetPoint(profile.justify, self.affixElement, profile.justify, 0, 0)
+	local justify = AMT.Profiles.active.timer.justify
+
+	self.affixRow:SetPoint(justify, self.affixElement, justify, 0, 0)
 	self.affixRow:Show()
 end
 
@@ -242,11 +244,14 @@ function module:LayoutTitle()
 		previous = part
 	end
 
+	local justify = AMT.Profiles.active.timer.justify
+
+	self.dungeonName:SetJustifyH(justify)
 	self:SetContentWidth("keyInfoTitle", width)
 
 	self.titleRow:SetSize(math.max(width, 1), profile.height)
 	self.titleRow:ClearAllPoints()
-	self.titleRow:SetPoint("LEFT", self.element, "LEFT", 0, 0)
+	self.titleRow:SetPoint(justify, self.element, justify, 0, 0)
 	self.titleRow:SetShown(#parts > 0)
 
 	AMT.Layout.SetCollapsed("keyInfoTitle", #parts == 0)

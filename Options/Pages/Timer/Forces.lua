@@ -3,6 +3,11 @@ local L = AMT.L
 
 local Options = AMT.Options
 
+---@return boolean
+local function IsMinimal()
+	return Options.Get("timer.style") == "MINIMAL"
+end
+
 Options.RegisterPage({
 	id = "timer.forces",
 	parent = "timer",
@@ -85,6 +90,7 @@ Options.RegisterPage({
 			{
 				type = "segmented",
 				label = L["Alignment"],
+				hidden = IsMinimal,
 				path = "timer.forces.count.slot",
 				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
 			},
@@ -135,6 +141,7 @@ Options.RegisterPage({
 			{
 				type = "segmented",
 				label = L["Alignment"],
+				hidden = IsMinimal,
 				path = "timer.forces.percent.slot",
 				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
 			},

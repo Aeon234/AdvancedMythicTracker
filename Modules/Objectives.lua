@@ -38,15 +38,10 @@ function module:AcquireRow(index)
 
 	row = CreateFrame("Frame", nil, self.element) --[[@as AMTObjectiveRow]]
 	row.icon = row:CreateTexture(nil, "ARTWORK")
-	row.icon:SetPoint("LEFT", row, "LEFT", 0, 0)
 	row.name = AMT.Mixins.NewText(row)
 	row.name:SetWordWrap(false)
-	row.name:SetJustifyH("LEFT")
 	row.time = AMT.Mixins.NewText(row)
-	row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-
 	row.split = AMT.Mixins.NewText(row)
-	row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
 	self.rows[index] = row
 
@@ -57,21 +52,14 @@ end
 
 ---@param row AMTObjectiveRow
 function module:StyleRow(row)
-	local profile = AMT.Profiles.active.timer.objectives
+	local timer = AMT.Profiles.active.timer
+	local profile = timer.objectives
+	local justify = timer.justify
 
 	row.icon:SetSize(profile.iconSize, profile.iconSize)
 	row.name:ApplyStyle(profile.text)
 	row.time:ApplyStyle(profile.time)
-
-	row.name:ClearAllPoints()
-
-	if profile.icon then
-		row.name:SetPoint("LEFT", row.icon, "RIGHT", ROW_GAP, 0)
-	else
-		row.name:SetPoint("LEFT", row, "LEFT", 0, 0)
-	end
-
-	row.split:ApplyStyle(AMT.Profiles.active.timer.splits.bossSplit.text)
+	row.split:ApplyStyle(timer.splits.bossSplit.text)
 end
 
 function module:ApplyStyle()
@@ -87,11 +75,8 @@ end
 function module:RenderSplit(row, diffMS)
 	local profile = AMT.Profiles.active.timer.splits
 
-	row.time:ClearAllPoints()
-
 	if not diffMS then
 		row.split:Hide()
-		row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
 		return
 	end
@@ -99,36 +84,133 @@ function module:RenderSplit(row, diffMS)
 	row.split:SetText(AMT.Util.FormatTime(diffMS / 1000, profile.decimals, true))
 	row.split:SetColor(AMT.Util.SplitColor(profile, AMT.Splits.Classify(diffMS)))
 	row.split:Show()
-
-	row.time:SetPoint("RIGHT", row.split, "LEFT", -ROW_GAP, 0)
 end
 
+---Panel and Aeon span the frame: the icon leads, the name takes the slack, and the times sit at the
+---far edge.
 ---@param row AMTObjectiveRow
-function module:FitName(row)
+function module:LayoutSpanRow(row)
 	local profile = AMT.Profiles.active.timer.objectives
 	local available = self.element:GetWidth()
-
-	if available <= 0 then
-		row.name:SetWidth(0)
-
-		return
-	end
-
 	local reserved = 0
 
+	row.name:SetJustifyH("LEFT")
+	row.icon:ClearAllPoints()
+	row.icon:SetPoint("LEFT", row, "LEFT", 0, 0)
+
+	row.name:ClearAllPoints()
+
 	if profile.icon then
+		row.name:SetPoint("LEFT", row.icon, "RIGHT", ROW_GAP, 0)
+
 		reserved = reserved + profile.iconSize + ROW_GAP
+	else
+		row.name:SetPoint("LEFT", row, "LEFT", 0, 0)
+	end
+
+	row.split:ClearAllPoints()
+	row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+
+	row.time:ClearAllPoints()
+
+	if row.split:IsShown() then
+		row.time:SetPoint("RIGHT", row.split, "LEFT", -ROW_GAP, 0)
+
+		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
+	else
+		row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 	end
 
 	if row.time:IsShown() then
 		reserved = reserved + row.time:GetStringWidth() + ROW_GAP
 	end
 
-	if row.split:IsShown() then
-		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
+	row.name:SetWidth(math.max(available - reserved, 1))
+end
+
+---Minimal is one packed run flush to the alignment edge, and the order mirrors with it: icon, name,
+---split, time going left; split, time, name, icon going right. Only the name gives ground when the
+---run does not fit.
+---@param row AMTObjectiveRow
+function module:LayoutRow(row)
+	local timer = AMT.Profiles.active.timer
+	local justify = timer.justify
+
+	if timer.style ~= "MINIMAL" then
+		self:LayoutSpanRow(row)
+
+		return
 	end
 
-	row.name:SetWidth(math.max(available - reserved, 1))
+	row.name:SetJustifyH(justify)
+	local available = self.element:GetWidth()
+	local parts = {}
+
+	local function Add(region, width)
+		if region:IsShown() then
+			parts[#parts + 1] = { region = region, width = width }
+		end
+	end
+
+	if justify == "RIGHT" then
+		Add(row.split, row.split:GetStringWidth())
+		Add(row.time, row.time:GetStringWidth())
+		Add(row.name, 0)
+		Add(row.icon, timer.objectives.iconSize)
+	else
+		Add(row.icon, timer.objectives.iconSize)
+		Add(row.name, 0)
+		Add(row.split, row.split:GetStringWidth())
+		Add(row.time, row.time:GetStringWidth())
+	end
+
+	local spare = available - (#parts - 1) * ROW_GAP
+
+	for _, part in ipairs(parts) do
+		spare = spare - part.width
+	end
+
+	local nameWidth = math.max(math.min(row.name:GetStringWidth(), spare), 1)
+
+	for _, part in ipairs(parts) do
+		if part.region == row.name then
+			part.width = nameWidth
+
+			row.name:SetWidth(nameWidth)
+		end
+
+		part.region:ClearAllPoints()
+	end
+
+	local previous
+
+	if justify == "RIGHT" then
+		for index = #parts, 1, -1 do
+			local region = parts[index].region
+
+			if previous then
+				region:SetPoint("RIGHT", previous, "LEFT", -ROW_GAP, 0)
+			else
+				region:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+			end
+
+			previous = region
+		end
+
+		return
+	end
+
+	for _, part in ipairs(parts) do
+		local region = part.region
+
+		if previous then
+			region:SetPoint("LEFT", previous, "RIGHT", ROW_GAP, 0)
+		else
+			region:SetPoint("LEFT", row, "LEFT", 0, 0)
+		end
+
+		previous = region
+	end
 end
 
 function module:OnProfileChanged()
@@ -167,7 +249,7 @@ function module:Render()
 		end
 
 		self:RenderSplit(row, showSplits and AMT.Splits.BossDiffMS(index) or nil)
-		self:FitName(row)
+		self:LayoutRow(row)
 
 		row:Show()
 

@@ -57,7 +57,7 @@ function module:ApplyStyle()
 
 	self.title:ApplyStyle(profile.title.text)
 	self.title:ClearAllPoints()
-	self.title:SetPoint("LEFT", self.aboveRow, "LEFT", 0, 0)
+	self.title:SetPoint(timer.justify, self.aboveRow, timer.justify, 0, 0)
 	self.title:SetText(L["Enemy Forces"])
 	self.title:SetShown(profile.title.enabled)
 
