@@ -111,6 +111,29 @@ function Util.FormatTime(seconds, decimals, signed)
 end
 
 ---Instead of MergeDefaults, overwrites existing table completely.
+---@param a any
+---@param b any
+---@return boolean
+function Util.Equal(a, b)
+	if type(a) ~= "table" or type(b) ~= "table" then
+		return a == b
+	end
+
+	for key, value in pairs(a) do
+		if not Util.Equal(value, b[key]) then
+			return false
+		end
+	end
+
+	for key in pairs(b) do
+		if a[key] == nil then
+			return false
+		end
+	end
+
+	return true
+end
+
 ---@param target table
 ---@param source table
 function Util.Overlay(target, source)

@@ -107,6 +107,14 @@ local function StyleValues()
 end
 
 ---@return string
+local function StyleLabel()
+	local key = Options.Get("timer.style")
+	local name = L[DISPLAY[key] or key]
+
+	return AMT.Style.IsModified() and L["%s - Modified"]:format(name) or name
+end
+
+---@return string
 local function CurrentStyle()
 	return Options.Get("timer.style")
 end
@@ -145,6 +153,7 @@ Options.RegisterPage({
 					{
 						type = "dropdown",
 						width = STYLE_WIDTH,
+						displayText = StyleLabel,
 						values = StyleValues(),
 						get = CurrentStyle,
 						set = function(value)

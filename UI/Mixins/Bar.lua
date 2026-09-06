@@ -24,9 +24,11 @@ local SLOT_ANCHORS = {
 ---@field color number[] {r, g, b, a} fill
 ---@field background number[]? {r, g, b, a} background
 ---@field height number
+---@field fill "RIGHT"|"LEFT"? which way the bar grows; defaults to RIGHT
 ---@field tierColors number[][]? four {r,g,b,a} for timer
 
 ---@class AMTBarMixin : StatusBar
+---@field reversed boolean? fill grows right to left, so marks measure from the right edge
 ---@field background Texture
 ---@field ticks Texture[]
 ---@field tickFractions number[]
@@ -69,6 +71,9 @@ function Bar:ApplyStyle(style)
 	end
 
 	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
+	self.reversed = style.fill == "LEFT"
+
+	self:SetReverseFill(self.reversed)
 
 	local background = style.background
 
@@ -124,8 +129,17 @@ end
 ---@param region AMTAnchorable
 ---@param fraction number 0-1
 function Bar:AttachAtFraction(region, fraction, x, y)
+	local offset = self:GetWidth() * fraction
+
 	region:ClearAllPoints()
-	region:SetPoint("RIGHT", self, "LEFT", self:GetWidth() * fraction - SLOT_INSET + (x or 0), y or 0)
+
+	if self.reversed then
+		region:SetPoint("LEFT", self, "RIGHT", -offset + SLOT_INSET + (x or 0), y or 0)
+
+		return
+	end
+
+	region:SetPoint("RIGHT", self, "LEFT", offset - SLOT_INSET + (x or 0), y or 0)
 end
 
 ---@param settings AMTPlacedTextSettings
@@ -243,12 +257,17 @@ function Bar:SetTicks(marks)
 
 			local mark = marks[index]
 			local color = mark.color
+			local edge = self.reversed and "RIGHT" or "LEFT"
 			local offset = width * mark.fraction
+
+			if self.reversed then
+				offset = -offset
+			end
 
 			tick:SetColorTexture(color[1], color[2], color[3], color[4])
 			tick:ClearAllPoints()
-			tick:SetPoint("TOP", self, "TOPLEFT", offset, 0)
-			tick:SetPoint("BOTTOM", self, "BOTTOMLEFT", offset, 0)
+			tick:SetPoint("TOP", self, "TOP" .. edge, offset, 0)
+			tick:SetPoint("BOTTOM", self, "BOTTOM" .. edge, offset, 0)
 			tick:Show()
 		elseif tick then
 			tick:Hide()

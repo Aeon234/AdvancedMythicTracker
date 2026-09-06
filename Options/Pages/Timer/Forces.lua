@@ -26,6 +26,14 @@ Options.RegisterPage({
 			{ type = "slider", label = L["Bar Height"], path = "timer.forces.bar.height", min = 8, max = 48, step = 1 },
 
 			{
+				type = "segmented",
+				label = L["Fill Direction"],
+				path = "timer.forces.bar.fill",
+				values = { { "LEFT", L["Left"] }, { "RIGHT", L["Right"] } },
+				tooltip = L["Which way the bar grows as forces are counted."],
+			},
+
+			{
 				type = "color",
 				label = L["Fill / Completed"],
 				paths = { "timer.forces.bar.color", "timer.forces.completedColor" },

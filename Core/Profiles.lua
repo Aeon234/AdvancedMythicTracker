@@ -173,6 +173,7 @@ local profileDefaults = {
 		bar = {
 			texture = "Blizzard",
 			height = 24,
+			fill = "RIGHT",
 			color = { 0.2, 0.6, 1, 1 },
 			background = { 0, 0, 0, 0.5 },
 			-- Depleted, +1, +2, +3.
@@ -253,6 +254,7 @@ local profileDefaults = {
 			bar = {
 				texture = "Blizzard",
 				height = 16,
+				fill = "RIGHT",
 				color = { 0.55, 0.2, 0.2, 1 },
 				background = { 0, 0, 0, 0.5 },
 			},

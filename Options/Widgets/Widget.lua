@@ -38,6 +38,7 @@ local TOOLTIP_BODY_R, TOOLTIP_BODY_G, TOOLTIP_BODY_B = 0.7, 0.7, 0.7
 ---@field width number? row item: total width, label included
 ---@field labelWidth number? row item: own label column; omit for a bare control
 ---@field align string? row item: LEFT (default) or RIGHT
+---@field displayText fun(): string? dropdown: overrides the closed button, not the menu rows
 ---@field tooltip string?
 ---@field tooltips string[]? colour swatch: one per path, falling back to `tooltip`
 

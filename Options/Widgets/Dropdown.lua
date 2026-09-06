@@ -50,7 +50,14 @@ function Dropdown:Update()
 		return
 	end
 
+	local info = self.info
+
 	self.control:SetDefaultText(tostring(self:GetValue()))
 	self.control:SetEnabled(not self.disabled)
 	self.control:GenerateMenu()
+
+	-- The closed button can say more than the menu row it came from.
+	if info and info.displayText then
+		self.control:OverrideText(info.displayText())
+	end
 end

@@ -26,6 +26,14 @@ Options.RegisterPage({
 
 			{
 				type = "segmented",
+				label = L["Fill Direction"],
+				path = "timer.bar.fill",
+				values = { { "LEFT", L["Left"] }, { "RIGHT", L["Right"] } },
+				tooltip = L["Which way the bar grows. Threshold marks and their times follow it."],
+			},
+
+			{
+				type = "segmented",
 				label = L["Count Direction"],
 				path = "timer.direction",
 				tooltip = L["Up counts elapsed time, down counts time remaining."],

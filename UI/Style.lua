@@ -54,6 +54,29 @@ function Style.Apply(key)
 	return true
 end
 
+---Whether the active profile still matches what its style stamps. Position and scale survive a
+---style switch, so they are not part of the comparison.
+---@return boolean
+function Style.IsModified()
+	local timer = AMT.Profiles.active.timer
+	local override = AMT.Options.Styles.GetOverride(timer.style)
+
+	if not override then
+		return false
+	end
+
+	local stamped = AMT.Profiles.TimerDefaults()
+
+	AMT.Util.Overlay(stamped, override)
+	stamped.style = timer.style
+
+	for _, field in ipairs(PRESERVED) do
+		stamped[field] = timer[field]
+	end
+
+	return not AMT.Util.Equal(stamped, timer)
+end
+
 ---@return boolean
 function Style.CanUndo()
 	return AMT.Profiles.active.__preTimerStyleBackup ~= nil
