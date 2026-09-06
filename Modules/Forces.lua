@@ -1,10 +1,6 @@
 local AMT = select(2, ...)
 local L = AMT.L
 
--- A row is its tallest font plus breathing room, and sits this far from the bar.
-local ROW_PADDING = 2
-local ROW_GAP = 2
-
 ---@class AMTForcesModule : AMTModule
 ---@field element Frame
 ---@field bar AMTBarMixin
@@ -39,81 +35,24 @@ function module:OnInitialize()
 	self:ApplyStyle()
 end
 
----Rows are sized from the profile rather than measured, so the frame's height cannot depend on
----which pass last rendered a string.
----@return number above
----@return number below
-function module:MeasureRows()
-	local timer = AMT.Profiles.active.timer
-	local profile = timer.forces
-	local above, below = 0, 0
-
-	if profile.title.enabled then
-		above = profile.title.text.size + ROW_PADDING
-	end
-
-	local function Consider(settings)
-		if not settings.enabled then
-			return
-		end
-
-		local height = settings.text.size + ROW_PADDING
-
-		if settings.placement == "ABOVE" then
-			above = math.max(above, height)
-		elseif settings.placement == "BELOW" then
-			below = math.max(below, height)
-		end
-	end
-
-	Consider(profile.count)
-	Consider(profile.percent)
-	Consider(timer.splits.forcesSplit)
-
-	return above, below
-end
-
----@param region AMTTextMixin
----@param settings AMTOverlayTextSettings
-function module:Attach(region, settings)
-	local nudge = settings.nudge
-
-	if settings.placement == "ABOVE" or settings.placement == "BELOW" then
-		local row = settings.placement == "ABOVE" and self.aboveRow or self.belowRow
-
-		AMT.Mixins.Bar.AttachToRow(region, row, settings.slot, nudge[1], nudge[2])
-
-		return
-	end
-
-	self.bar:AttachToSlot(region, settings.slot, nudge[1], nudge[2])
-end
-
 function module:ApplyStyle()
 	local timer = AMT.Profiles.active.timer
 	local profile = timer.forces
-	local above, below = self:MeasureRows()
-	local barTop = above > 0 and above + ROW_GAP or 0
-	local barBottom = below > 0 and below + ROW_GAP or 0
+	local Bar = AMT.Mixins.Bar
+	local split = timer.splits.forcesSplit
+	local above = math.max(
+		profile.title.enabled and profile.title.text.size + 2 or 0,
+		Bar.RowHeightFor(profile.count, "ABOVE"),
+		Bar.RowHeightFor(profile.percent, "ABOVE"),
+		Bar.RowHeightFor(split, "ABOVE")
+	)
+	local below = math.max(
+		Bar.RowHeightFor(profile.count, "BELOW"),
+		Bar.RowHeightFor(profile.percent, "BELOW"),
+		Bar.RowHeightFor(split, "BELOW")
+	)
 
-	self.element:SetHeight(barTop + profile.bar.height + barBottom)
-
-	self.aboveRow:ClearAllPoints()
-	self.aboveRow:SetPoint("TOPLEFT", self.element, "TOPLEFT", 0, 0)
-	self.aboveRow:SetPoint("TOPRIGHT", self.element, "TOPRIGHT", 0, 0)
-	self.aboveRow:SetHeight(math.max(above, 1))
-	self.aboveRow:SetShown(above > 0)
-
-	self.belowRow:ClearAllPoints()
-	self.belowRow:SetPoint("BOTTOMLEFT", self.element, "BOTTOMLEFT", 0, 0)
-	self.belowRow:SetPoint("BOTTOMRIGHT", self.element, "BOTTOMRIGHT", 0, 0)
-	self.belowRow:SetHeight(math.max(below, 1))
-	self.belowRow:SetShown(below > 0)
-
-	self.bar:ClearAllPoints()
-	self.bar:SetPoint("TOPLEFT", self.element, "TOPLEFT", 0, -barTop)
-	self.bar:SetPoint("TOPRIGHT", self.element, "TOPRIGHT", 0, -barTop)
-	self.bar:SetHeight(profile.bar.height)
+	self.element:SetHeight(self.bar:LayoutRows(self.element, self.aboveRow, self.belowRow, above, below, profile.bar.height))
 	self.bar:ApplyStyle(profile.bar)
 
 	self.title:ApplyStyle(profile.title.text)
@@ -123,15 +62,15 @@ function module:ApplyStyle()
 	self.title:SetShown(profile.title.enabled)
 
 	self.count:ApplyStyle(profile.count.text)
-	self:Attach(self.count, profile.count)
+	self.bar:Place(self.count, profile.count, self.aboveRow, self.belowRow)
 
 	self.percent:ApplyStyle(profile.percent.text)
-	self:Attach(self.percent, profile.percent)
+	self.bar:Place(self.percent, profile.percent, self.aboveRow, self.belowRow)
 
 	self.percentFormat = "%." .. profile.decimals .. "f%%"
 
-	self.split:ApplyStyle(timer.splits.forcesSplit.text)
-	self:Attach(self.split, timer.splits.forcesSplit)
+	self.split:ApplyStyle(split.text)
+	self.bar:Place(self.split, split, self.aboveRow, self.belowRow)
 
 	AMT.State.MarkDirty("layout")
 end

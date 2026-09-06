@@ -22,6 +22,7 @@ local EXPORT_FORMAT = 1
 
 ---@class AMTThresholdSettings
 ---@field enabled boolean
+---@field nudge number[] {x, y} the tick stays on its fraction; only the text moves
 ---@field marks "TICK"|"TEXT"|"BOTH"
 ---@field tickColor number[]
 ---@field aheadColor number[]
@@ -55,12 +56,14 @@ local EXPORT_FORMAT = 1
 ---@field nineslice boolean
 
 -- Timer Forces
----@class AMTOverlayTextSettings
----@field enabled boolean
+---@class AMTPlacedTextSettings
 ---@field placement "BAR"|"ABOVE"|"BELOW"
----@field slot "LEFT"|"CENTER"|"RIGHT" on the bar a D-34 slot, off it the alignment within the row
+---@field slot "LEFT"|"CENTER"|"RIGHT" o
 ---@field nudge number[] {x, y}
 ---@field text AMTTextStyle
+
+---@class AMTOverlayTextSettings : AMTPlacedTextSettings
+---@field enabled boolean
 
 ---@class AMTBarTitleSettings
 ---@field enabled boolean
@@ -131,7 +134,7 @@ local EXPORT_FORMAT = 1
 ---@field successColor number[]
 ---@field failColor number[]
 ---@field bar AMTBarStyle
----@field text AMTTextStyle
+---@field clock AMTPlacedTextSettings
 ---@field spacedSlash boolean
 ---@field thresholds AMTThresholdSettings[]
 ---@field keyInfo AMTKeyInfoProfile
@@ -182,16 +185,22 @@ local profileDefaults = {
 				{ 128 / 255, 1, 0, 1 },
 			},
 		},
-		text = {
-			font = "Friz Quadrata TT",
-			size = 16,
-			outline = "OUTLINE",
-			color = { 1, 1, 1, 1 },
+		clock = {
+			placement = "BAR",
+			slot = "LEFT",
+			nudge = { 0, 0 },
+			text = {
+				font = "Friz Quadrata TT",
+				size = 16,
+				outline = "OUTLINE",
+				color = { 1, 1, 1, 1 },
+			},
 		},
 		spacedSlash = true,
 		thresholds = {
 			{
 				enabled = true,
+				nudge = { 0, 0 },
 				marks = "TEXT",
 				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },
@@ -200,6 +209,7 @@ local profileDefaults = {
 			},
 			{
 				enabled = true,
+				nudge = { 0, 0 },
 				marks = "BOTH",
 				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },
@@ -208,6 +218,7 @@ local profileDefaults = {
 			},
 			{
 				enabled = true,
+				nudge = { 0, 0 },
 				marks = "BOTH",
 				tickColor = { 1, 1, 1, 0.5 },
 				aheadColor = { 0, 1, 0, 1 },

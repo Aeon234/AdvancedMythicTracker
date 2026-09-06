@@ -66,7 +66,27 @@ Options.RegisterPage({
 			},
 		})
 
-		page:AddFontGroup(L["Timer Text"], "timer.text")
+		page:AddWidgets({
+			{
+				type = "segmented",
+				label = L["Placement"],
+				path = "timer.clock.placement",
+				values = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } },
+				tooltip = L["Whether this text sits on the bar or on a row above or below it."],
+			},
+
+			{
+				type = "segmented",
+				label = L["Alignment"],
+				path = "timer.clock.slot",
+				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
+			},
+
+			{ type = "slider", label = L["X Offset"], path = "timer.clock.nudge.1", min = -50, max = 50, step = 1 },
+			{ type = "slider", label = L["Y Offset"], path = "timer.clock.nudge.2", min = -50, max = 50, step = 1 },
+		})
+
+		page:AddFontGroup(L["Timer Text"], "timer.clock.text")
 
 		for tier = 1, 3 do
 			local prefix = "timer.thresholds." .. tier
@@ -97,6 +117,13 @@ Options.RegisterPage({
 					end,
 				}
 			end
+
+			-- The tick is pinned to its fraction; only the text moves.
+			widgets[#widgets + 1] =
+				{ type = "slider", label = L["X Offset"], path = prefix .. ".nudge.1", min = -10, max = 10, step = 1 }
+
+			widgets[#widgets + 1] =
+				{ type = "slider", label = L["Y Offset"], path = prefix .. ".nudge.2", min = -10, max = 10, step = 1 }
 
 			widgets[#widgets + 1] = {
 				type = "color",

@@ -195,8 +195,6 @@ function module:OnAbandonVote(event, votePassed)
 	byLevel[state.level] = (byLevel[state.level] or 0) + 1
 end
 
--- Run history and abandon counts are dormant until the v2 dashboard (D-15, D-48). RecordBest is not
--- part of that deferral: TIMER -> Splits diffs against the PBs it writes.
 function module:OnChallengeComplete()
 	self:RecordBest()
 end

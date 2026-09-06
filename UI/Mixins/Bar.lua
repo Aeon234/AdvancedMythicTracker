@@ -1,6 +1,9 @@
 local AMT = select(2, ...)
 
 local SLOT_INSET = 4
+-- A row is its tallest font plus breathing room, and sits this far from the bar.
+local ROW_PADDING = 2
+local ROW_GAP = 2
 
 ---@alias AMTAnchorable FontString|Texture
 
@@ -109,14 +112,78 @@ function Bar.AttachToRow(region, parent, slot, x, y)
 	local point = slot == "CENTER" and "CENTER" or slot
 
 	region:ClearAllPoints()
-	region:SetPoint(point, parent, point, (x or 0) + (slot == "RIGHT" and -SLOT_INSET or slot == "LEFT" and SLOT_INSET or 0), y or 0)
+	region:SetPoint(
+		point,
+		parent,
+		point,
+		(x or 0) + (slot == "RIGHT" and -SLOT_INSET or slot == "LEFT" and SLOT_INSET or 0),
+		y or 0
+	)
 end
 
 ---@param region AMTAnchorable
 ---@param fraction number 0-1
-function Bar:AttachAtFraction(region, fraction)
+function Bar:AttachAtFraction(region, fraction, x, y)
 	region:ClearAllPoints()
-	region:SetPoint("RIGHT", self, "LEFT", self:GetWidth() * fraction - SLOT_INSET, 0)
+	region:SetPoint("RIGHT", self, "LEFT", self:GetWidth() * fraction - SLOT_INSET + (x or 0), y or 0)
+end
+
+---@param settings AMTPlacedTextSettings
+---@param placement "ABOVE"|"BELOW"
+---@return number
+function Bar.RowHeightFor(settings, placement)
+	if settings.placement ~= placement or settings.enabled == false then
+		return 0
+	end
+
+	return settings.text.size + ROW_PADDING
+end
+
+---@param element Frame
+---@param above Frame
+---@param below Frame
+---@param aboveHeight number
+---@param belowHeight number
+---@param barHeight number
+---@return number height
+function Bar:LayoutRows(element, above, below, aboveHeight, belowHeight, barHeight)
+	local top = aboveHeight > 0 and aboveHeight + ROW_GAP or 0
+	local bottom = belowHeight > 0 and belowHeight + ROW_GAP or 0
+
+	above:ClearAllPoints()
+	above:SetPoint("TOPLEFT", element, "TOPLEFT", 0, 0)
+	above:SetPoint("TOPRIGHT", element, "TOPRIGHT", 0, 0)
+	above:SetHeight(math.max(aboveHeight, 1))
+	above:SetShown(aboveHeight > 0)
+
+	below:ClearAllPoints()
+	below:SetPoint("BOTTOMLEFT", element, "BOTTOMLEFT", 0, 0)
+	below:SetPoint("BOTTOMRIGHT", element, "BOTTOMRIGHT", 0, 0)
+	below:SetHeight(math.max(belowHeight, 1))
+	below:SetShown(belowHeight > 0)
+
+	self:ClearAllPoints()
+	self:SetPoint("TOPLEFT", element, "TOPLEFT", 0, -top)
+	self:SetPoint("TOPRIGHT", element, "TOPRIGHT", 0, -top)
+	self:SetHeight(barHeight)
+
+	return top + barHeight + bottom
+end
+
+---@param region AMTAnchorable
+---@param settings AMTPlacedTextSettings
+---@param above Frame
+---@param below Frame
+function Bar:Place(region, settings, above, below)
+	local nudge = settings.nudge
+
+	if settings.placement == "ABOVE" or settings.placement == "BELOW" then
+		Bar.AttachToRow(region, settings.placement == "ABOVE" and above or below, settings.slot, nudge[1], nudge[2])
+
+		return
+	end
+
+	self:AttachToSlot(region, settings.slot, nudge[1], nudge[2])
 end
 
 ---@param parent Frame

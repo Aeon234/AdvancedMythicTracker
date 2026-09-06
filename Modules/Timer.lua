@@ -4,6 +4,8 @@ local L = AMT.L
 ---@class AMTTimerModule : AMTModule
 ---@field element Frame
 ---@field bar AMTBarMixin
+---@field aboveRow Frame
+---@field belowRow Frame
 ---@field text AMTTextMixin
 ---@field thresholds AMTTextMixin[]
 ---@field pbCompare AMTTextMixin
@@ -13,10 +15,11 @@ function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("timer"))
 
 	self.bar = AMT.Mixins.NewBar(self.element)
-	self.bar:SetAllPoints()
+
+	self.aboveRow = CreateFrame("Frame", nil, self.element)
+	self.belowRow = CreateFrame("Frame", nil, self.element)
 
 	self.text = AMT.Mixins.NewText(self.bar)
-	self.bar:AttachToSlot(self.text, "LEFT")
 
 	self.thresholds = {}
 
@@ -45,17 +48,23 @@ end
 
 function module:ApplyStyle()
 	local profile = AMT.Profiles.active.timer
+	local splits = profile.splits
+	local Bar = AMT.Mixins.Bar
+	local above = math.max(Bar.RowHeightFor(profile.clock, "ABOVE"), Bar.RowHeightFor(splits.pbCompare, "ABOVE"))
+	local below = math.max(Bar.RowHeightFor(profile.clock, "BELOW"), Bar.RowHeightFor(splits.pbCompare, "BELOW"))
 
-	self.element:SetHeight(profile.bar.height)
+	self.element:SetHeight(self.bar:LayoutRows(self.element, self.aboveRow, self.belowRow, above, below, profile.bar.height))
 	self.bar:ApplyStyle(profile.bar)
-	self.text:ApplyStyle(profile.text)
+
+	self.text:ApplyStyle(profile.clock.text)
+	self.bar:Place(self.text, profile.clock, self.aboveRow, self.belowRow)
+
 	for index, text in ipairs(self.thresholds) do
 		text:ApplyStyle(profile.thresholds[index].text)
 	end
-	local splits = profile.splits
 
 	self.pbCompare:ApplyStyle(splits.pbCompare.text)
-	self.bar:AttachToSlot(self.pbCompare, splits.pbCompare.slot)
+	self.bar:Place(self.pbCompare, splits.pbCompare, self.aboveRow, self.belowRow)
 	self:RefreshMarks()
 
 	AMT.State.MarkDirty("layout")
@@ -85,7 +94,9 @@ function module:RefreshMarks()
 	self.bar:SetTicks(marks)
 
 	for index, text in ipairs(self.thresholds) do
-		self.bar:AttachAtFraction(text, limits[index] / limits[1])
+		local nudge = thresholds[index].nudge
+
+		self.bar:AttachAtFraction(text, limits[index] / limits[1], nudge[1], nudge[2])
 	end
 end
 
@@ -215,7 +226,7 @@ function module:Render()
 	if state.challengeCompleted then
 		self.text:SetColor(state.completedOnTime and profile.successColor or profile.failColor)
 	else
-		self.text:SetColor(profile.text.color)
+		self.text:SetColor(profile.clock.text.color)
 	end
 
 	self:RenderPBCompare()

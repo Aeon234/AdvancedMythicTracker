@@ -60,7 +60,7 @@ Options.RegisterPage({
 		})
 
 		local texts = {
-			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare" },
+			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare", placed = true },
 			{ title = L["Boss Split Text"], prefix = "timer.splits.bossSplit" },
 			-- Drawn on the forces bar, so it carries the same placement controls as that bar's overlays.
 			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit", placed = true },
@@ -93,8 +93,8 @@ Options.RegisterPage({
 						type = "slider",
 						label = L["X Offset"],
 						path = entry.prefix .. ".nudge.1",
-						min = -10,
-						max = 10,
+						min = -50,
+						max = 50,
 						step = 1,
 					},
 
@@ -102,8 +102,8 @@ Options.RegisterPage({
 						type = "slider",
 						label = L["Y Offset"],
 						path = entry.prefix .. ".nudge.2",
-						min = -10,
-						max = 10,
+						min = -50,
+						max = 50,
 						step = 1,
 					},
 				})
