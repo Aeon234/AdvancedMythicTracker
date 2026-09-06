@@ -46,21 +46,23 @@ function PageHeader:Refresh()
 		self.action:SetShown(predicate == nil or not predicate())
 	end
 
-	if not (self.previewCheck and self.previewTick and self.animateCheck and self.animateTick) then
+	local previewCheck, previewTick = self.previewCheck, self.previewTick
+	local animateCheck, animateTick = self.animateCheck, self.animateTick
+	local unlockTick = self.unlockTick
+
+	if not (previewCheck and previewTick and animateCheck and animateTick and unlockTick) then
 		return
 	end
 
 	local inKey = AMT.State.current.inChallenge
 
-	if self.unlockTick then
-		self.unlockTick:SetShown(AMT.Frames.IsUnlocked())
-	end
+	unlockTick:SetShown(AMT.Frames.IsUnlocked())
 
-	self.previewTick:SetShown(AMT.Demo.IsActive())
-	self.previewCheck:SetEnabled(not inKey)
+	previewTick:SetShown(AMT.Demo.IsActive())
+	previewCheck:SetEnabled(not inKey)
 
-	self.animateTick:SetShown(Options.IsPreviewAnimated())
-	self.animateCheck:SetEnabled(not inKey)
+	animateTick:SetShown(Options.IsPreviewAnimated())
+	animateCheck:SetEnabled(not inKey)
 end
 
 ---@param header AMTOptionsPageHeader
