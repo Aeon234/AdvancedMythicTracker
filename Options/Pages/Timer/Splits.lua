@@ -62,7 +62,8 @@ Options.RegisterPage({
 		local texts = {
 			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare" },
 			{ title = L["Boss Split Text"], prefix = "timer.splits.bossSplit" },
-			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit" },
+			-- Drawn on the forces bar, so it carries the same placement controls as that bar's overlays.
+			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit", placed = true },
 		}
 
 		for _, entry in ipairs(texts) do
@@ -70,6 +71,43 @@ Options.RegisterPage({
 				title = entry.title,
 				enabledPath = entry.prefix .. ".enabled",
 			})
+
+			if entry.placed then
+				group.content:AddWidgets({
+					{
+						type = "segmented",
+						label = L["Placement"],
+						path = entry.prefix .. ".placement",
+						values = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } },
+						tooltip = L["Whether this text sits on the bar or on a row above or below it."],
+					},
+
+					{
+						type = "segmented",
+						label = L["Alignment"],
+						path = entry.prefix .. ".slot",
+						values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
+					},
+
+					{
+						type = "slider",
+						label = L["X Offset"],
+						path = entry.prefix .. ".nudge.1",
+						min = -10,
+						max = 10,
+						step = 1,
+					},
+
+					{
+						type = "slider",
+						label = L["Y Offset"],
+						path = entry.prefix .. ".nudge.2",
+						min = -10,
+						max = 10,
+						step = 1,
+					},
+				})
+			end
 
 			group.content:AddFontGroup(L["Text"], entry.prefix .. ".text")
 		end

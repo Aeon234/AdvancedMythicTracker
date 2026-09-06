@@ -24,41 +24,37 @@ Options.RegisterPage({
 				type = "color",
 				label = L["Fill / Completed"],
 				paths = { "timer.forces.bar.color", "timer.forces.completedColor" },
+				tooltips = {
+					L["Bar color while forces are still being counted."],
+					L["Bar color once the forces requirement is met."],
+				},
 			},
 
 			{ type = "color", label = L["Background"], path = "timer.forces.bar.background", hasOpacity = true },
 
 			{
-				type = "segmented",
-				label = L["Count Format"],
-				tooltip = L["Absolute count, percent, or both."],
-				values = { { "COUNT", L["Count"] }, { "PERCENT", L["Percent"] }, { "BOTH", L["Both"] } },
-				get = function()
-					local count = Options.Get("timer.forces.count.enabled")
-					local percent = Options.Get("timer.forces.percent.enabled")
-
-					if count and percent then
-						return "BOTH"
-					elseif percent then
-						return "PERCENT"
-					end
-
-					return "COUNT"
-				end,
-				set = function(value)
-					Options.Set("timer.forces.count.enabled", value ~= "PERCENT")
-					Options.Set("timer.forces.percent.enabled", value ~= "COUNT")
-				end,
+				type = "checkbox",
+				label = L["Show Forces Title"],
+				path = "timer.forces.title.enabled",
+				tooltip = L["Puts a label above the bar. The row it needs adds to the frame's height."],
 			},
+		})
 
+		page:AddFontGroup(L["Title Text"], "timer.forces.title.text", function()
+			return Options.Get("timer.forces.title.enabled") ~= true
+		end)
+
+		local count = page:AddGroup({
+			title = L["Count"],
+			enabledPath = "timer.forces.count.enabled",
+		})
+
+		count.content:AddWidgets({
 			{
 				type = "checkbox",
-				label = L["Show Remaining"],
-				path = "timer.forces.showRemaining",
-				tooltip = L["Counts down what is left instead of up from zero."],
-				disabled = function()
-					return not Options.Get("timer.forces.count.enabled")
-				end,
+				label = L["Show Total"],
+				path = "timer.forces.showTotal",
+				tooltip = L["Shows the pull total alongside the current count."],
 			},
 
 			{
@@ -67,23 +63,101 @@ Options.RegisterPage({
 				path = "timer.forces.spacedSlash",
 				tooltip = L["Adds spaces around the slash between the current and total counts."],
 				disabled = function()
-					return not Options.Get("timer.forces.count.enabled")
+					return Options.Get("timer.forces.showTotal") ~= true
 				end,
 			},
 
 			{
+				type = "checkbox",
+				label = L["Show Remaining"],
+				path = "timer.forces.showRemaining",
+				tooltip = L["Counts down what is left instead of up from zero."],
+			},
+
+			{
 				type = "segmented",
-				label = L["Percent Decimals"],
-				tooltip = L["Fractions of a percent shown on the forces count."],
-				path = "timer.forces.decimals",
-				values = { { 0, "0" }, { 1, "1" }, { 2, "2" } },
-				disabled = function()
-					return not Options.Get("timer.forces.percent.enabled")
-				end,
+				label = L["Placement"],
+				path = "timer.forces.count.placement",
+				values = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } },
+				tooltip = L["Whether this text sits on the bar or on a row above or below it."],
+			},
+
+			{
+				type = "segmented",
+				label = L["Alignment"],
+				path = "timer.forces.count.slot",
+				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
+			},
+
+			{
+				type = "slider",
+				label = L["X Offset"],
+				path = "timer.forces.count.nudge.1",
+				min = -50,
+				max = 50,
+				step = 1,
+			},
+
+			{
+				type = "slider",
+				label = L["Y Offset"],
+				path = "timer.forces.count.nudge.2",
+				min = -50,
+				max = 50,
+				step = 1,
 			},
 		})
 
-		page:AddFontGroup(L["Count Text"], "timer.forces.count.text")
-		page:AddFontGroup(L["Percent Text"], "timer.forces.percent.text")
+		count.content:AddFontGroup(L["Text"], "timer.forces.count.text")
+
+		local percent = page:AddGroup({
+			title = L["Percent"],
+			enabledPath = "timer.forces.percent.enabled",
+		})
+
+		percent.content:AddWidgets({
+			{
+				type = "segmented",
+				label = L["Percent Decimals"],
+				path = "timer.forces.decimals",
+				values = { { 0, "0" }, { 1, "1" }, { 2, "2" } },
+				tooltip = L["Fractions of a percent shown on the forces count."],
+			},
+
+			{
+				type = "segmented",
+				label = L["Placement"],
+				path = "timer.forces.percent.placement",
+				values = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } },
+				tooltip = L["Whether this text sits on the bar or on a row above or below it."],
+			},
+
+			{
+				type = "segmented",
+				label = L["Alignment"],
+				path = "timer.forces.percent.slot",
+				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
+			},
+
+			{
+				type = "slider",
+				label = L["X Offset"],
+				path = "timer.forces.percent.nudge.1",
+				min = -50,
+				max = 50,
+				step = 1,
+			},
+
+			{
+				type = "slider",
+				label = L["Y Offset"],
+				path = "timer.forces.percent.nudge.2",
+				min = -50,
+				max = 50,
+				step = 1,
+			},
+		})
+
+		percent.content:AddFontGroup(L["Text"], "timer.forces.percent.text")
 	end,
 })

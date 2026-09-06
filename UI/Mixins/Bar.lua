@@ -87,7 +87,7 @@ end
 
 ---@param region AMTAnchorable
 ---@param slot "LEFT"|"CENTER"|"RIGHT"
-function Bar:AttachToSlot(region, slot)
+function Bar:AttachToSlot(region, slot, x, y)
 	local anchor = SLOT_ANCHORS[slot]
 
 	if not anchor then
@@ -97,7 +97,19 @@ function Bar:AttachToSlot(region, slot)
 	end
 
 	region:ClearAllPoints()
-	region:SetPoint(anchor.point, self, anchor.relativePoint, anchor.x, 0)
+	region:SetPoint(anchor.point, self, anchor.relativePoint, anchor.x + (x or 0), y or 0)
+end
+
+---@param region AMTAnchorable
+---@param parent Frame
+---@param slot "LEFT"|"CENTER"|"RIGHT"
+---@param x number?
+---@param y number?
+function Bar.AttachToRow(region, parent, slot, x, y)
+	local point = slot == "CENTER" and "CENTER" or slot
+
+	region:ClearAllPoints()
+	region:SetPoint(point, parent, point, (x or 0) + (slot == "RIGHT" and -SLOT_INSET or slot == "LEFT" and SLOT_INSET or 0), y or 0)
 end
 
 ---@param region AMTAnchorable

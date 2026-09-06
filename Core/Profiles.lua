@@ -57,14 +57,22 @@ local EXPORT_FORMAT = 1
 -- Timer Forces
 ---@class AMTOverlayTextSettings
 ---@field enabled boolean
----@field slot "LEFT"|"CENTER"|"RIGHT"
+---@field placement "BAR"|"ABOVE"|"BELOW"
+---@field slot "LEFT"|"CENTER"|"RIGHT" on the bar a D-34 slot, off it the alignment within the row
+---@field nudge number[] {x, y}
+---@field text AMTTextStyle
+
+---@class AMTBarTitleSettings
+---@field enabled boolean
 ---@field text AMTTextStyle
 
 ---@class AMTForcesProfile
 ---@field bar AMTBarStyle
+---@field title AMTBarTitleSettings
 ---@field count AMTOverlayTextSettings
 ---@field percent AMTOverlayTextSettings
 ---@field decimals integer
+---@field showTotal boolean
 ---@field spacedSlash boolean
 ---@field completedColor number[]
 ---@field showRemaining boolean
@@ -241,17 +249,26 @@ local profileDefaults = {
 				color = { 0.55, 0.2, 0.2, 1 },
 				background = { 0, 0, 0, 0.5 },
 			},
+			title = {
+				enabled = false,
+				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
+			},
 			count = {
 				enabled = true,
+				placement = "BAR",
 				slot = "RIGHT",
+				nudge = { 0, 0 },
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			percent = {
 				enabled = true,
+				placement = "BAR",
 				slot = "CENTER",
+				nudge = { 0, 0 },
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			decimals = 2,
+			showTotal = true,
 			spacedSlash = false,
 			showRemaining = false,
 			completedColor = { 0.2, 0.8, 0.2, 1 },
@@ -276,12 +293,16 @@ local profileDefaults = {
 			behindColor = { 1, 0, 0, 1 },
 			pbCompare = {
 				enabled = true,
+				placement = "BAR",
 				slot = "RIGHT",
+				nudge = { 0, 0 },
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			forcesSplit = {
 				enabled = true,
+				placement = "BAR",
 				slot = "LEFT",
+				nudge = { 0, 0 },
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},
 			bossSplit = {
