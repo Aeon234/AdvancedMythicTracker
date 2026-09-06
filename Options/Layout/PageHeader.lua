@@ -12,6 +12,14 @@ local TOGGLE_LABEL_GAP = 8
 local TOGGLE_ROW_DROP = 4
 local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 
+---@class AMTOptionsHeaderToggles
+---@field unlock Button
+---@field unlockTick Texture
+---@field preview Button
+---@field previewTick Texture
+---@field animate Button
+---@field animateTick Texture
+
 ---@class AMTOptionsPageHeaderConfig
 ---@field title string?
 ---@field description string?
@@ -27,12 +35,7 @@ local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 ---@field title FontString
 ---@field description FontString
 ---@field action Button?
----@field unlockCheck Button?
----@field unlockTick Texture?
----@field previewCheck Button?
----@field previewTick Texture?
----@field animateCheck Button?
----@field animateTick Texture?
+---@field toggles AMTOptionsHeaderToggles? built together, so they exist together
 ---@field config AMTOptionsPageHeaderConfig
 ---@field onResized fun()?
 local PageHeader = {}
@@ -46,23 +49,21 @@ function PageHeader:Refresh()
 		self.action:SetShown(predicate == nil or not predicate())
 	end
 
-	local previewCheck, previewTick = self.previewCheck, self.previewTick
-	local animateCheck, animateTick = self.animateCheck, self.animateTick
-	local unlockTick = self.unlockTick
+	local toggles = self.toggles
 
-	if not (previewCheck and previewTick and animateCheck and animateTick and unlockTick) then
+	if not toggles then
 		return
 	end
 
 	local inKey = AMT.State.current.inChallenge
 
-	unlockTick:SetShown(AMT.Frames.IsUnlocked())
+	toggles.unlockTick:SetShown(AMT.Frames.IsUnlocked())
 
-	previewTick:SetShown(AMT.Demo.IsActive())
-	previewCheck:SetEnabled(not inKey)
+	toggles.previewTick:SetShown(AMT.Demo.IsActive())
+	toggles.preview:SetEnabled(not inKey)
 
-	animateTick:SetShown(Options.IsPreviewAnimated())
-	animateCheck:SetEnabled(not inKey)
+	toggles.animateTick:SetShown(Options.IsPreviewAnimated())
+	toggles.animate:SetEnabled(not inKey)
 end
 
 ---@param header AMTOptionsPageHeader
@@ -129,12 +130,14 @@ local function BuildHeaderToggles(header)
 		0
 	)
 
-	header.unlockCheck = unlockCheck
-	header.unlockTick = unlockTick
-	header.previewCheck = previewCheck
-	header.previewTick = previewTick
-	header.animateCheck = animateCheck
-	header.animateTick = animateTick
+	header.toggles = {
+		unlock = unlockCheck,
+		unlockTick = unlockTick,
+		preview = previewCheck,
+		previewTick = previewTick,
+		animate = animateCheck,
+		animateTick = animateTick,
+	}
 end
 
 ---@param parent Frame
