@@ -14,7 +14,7 @@ function Style.Replace(source)
 	wipe(timer)
 	AMT.Util.Overlay(timer, source)
 
-	AMT.Layout.ReseedProfile()
+	AMT.Layout.Seed()
 	AMT.Profiles.Refresh()
 end
 
@@ -68,6 +68,8 @@ function Style.IsModified()
 	local stamped = AMT.Profiles.TimerDefaults()
 
 	AMT.Util.Overlay(stamped, override)
+	AMT.Layout.Seed(stamped)
+
 	stamped.style = timer.style
 
 	for _, field in ipairs(PRESERVED) do

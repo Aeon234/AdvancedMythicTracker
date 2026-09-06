@@ -40,8 +40,8 @@ function Layout.GetGroup(key)
 end
 
 ---@param elementKey string
-local function SeedElement(elementKey)
-	local profile = AMT.Profiles.active.timer
+---@param profile AMTTimerProfile
+local function SeedElement(elementKey, profile)
 	local order = profile.order[elements[elementKey].group]
 
 	if order and not tContains(order, elementKey) then
@@ -79,12 +79,16 @@ function Layout.RegisterElement(groupKey, elementKey, frame, slot)
 	elements[elementKey] = { group = groupKey, frame = frame, slot = slot or "LEFT" }
 	registrationOrder[#registrationOrder + 1] = elementKey
 
-	SeedElement(elementKey)
+	SeedElement(elementKey, AMT.Profiles.active.timer)
 end
 
-function Layout.ReseedProfile()
+---Fills a timer table's order and element bookkeeping, so a freshly stamped table matches a live one.
+---@param profile AMTTimerProfile?
+function Layout.Seed(profile)
+	profile = profile or AMT.Profiles.active.timer
+
 	for _, elementKey in ipairs(registrationOrder) do
-		SeedElement(elementKey)
+		SeedElement(elementKey, profile)
 	end
 end
 

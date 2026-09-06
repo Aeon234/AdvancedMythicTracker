@@ -198,7 +198,7 @@ Options.RegisterPage({
 				path = "timer.width",
 				min = 200,
 				max = 600,
-				step = 5,
+				step = 1,
 				tooltip = L["Width of the timer frame."],
 			},
 
