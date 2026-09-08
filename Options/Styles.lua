@@ -75,21 +75,346 @@ local definitions = {
 	},
 
 	AEON = {
+		order = { groups = { "keyInfo", "timer", "forces", "objectives" } },
+		affixes = {
+			iconSize = 14,
+			text = {
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+			},
+		},
 		background = {
-			color = { 31 / 255, 24 / 255, 19 / 255, 1 },
+			color = {
+				0.121569,
+				0.094118,
+				0.07451,
+				1,
+			},
 			nineslice = true,
+			padding = 10,
+		},
+		bar = {
+			background = {
+				0.1,
+				0.1,
+				0.12,
+				0.9,
+			},
+			color = {
+				0.2,
+				0.45,
+				0.85,
+				1,
+			},
+			height = 21,
+			texture = "Solid",
+			tickWidth = 2,
+			tierColors = {
+				{
+					0.34902,
+					0.352941,
+					0.360784,
+					1,
+				},
+				{
+					0.384314,
+					0.768628,
+					1,
+					1,
+				},
+				{
+					0.384314,
+					0.768628,
+					1,
+					1,
+				},
+				{
+					0.25098,
+					0.752941,
+					0.25098,
+					1,
+				},
+			},
+		},
+		clock = {
+			text = {
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 14,
+			},
+		},
+		deaths = {
+			text = {
+				color = {
+					1,
+					0.25098,
+					0.25098,
+					1,
+				},
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 16,
+			},
+		},
+		decimals = 3,
+		failColor = {
+			0.74902,
+			0.14902,
+			0.14902,
+			1,
+		},
+		forces = {
+			bar = {
+				background = {
+					0.1,
+					0.1,
+					0.12,
+					0.9,
+				},
+				color = {
+					0.2,
+					0.576471,
+					0.498039,
+					1,
+				},
+				height = 21,
+				texture = "Solid",
+			},
+			completedColor = {
+				1,
+				0.709804,
+				0,
+				1,
+			},
+			count = {
+				text = {
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+					size = 14,
+				},
+			},
+			percent = {
+				slot = "LEFT",
+				text = {
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+					size = 14,
+				},
+			},
+			title = {
+				text = {
+					color = {
+						0.6,
+						0.6,
+						0.63,
+						1,
+					},
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+		},
+		keyInfo = {
+			height = 14,
+			inline = true,
+			level = {
+				color = {
+					1,
+					0.82,
+					0,
+					1,
+				},
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 16,
+			},
+			text = {
+				color = {
+					1,
+					0.82,
+					0,
+					1,
+				},
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 16,
+			},
+		},
+		objectives = {
+			completedColor = {
+				0.34902,
+				0.85098,
+				0.34902,
+				1,
+			},
+			icon = false,
+			iconSize = 14,
+			pendingColor = {
+				0.6,
+				0.6,
+				0.63,
+				1,
+			},
+			rowHeight = 18,
+			spacing = 0,
+			text = {
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 14,
+			},
+			time = {
+				font = "Gilroy Bold",
+				outline = "SLUG, OUTLINE",
+				size = 14,
+			},
+		},
+		splits = {
+			aheadColor = {
+				0.34902,
+				0.85098,
+				0.34902,
+				1,
+			},
+			behindColor = {
+				1,
+				0.25098,
+				0.25098,
+				1,
+			},
+			bossSplit = {
+				text = {
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			forcesSplit = {
+				text = {
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			pbCompare = {
+				text = {
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+		},
+		thresholds = {
+			{
+				aheadColor = {
+					0.34902,
+					0.85098,
+					0.34902,
+					1,
+				},
+				behindColor = {
+					1,
+					0.25098,
+					0.25098,
+					1,
+				},
+				enabled = true,
+				marks = "TEXT",
+				nudge = {
+					0,
+					0,
+				},
+				text = {
+					color = {
+						1,
+						1,
+						1,
+						1,
+					},
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+					size = 14,
+				},
+				tickColor = {
+					1,
+					1,
+					1,
+					0.5,
+				},
+			},
+			{
+				aheadColor = {
+					0.34902,
+					0.85098,
+					0.34902,
+					1,
+				},
+				behindColor = {
+					1,
+					0.25098,
+					0.25098,
+					1,
+				},
+				enabled = true,
+				marks = "BOTH",
+				nudge = {
+					0,
+					0,
+				},
+				text = {
+					color = {
+						1,
+						1,
+						1,
+						1,
+					},
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+					size = 14,
+				},
+				tickColor = {
+					1,
+					1,
+					1,
+					0.5,
+				},
+			},
+			{
+				aheadColor = {
+					0.34902,
+					0.85098,
+					0.34902,
+					1,
+				},
+				behindColor = {
+					1,
+					0.25098,
+					0.25098,
+					1,
+				},
+				enabled = true,
+				marks = "BOTH",
+				nudge = {
+					0,
+					0,
+				},
+				text = {
+					color = {
+						1,
+						1,
+						1,
+						1,
+					},
+					font = "Gilroy Bold",
+					outline = "SLUG, OUTLINE",
+					size = 14,
+				},
+				tickColor = {
+					1,
+					1,
+					1,
+					0.5,
+				},
+			},
 		},
 	},
 }
-
--- Temp Profile for Aeon
-do
-	local aeon = AMT.Util.Copy(definitions.PANEL)
-
-	AMT.Util.Overlay(aeon, definitions.AEON)
-
-	definitions.AEON = aeon
-end
 
 ---@class AMTStyles
 ---@field ORDER AMTStyleKey[]
