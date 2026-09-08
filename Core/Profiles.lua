@@ -377,6 +377,7 @@ function Profiles.Activate(name)
 	Profiles.activeName = name
 	Profiles.active = Profiles.Create(name)
 
+	AMT.Layout.Seed()
 	Profiles.Refresh()
 end
 

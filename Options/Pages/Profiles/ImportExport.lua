@@ -4,7 +4,7 @@ local L = AMT.L
 local Options = AMT.Options
 
 StaticPopupDialogs["AMT_PROFILE_OVERWRITE"] = {
-	text = L["A profile named %q already exists. Replace it with the imported one?"],
+	text = L['A profile named "%s" already exists. Replace it with the imported one?'],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(_, payload)

@@ -37,7 +37,7 @@ StaticPopupDialogs["AMT_PROFILE_NAME"] = {
 }
 
 StaticPopupDialogs["AMT_PROFILE_DELETE"] = {
-	text = L["Delete the profile %q? This cannot be undone."],
+	text = L['Delete the profile "%s"? This cannot be undone.'],
 	button1 = DELETE,
 	button2 = CANCEL,
 	OnAccept = function(_, name)
@@ -50,7 +50,7 @@ StaticPopupDialogs["AMT_PROFILE_DELETE"] = {
 }
 
 StaticPopupDialogs["AMT_PROFILE_DEFAULT"] = {
-	text = L["Use %q for characters that have not chosen a profile? Characters with a profile already set keep it."],
+	text = L['Use "%s" for characters that have not chosen a profile? Characters with a profile already set keep it.'],
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	OnAccept = function(_, name)
