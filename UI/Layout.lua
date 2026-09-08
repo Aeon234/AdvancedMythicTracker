@@ -170,7 +170,10 @@ local function ApplyInline(groupKey, width)
 	local buckets = { LEFT = {}, CENTER = {}, RIGHT = {} }
 	local shown = 0
 
-	for _, elementKey in ipairs(profile.order[groupKey]) do
+	local order = profile.order[groupKey]
+
+	for index = #order, 1, -1 do
+		local elementKey = order[index]
 		local element = elements[elementKey]
 
 		if element then

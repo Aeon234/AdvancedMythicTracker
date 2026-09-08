@@ -25,10 +25,12 @@ local SLOT_ANCHORS = {
 ---@field background number[]? {r, g, b, a} background
 ---@field height number
 ---@field fill "RIGHT"|"LEFT"? which way the bar grows; defaults to RIGHT
+---@field tickWidth number? threshold mark thickness; defaults to 1
 ---@field tierColors number[][]? four {r,g,b,a} for timer
 
 ---@class AMTBarMixin : StatusBar
 ---@field reversed boolean? fill grows right to left, so marks measure from the right edge
+---@field tickWidth number?
 ---@field background Texture
 ---@field ticks Texture[]
 ---@field tickFractions number[]
@@ -72,6 +74,7 @@ function Bar:ApplyStyle(style)
 
 	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
 	self.reversed = style.fill == "LEFT"
+	self.tickWidth = style.tickWidth
 
 	self:SetReverseFill(self.reversed)
 
@@ -251,7 +254,7 @@ function Bar:SetTicks(marks)
 		if index <= #marks then
 			if not tick then
 				tick = self:CreateTexture(nil, "OVERLAY")
-				tick:SetWidth(1)
+				tick:SetWidth(self.tickWidth or 1)
 				self.ticks[index] = tick
 			end
 

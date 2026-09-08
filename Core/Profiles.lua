@@ -154,7 +154,7 @@ local profileDefaults = {
 	timer = {
 		style = "PANEL",
 		scale = 1.0,
-		width = 320,
+		width = 330,
 		geometry = "SPAN",
 		justify = "RIGHT",
 		position = { anchor = "RIGHT", x = 0, y = -10 },
@@ -351,6 +351,10 @@ function Profiles.Create(name)
 
 	if not profile then
 		profile = Util.Copy(profileDefaults)
+
+		-- Defaults are the neutral base; the starting style's look comes from its override.
+		Util.Overlay(profile.timer, AMT.Options.Styles.GetOverride(profile.timer.style) or {})
+
 		settings.profiles[name] = profile
 	else
 		Util.MergeDefaults(profile, profileDefaults)
