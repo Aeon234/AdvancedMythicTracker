@@ -9,7 +9,7 @@ local TIME_LIMIT = 1980
 local TOTAL_FORCES = 388
 local TIME_SCALE = 10
 
-local FORCES_FULL_AT = 600
+local FORCES_FULL_AT = TIME_LIMIT * 0.9
 local BOSS_INTERVAL = 150
 local DEATH_INTERVAL = 90
 local DEATH_PENALTY = 5
@@ -88,15 +88,21 @@ local function LoadKey()
 	return true
 end
 
+---@param elapsed number
+---@return integer
+local function ForcesAt(elapsed)
+	return math.floor(TOTAL_FORCES * math.min(elapsed / FORCES_FULL_AT, 1))
+end
+
 ---Normally forces count is set to only ever go up.
 local function UpdateForces()
 	local state = State.current
-	local fraction = math.min(state.elapsed / FORCES_FULL_AT, 1)
+	local current = ForcesAt(state.elapsed)
 
 	AMT.Forces.SetTotal(TOTAL_FORCES)
-	AMT.Forces.SetCurrent(math.floor(TOTAL_FORCES * fraction))
+	AMT.Forces.SetCurrent(current)
 
-	if fraction >= 1 and not state.forcesCompleted then
+	if current >= TOTAL_FORCES and not state.forcesCompleted then
 		state.forcesCompleted = true
 		state.forcesCompletedAtMS = math.floor(state.elapsed * 1000)
 
@@ -162,7 +168,7 @@ local function Populate()
 	state.elapsed = math.random(300, TIME_LIMIT - 300)
 
 	AMT.Forces.SetTotal(TOTAL_FORCES)
-	AMT.Forces.SetCurrent(math.floor(TOTAL_FORCES * math.random(25, 95) / 100))
+	AMT.Forces.SetCurrent(ForcesAt(state.elapsed))
 
 	local defeated = math.random(1, #BOSS_NAMES - 1)
 
