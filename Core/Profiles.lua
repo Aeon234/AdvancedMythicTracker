@@ -173,6 +173,7 @@ local profileDefaults = {
 		bar = {
 			texture = "Blizzard",
 			height = 24,
+			mode = "UNIFIED",
 			fill = "RIGHT",
 			color = { 0.2, 0.6, 1, 1 },
 			background = { 0, 0, 0, 0.5 },

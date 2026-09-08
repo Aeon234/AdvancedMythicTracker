@@ -4,6 +4,11 @@ local L = AMT.L
 local Options = AMT.Options
 
 ---@return boolean
+local function IsSegmented()
+	return Options.Get("timer.bar.mode") == "SEGMENTED"
+end
+
+---@return boolean
 local function IsMinimal()
 	return Options.Get("timer.style") == "MINIMAL"
 end
@@ -23,6 +28,14 @@ Options.RegisterPage({
 			{ type = "checkbox", label = L["Enabled"], path = "timer.elements.timerBar.enabled" },
 			{ type = "media", label = L["Bar Texture"], path = "timer.bar.texture", mediaType = "statusbar" },
 			{ type = "slider", label = L["Bar Height"], path = "timer.bar.height", min = 8, max = 48, step = 1 },
+
+			{
+				type = "segmented",
+				label = L["Bar Style"],
+				path = "timer.bar.mode",
+				values = { { "UNIFIED", L["Unified"] }, { "SEGMENTED", L["Segmented"] } },
+				tooltip = L["One bar with threshold marks, or one bar per threshold sized to its time."],
+			},
 
 			{
 				type = "segmented",
@@ -118,7 +131,18 @@ Options.RegisterPage({
 					label = L["Marks"],
 					path = prefix .. ".marks",
 					tooltip = L["Whether this threshold draws a tick on the bar, its time as text, or both."],
-					values = { { "TICK", L["Tick"] }, { "TEXT", L["Text"] }, { "BOTH", L["Both"] } },
+					get = function()
+						local value = Options.Get(prefix .. ".marks")
+
+						return IsSegmented() and value == "TICK" and "BOTH" or value
+					end,
+					GetValues = function()
+						if IsSegmented() then
+							return { { "TEXT", L["Text"] }, { "BOTH", L["Both"] } }
+						end
+
+						return { { "TICK", L["Tick"] }, { "TEXT", L["Text"] }, { "BOTH", L["Both"] } }
+					end,
 				}
 
 				widgets[#widgets + 1] = {
@@ -126,6 +150,7 @@ Options.RegisterPage({
 					label = L["Tick Color"],
 					path = prefix .. ".tickColor",
 					hasOpacity = true,
+					hidden = IsSegmented,
 					disabled = function()
 						return Options.Get(prefix .. ".marks") == "TEXT"
 					end,

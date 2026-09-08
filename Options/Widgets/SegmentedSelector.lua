@@ -27,13 +27,35 @@ end
 ---@field labels FontString[]
 ---@field hovers AMTBorder[]
 ---@field segmentWidth number
----@field valuesRef table[]?
+---@field valuesRef string? the value keys the segments were last built from
 ---@field thumbX number
 ---@field thumbStartX number?
 ---@field thumbTargetX number?
 ---@field thumbElapsed number?
 ---@field thumbUpdater function
 local Segmented = Options.NewWidgetPrototype("segmented")
+
+---@return table[]
+function Segmented:GetValues()
+	local info = self.info
+
+	if not info then
+		return {}
+	end
+
+	return info.GetValues and info.GetValues() or info.values or {}
+end
+
+---@return string
+function Segmented:ValuesKey()
+	local keys = {}
+
+	for index, entry in ipairs(self:GetValues()) do
+		keys[index] = tostring(entry[1])
+	end
+
+	return table.concat(keys, ",")
+end
 
 ---@return number
 function Segmented:GetControlHeight()
@@ -125,8 +147,7 @@ function Segmented:AcquireSegment(index)
 	end)
 
 	button:SetScript("OnClick", function()
-		local values = self.info and self.info.values
-		local entry = values and values[index]
+		local entry = self:GetValues()[index]
 
 		if entry and not self.disabled then
 			self:SetValue(entry[1])
@@ -141,7 +162,7 @@ function Segmented:AcquireSegment(index)
 end
 
 function Segmented:Rebuild()
-	local values = (self.info and self.info.values) or {}
+	local values = self:GetValues()
 	local count = #values
 	local widest = 0
 
@@ -179,7 +200,7 @@ function Segmented:Rebuild()
 	self.track:SetSize(math.max(width * count, 1), TRACK_HEIGHT)
 	self.thumb:SetSize(width, TRACK_HEIGHT)
 
-	self.valuesRef = self.info and self.info.values
+	self.valuesRef = self:ValuesKey()
 end
 
 ---@param parent Frame
@@ -224,9 +245,9 @@ function Segmented:Update()
 		return
 	end
 
-	local values = info.values or {}
+	local values = self:GetValues()
 
-	if self.valuesRef ~= info.values then
+	if self.valuesRef ~= self:ValuesKey() then
 		self:Rebuild()
 	end
 

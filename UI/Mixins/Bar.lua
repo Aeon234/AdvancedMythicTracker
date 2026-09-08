@@ -24,6 +24,7 @@ local SLOT_ANCHORS = {
 ---@field color number[] {r, g, b, a} fill
 ---@field background number[]? {r, g, b, a} background
 ---@field height number
+---@field mode "UNIFIED"|"SEGMENTED"? one bar with marks, or one bar per threshold band
 ---@field fill "RIGHT"|"LEFT"? which way the bar grows; defaults to RIGHT
 ---@field tickWidth number? threshold mark thickness; defaults to 1
 ---@field tierColors number[][]? four {r,g,b,a} for timer

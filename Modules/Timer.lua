@@ -4,6 +4,8 @@ local L = AMT.L
 ---@class AMTTimerModule : AMTModule
 ---@field element Frame
 ---@field bar AMTBarMixin
+---@field segmented AMTSegmentedBarMixin
+---@field overlay Frame texts live here so hiding either bar cannot take them with it
 ---@field aboveRow Frame
 ---@field belowRow Frame
 ---@field text AMTTextMixin
@@ -15,19 +17,24 @@ function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("timer"))
 
 	self.bar = AMT.Mixins.NewBar(self.element)
+	self.segmented = AMT.Mixins.NewSegmentedBar(self.element)
 
 	self.aboveRow = CreateFrame("Frame", nil, self.element)
 	self.belowRow = CreateFrame("Frame", nil, self.element)
 
-	self.text = AMT.Mixins.NewText(self.bar)
+	self.overlay = CreateFrame("Frame", nil, self.element)
+	self.overlay:SetAllPoints(self.element)
+	self.overlay:SetFrameLevel(self.element:GetFrameLevel() + 5)
+
+	self.text = AMT.Mixins.NewText(self.overlay)
 
 	self.thresholds = {}
 
 	for index = 1, 3 do
-		self.thresholds[index] = AMT.Mixins.NewText(self.bar)
+		self.thresholds[index] = AMT.Mixins.NewText(self.overlay)
 	end
 
-	self.pbCompare = AMT.Mixins.NewText(self.bar)
+	self.pbCompare = AMT.Mixins.NewText(self.overlay)
 
 	AMT.Layout.RegisterElement("timer", "timerBar", self.element)
 
@@ -46,15 +53,29 @@ function module:OnInitialize()
 	self:ApplyStyle()
 end
 
+---@return boolean
+function module:IsSegmented()
+	return AMT.Profiles.active.timer.bar.mode == "SEGMENTED"
+end
+
 function module:ApplyStyle()
 	local profile = AMT.Profiles.active.timer
 	local splits = profile.splits
 	local Bar = AMT.Mixins.Bar
 	local above = math.max(Bar.RowHeightFor(profile.clock, "ABOVE"), Bar.RowHeightFor(splits.pbCompare, "ABOVE"))
 	local below = math.max(Bar.RowHeightFor(profile.clock, "BELOW"), Bar.RowHeightFor(splits.pbCompare, "BELOW"))
+	local segmented = self:IsSegmented()
 
+	-- One of the two owns the bar row; the other is parked so its frames keep their settings.
 	self.element:SetHeight(self.bar:LayoutRows(self.element, self.aboveRow, self.belowRow, above, below, profile.bar.height))
 	self.bar:ApplyStyle(profile.bar)
+	self.bar:SetShown(not segmented)
+
+	self.segmented:ClearAllPoints()
+	self.segmented:SetAllPoints(self.bar)
+	self.segmented:ApplyStyle(profile.bar)
+	self.segmented:SetShown(segmented)
+	self.segmented:Layout()
 
 	self.text:ApplyStyle(profile.clock.text)
 	self.bar:Place(self.text, profile.clock, self.aboveRow, self.belowRow)
@@ -73,6 +94,22 @@ end
 function module:RefreshMarks()
 	local thresholds = AMT.Profiles.active.timer.thresholds
 	local limits = AMT.State.current.timeLimits
+
+	if self:IsSegmented() then
+		self.bar:SetTicks({})
+		self.segmented:Layout()
+
+		-- The gaps between segments are the marks, so each text labels its own band instead.
+		for index, text in ipairs(self.thresholds) do
+			local nudge = thresholds[index].nudge
+			local segment = self.segmented:GetSegment(index)
+			local slot = AMT.Mixins.Bar.ResolveSlot(AMT.Profiles.active.timer.justify)
+
+			segment:AttachToSlot(text, slot, nudge[1], nudge[2])
+		end
+
+		return
+	end
 
 	if not limits[1] or limits[1] <= 0 then
 		self.bar:SetTicks({})
@@ -129,7 +166,9 @@ function module:RenderThresholds()
 		local settings = profile.thresholds[index]
 		local limit = limits[index]
 
-		if not settings.enabled or settings.marks == "TICK" or not limit then
+		local hidden = not settings.enabled or not limit or (settings.marks == "TICK" and not self:IsSegmented())
+
+		if hidden then
 			text:Hide()
 		elseif state.challengeCompleted then
 			local achieved = (state.upgradeLevels or 0) >= index
@@ -213,11 +252,19 @@ function module:Render()
 	local completed = state.challengeCompleted and state.completionMS
 	local seconds = completed and (state.completionMS / 1000) or state.elapsed
 
-	self.bar:SetValues(seconds, state.timeLimit)
-	self.bar:SetTickCutoff(state.timeLimit > 0 and seconds / state.timeLimit or 0)
+	if self:IsSegmented() then
+		self.segmented:SetValues(seconds, state.timeLimit)
 
-	if profile.bar.tierColors then
-		self.bar:SetColor(profile.bar.tierColors[AMT.Challenge.GetUpgradeTier() + 1])
+		if profile.bar.tierColors then
+			self.segmented:SetTierColors(profile.bar.tierColors, AMT.Challenge.GetUpgradeTier() == 0)
+		end
+	else
+		self.bar:SetValues(seconds, state.timeLimit)
+		self.bar:SetTickCutoff(state.timeLimit > 0 and seconds / state.timeLimit or 0)
+
+		if profile.bar.tierColors then
+			self.bar:SetColor(profile.bar.tierColors[AMT.Challenge.GetUpgradeTier() + 1])
+		end
 	end
 
 	self.text:SetText(self:FormatDisplayTime())
