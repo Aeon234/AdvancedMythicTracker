@@ -75,6 +75,7 @@ local definitions = {
 	},
 
 	AEON = {
+		elements = { keyInfoAffixes = { enabled = false } },
 		order = { groups = { "keyInfo", "timer", "forces", "objectives" } },
 		affixes = {
 			iconSize = 14,

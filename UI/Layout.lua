@@ -45,8 +45,16 @@ local function SeedElement(elementKey, profile)
 	local settings = profile.elements[elementKey]
 
 	if not settings then
-		settings = { enabled = true, nudge = { 0, 0 } }
+		settings = {}
 		profile.elements[elementKey] = settings
+	end
+
+	if settings.enabled == nil then
+		settings.enabled = true
+	end
+
+	if not settings.nudge then
+		settings.nudge = { 0, 0 }
 	end
 
 	settings.slot = elements[elementKey].slot
