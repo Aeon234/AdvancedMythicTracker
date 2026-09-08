@@ -11,19 +11,20 @@ local module = AMT.Modules.New("Deaths")
 
 function module:OnInitialize()
 	self.element = CreateFrame("Frame", nil, AMT.Layout.GetGroup("keyInfo"))
-	self.element:SetMouseMotionEnabled(true)
 
-	self.element:SetScript("OnEnter", function()
+	-- The element spans the frame; the row is only as wide as the count and its icon.
+	self.row = CreateFrame("Frame", nil, self.element)
+	self.row:SetMouseMotionEnabled(true)
+
+	self.row:SetScript("OnEnter", function()
 		if AMT.Profiles.active.timer.deaths.tooltip then
-			AMT.Tooltip.ShowDeaths(self.element)
+			AMT.Tooltip.ShowDeaths(self.row)
 		end
 	end)
 
-	self.element:SetScript("OnLeave", function()
+	self.row:SetScript("OnLeave", function()
 		AMT.Tooltip.Hide()
 	end)
-
-	self.row = CreateFrame("Frame", nil, self.element)
 
 	self.text = AMT.Mixins.NewText(self.row)
 	self.width = 0
