@@ -248,13 +248,6 @@ function AMT.Mixins.NewBar(parent)
 end
 
 ---@param color number[]
-function Bar:SetBorderColor(color)
-	if self.border then
-		self.border:SetVertexColor(color[1], color[2], color[3], color[4])
-	end
-end
-
----@param color number[]
 function Bar:SetColor(color)
 	self:SetStatusBarColor(color[1], color[2], color[3], color[4])
 end
