@@ -1,5 +1,8 @@
 local AMT = select(2, ...)
 
+local RING_CORNER = 16
+local RING_OUTSET = 1
+
 local SLOT_INSET = 4
 -- A row is its tallest font plus breathing room, and sits this far from the bar.
 local ROW_PADDING = 2
@@ -19,6 +22,8 @@ local SLOT_ANCHORS = {
 	RIGHT = { point = "RIGHT", relativePoint = "RIGHT", x = -SLOT_INSET },
 }
 
+local MIRRORED_SLOTS = { LEFT = "RIGHT", RIGHT = "LEFT" }
+
 ---@class AMTBarStyle
 ---@field texture string LibSharedMedia statusbar name
 ---@field color number[] {r, g, b, a} fill
@@ -28,11 +33,13 @@ local SLOT_ANCHORS = {
 ---@field fill "RIGHT"|"LEFT"? which way the bar grows; defaults to RIGHT
 ---@field tickWidth number? threshold mark thickness; defaults to 1
 ---@field tierColors number[][]? four {r,g,b,a} for timer
+---@field border boolean? draws the edge around the bar; defaults to on
 
 ---@class AMTBarMixin : StatusBar
 ---@field reversed boolean? fill grows right to left, so marks measure from the right edge
 ---@field tickWidth number?
 ---@field background Texture
+---@field border AMTBorder?
 ---@field ticks Texture[]
 ---@field tickFractions number[]
 local Bar = {}
@@ -45,6 +52,8 @@ function Bar:OnLoad()
 	self.background = self:CreateTexture(nil, "BACKGROUND")
 	self.background:SetAllPoints()
 	self.background:Hide()
+
+	self.border = AMT.NineSlice.Apply(self, "Ring", RING_CORNER, "OVERLAY", 1, RING_OUTSET)
 
 	self.ticks = {}
 	self.tickFractions = {}
@@ -90,6 +99,10 @@ function Bar:ApplyStyle(style)
 		self.background:Show()
 	else
 		self.background:Hide()
+	end
+
+	if self.border then
+		self.border:SetShown(style.border ~= false)
 	end
 
 	if style.height then
@@ -216,6 +229,10 @@ function Bar:Place(region, settings, above, below)
 		return
 	end
 
+	if self.reversed then
+		slot = MIRRORED_SLOTS[slot] or slot
+	end
+
 	self:AttachToSlot(region, slot, nudge[1], nudge[2])
 end
 
@@ -228,6 +245,13 @@ function AMT.Mixins.NewBar(parent)
 	bar:OnLoad()
 
 	return bar
+end
+
+---@param color number[]
+function Bar:SetBorderColor(color)
+	if self.border then
+		self.border:SetVertexColor(color[1], color[2], color[3], color[4])
+	end
 end
 
 ---@param color number[]

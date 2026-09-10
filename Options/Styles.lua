@@ -10,7 +10,7 @@ local definitions = {
 		justify = "RIGHT",
 		clock = { placement = "ABOVE", slot = "RIGHT" },
 		keyInfo = { inline = false },
-		thresholds = { [2] = { marks = "TEXT" }, [3] = { marks = "TEXT" } },
+		thresholds = { [2] = { marks = "BOTH" }, [3] = { marks = "BOTH" } },
 		affixes = { widget = "TEXT" },
 	},
 

@@ -256,7 +256,7 @@ function module:Render()
 		self.segmented:SetValues(seconds, state.timeLimit)
 
 		if profile.bar.tierColors then
-			self.segmented:SetTierColors(profile.bar.tierColors, AMT.Challenge.GetUpgradeTier() == 0)
+			self.segmented:SetColor(profile.bar.tierColors[AMT.Challenge.GetUpgradeTier() + 1])
 		end
 	else
 		self.bar:SetValues(seconds, state.timeLimit)

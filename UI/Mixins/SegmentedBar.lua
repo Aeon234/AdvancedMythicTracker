@@ -1,6 +1,6 @@
 local AMT = select(2, ...)
 
-local GAP = 2
+local GAP = 7
 local FALLBACK = { 0.2, 0.2, 0.6 } -- sub +12 key
 
 ---@class AMTSegmentedBarMixin : Frame
@@ -34,7 +34,7 @@ function Segmented:ApplyStyle(style)
 end
 
 function Segmented:Layout()
-	local width = self:GetWidth()
+	local width = math.floor(self:GetWidth())
 
 	if width <= 0 then
 		return
@@ -44,11 +44,17 @@ function Segmented:Layout()
 
 	local usable = width - GAP * 2
 	local reversed = self.segments[1].reversed
-	local offset = 0
+	local consumed = 0
+	local edge = 0
 
-	for _, index in ipairs({ 3, 2, 1 }) do
+	for order, index in ipairs({ 3, 2, 1 }) do
 		local segment = self.segments[index]
-		local segmentWidth = math.max(usable * self.fractions[index], 1)
+
+		consumed = consumed + self.fractions[index]
+
+		local finish = math.min(math.floor(consumed * usable + 0.5), usable)
+		local segmentWidth = math.max(finish - edge, 1)
+		local offset = edge + (order - 1) * GAP
 
 		segment:ClearAllPoints()
 		segment:SetWidth(segmentWidth)
@@ -61,7 +67,7 @@ function Segmented:Layout()
 			segment:SetPoint("BOTTOMLEFT", self, "BOTTOMLEFT", offset, 0)
 		end
 
-		offset = offset + segmentWidth + GAP
+		edge = edge + segmentWidth
 	end
 end
 
@@ -88,11 +94,10 @@ function Segmented:SetValues(elapsed, limit)
 	end
 end
 
----@param tierColors number[][]
----@param depleted boolean
-function Segmented:SetTierColors(tierColors, depleted)
+---@param color number[]
+function Segmented:SetColor(color)
 	for index = 1, 3 do
-		self.segments[index]:SetColor(depleted and tierColors[1] or tierColors[index + 1])
+		self.segments[index]:SetColor(color)
 	end
 end
 

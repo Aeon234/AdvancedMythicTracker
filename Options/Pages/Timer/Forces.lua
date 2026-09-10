@@ -26,6 +26,13 @@ Options.RegisterPage({
 			{ type = "slider", label = L["Bar Height"], path = "timer.forces.bar.height", min = 8, max = 48, step = 1 },
 
 			{
+				type = "checkbox",
+				label = L["Show Bar Border"],
+				path = "timer.forces.bar.border",
+				tooltip = L["Draws a border around the bar."],
+			},
+
+			{
 				type = "segmented",
 				label = L["Fill Direction"],
 				path = "timer.forces.bar.fill",

@@ -10,8 +10,6 @@ local TOTAL_FORCES = 388
 local TIME_SCALE = 10
 
 local FORCES_FULL_AT = TIME_LIMIT * 0.9
-local BOSS_INTERVAL = 150
-local DEATH_INTERVAL = 90
 local DEATH_PENALTY = 5
 
 local MAX_AFFIXES = 4
@@ -24,6 +22,8 @@ local BOSS_NAMES = {
 	"Scarlet Commander Mograine",
 	"High Inquisitor Whitemane",
 }
+
+local BOSS_INTERVAL = TIME_LIMIT / (#BOSS_NAMES + 1)
 
 local FAKE_DEATHS = {
 	{ name = "Arthas", class = "DEATHKNIGHT" },
@@ -40,6 +40,8 @@ local FAKE_DEATHS = {
 	{ name = "Gul'dan", class = "WARLOCK" },
 	{ name = "Varian", class = "WARRIOR" },
 }
+
+local DEATH_INTERVAL = TIME_LIMIT / #FAKE_DEATHS
 
 ---@class AMTDemo
 local Demo = {}
@@ -162,40 +164,14 @@ local function UpdateDeaths()
 	State.MarkDirty("deaths")
 end
 
+---The snapshot has to agree with what the ticker would have produced at the same elapsed, or the
+---first animated tick rewrites everything it disagrees about.
 local function Populate()
-	local state = State.current
+	State.current.elapsed = math.random(300, TIME_LIMIT - 300)
 
-	state.elapsed = math.random(300, TIME_LIMIT - 300)
-
-	AMT.Forces.SetTotal(TOTAL_FORCES)
-	AMT.Forces.SetCurrent(ForcesAt(state.elapsed))
-
-	local defeated = math.random(1, #BOSS_NAMES - 1)
-
-	for index, name in ipairs(BOSS_NAMES) do
-		local objective = { description = name, name = name }
-
-		if index <= defeated then
-			objective.completedAtMS = math.floor(state.elapsed * 1000 * index / (defeated + 1))
-		end
-
-		state.objectives[index] = objective
-	end
-
-	local deaths = math.random(0, #FAKE_DEATHS)
-
-	state.deathCount = deaths
-	state.deathTimeLost = deaths * DEATH_PENALTY
-
-	for index = 1, deaths do
-		local fake = FAKE_DEATHS[index]
-
-		state.deaths[index] = {
-			atMS = math.floor(state.elapsed * 1000 * index / (deaths + 1)),
-			name = fake.name,
-			class = fake.class,
-		}
-	end
+	UpdateForces()
+	UpdateObjectives()
+	UpdateDeaths()
 
 	State.MarkAllDirty()
 end

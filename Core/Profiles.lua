@@ -175,6 +175,7 @@ local profileDefaults = {
 			height = 24,
 			mode = "UNIFIED",
 			fill = "RIGHT",
+			border = true,
 			color = { 0.2, 0.6, 1, 1 },
 			background = { 0, 0, 0, 0.5 },
 			-- Depleted, +1, +2, +3.
@@ -256,6 +257,7 @@ local profileDefaults = {
 				texture = "Blizzard",
 				height = 16,
 				fill = "RIGHT",
+				border = true,
 				color = { 0.55, 0.2, 0.2, 1 },
 				background = { 0, 0, 0, 0.5 },
 			},

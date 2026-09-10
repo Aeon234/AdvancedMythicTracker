@@ -85,6 +85,17 @@ function Border:SetTexture(textureName)
 	end
 end
 
+---Corner pieces are centred on the frame's corners, so a corner larger than the frame's shorter
+---side overlaps its opposite piece and draws that edge's stroke twice.
+---@param size number
+function Border:SetCornerSize(size)
+	self.cornerSize = size
+
+	for _, index in ipairs(CORNERS) do
+		self.pieces[index]:SetSize(size, size)
+	end
+end
+
 --@return Texture
 function Border:GetCenter()
 	return self.pieces[5]
@@ -93,15 +104,16 @@ end
 ---@param frame Frame
 ---@param pieces Texture[]
 ---@param cornerSize number
-local function LayoutPieces(frame, pieces, cornerSize)
+---@param outset number
+local function LayoutPieces(frame, pieces, cornerSize, outset)
 	for _, index in ipairs(CORNERS) do
 		pieces[index]:SetSize(cornerSize, cornerSize)
 	end
 
-	pieces[1]:SetPoint("CENTER", frame, "TOPLEFT", 0, 0)
-	pieces[3]:SetPoint("CENTER", frame, "TOPRIGHT", 0, 0)
-	pieces[7]:SetPoint("CENTER", frame, "BOTTOMLEFT", 0, 0)
-	pieces[9]:SetPoint("CENTER", frame, "BOTTOMRIGHT", 0, 0)
+	pieces[1]:SetPoint("CENTER", frame, "TOPLEFT", -outset, outset)
+	pieces[3]:SetPoint("CENTER", frame, "TOPRIGHT", outset, outset)
+	pieces[7]:SetPoint("CENTER", frame, "BOTTOMLEFT", -outset, -outset)
+	pieces[9]:SetPoint("CENTER", frame, "BOTTOMRIGHT", outset, -outset)
 
 	pieces[2]:SetPoint("TOPLEFT", pieces[1], "TOPRIGHT", 0, 0)
 	pieces[2]:SetPoint("BOTTOMRIGHT", pieces[3], "BOTTOMLEFT", 0, 0)
@@ -130,8 +142,9 @@ AMT.NineSlice = NineSlice
 ---@param cornerSize number? defaults to 16
 ---@param layer DrawLayer? defaults to "BORDER"
 ---@param subLevel number?
+---@param outset number?
 ---@return AMTBorder? border nil if the layout name is unknown
-function NineSlice.Apply(frame, textureName, cornerSize, layer, subLevel)
+function NineSlice.Apply(frame, textureName, cornerSize, layer, subLevel, outset)
 	if not LAYOUTS[textureName] then
 		AMT.Util.Warn("unknown nineslice layout %q.", tostring(textureName))
 
@@ -153,7 +166,7 @@ function NineSlice.Apply(frame, textureName, cornerSize, layer, subLevel)
 		pieces[index] = piece
 	end
 
-	LayoutPieces(frame, pieces, size)
+	LayoutPieces(frame, pieces, size, outset or 0)
 
 	return setmetatable({ pieces = pieces, cornerSize = size }, Border)
 end
