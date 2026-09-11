@@ -32,7 +32,7 @@ function Options.GetChrome()
 
 	chrome = {}
 
-	local frame = CreateFrame("Frame", "AdvancedMythicTrackerOptions", UIParent, "DefaultPanelTemplate")
+	local frame = CreateFrame("Frame", "AdvancedMythicTrackerOptions", UIParent, "AdvancedMythicTrackerFrameTemplate")
 
 	frame:SetSize(CONST.FRAME_WIDTH, CONST.FRAME_HEIGHT)
 	frame:SetFrameStrata("HIGH")
@@ -46,15 +46,6 @@ function Options.GetChrome()
 	frame:SetScript("OnDragStart", frame.StartMoving)
 	frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
 
-	CreateFrame("Button", nil, frame, "UIPanelCloseButtonDefaultAnchors")
-
-	frame.onCloseCallback = function()
-		Options.Hide()
-
-		return false
-	end
-
-	-- Every hide path lands here, so an unlocked frame can never outlive the window that unlocked it.
 	frame:SetScript("OnHide", function()
 		if AMT.Frames.IsUnlocked() then
 			AMT.Frames.SetUnlocked(false)

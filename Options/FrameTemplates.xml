@@ -1,0 +1,30 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+
+    <Frame name="AdvancedMythicTrackerFrameTemplate" inherits="DefaultPanelBaseTemplate"
+        virtual="true">
+        <Layers>
+            <Layer level="BACKGROUND" textureSubLevel="-6">
+                <Texture atlas="UI-Journeys-BG" useAtlasSize="false" parentKey="Bg">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="6" y="-21" />
+                        <Anchor point="BOTTOMRIGHT" x="-2" y="2" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+            <Layer level="BACKGROUND" textureSubLevel="-5">
+                <Texture parentKey="TopTileStreaks"
+                    inherits="_UI-Frame-TopTileStreaks">
+                    <Anchors>
+                        <Anchor point="TOPLEFT" x="6" y="-21" />
+                        <Anchor point="TOPRIGHT" x="-2" y="-21" />
+                    </Anchors>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Frames>
+            <Button parentKey="CloseButton"
+                inherits="UIPanelCloseButtonDefaultAnchors" />
+        </Frames>
+    </Frame>
+
+</Ui>

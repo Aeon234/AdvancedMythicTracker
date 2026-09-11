@@ -7,6 +7,7 @@
     <Include file="Widgets\Widgets.xml" />
     <Include file="Layout\Layout.xml" />
 
+    <Include file="FrameTemplates.xml" />
     <Script file="Chrome.lua" />
     <Script file="Sidebar.lua" />
     <Script file="Page.lua" />
