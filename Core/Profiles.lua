@@ -12,6 +12,7 @@ local EXPORT_FORMAT = 1
 ---@field enabled boolean
 ---@field nudge number[] {x, y}
 ---@field slot "LEFT"|"CENTER"|"RIGHT"
+---@field justify "LEFT"|"CENTER"|"RIGHT"
 
 ---@class AMTLayoutOrder
 ---@field groups AMTLayoutGroupKey[]

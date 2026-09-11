@@ -7,7 +7,6 @@ local AMT = select(2, ...)
 ---@field SIDEBAR_WIDTH number
 ---@field PANEL_PADDING number
 ---@field LABEL_WIDTH number
----@field LABEL_WIDTH_NESTED number
 ---@field LABEL_GAP number
 ---@field ROW_SPACING number
 ---@field CORNER_SIZE number
@@ -68,7 +67,6 @@ Options.CONST = {
 	SIDEBAR_WIDTH = 190,
 	PANEL_PADDING = 16,
 	LABEL_WIDTH = 190,
-	LABEL_WIDTH_NESTED = 110,
 	LABEL_GAP = 12,
 	ROW_SPACING = 12,
 	CORNER_SIZE = 16,

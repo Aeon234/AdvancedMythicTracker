@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 ---@type string[]
 local registrationOrder = {}
@@ -11,10 +12,22 @@ local ELEMENT_SPACING = 2
 
 ---@alias AMTLayoutGroupKey "keyInfo"|"timer"|"objectives"|"forces"
 
+---@type AMTLayoutGroupKey[]
+local GROUP_KEYS = { "keyInfo", "timer", "objectives", "forces" }
+
+---@type table<AMTLayoutGroupKey, string>
+local GROUP_LABELS = {
+	keyInfo = L["Key Info"],
+	timer = L["Timer"],
+	objectives = L["Objectives"],
+	forces = L["Enemy Forces"],
+}
+
 ---@class AMTLayoutElement
 ---@field group AMTLayoutGroupKey
 ---@field frame Frame
 ---@field slot "LEFT"|"CENTER"|"RIGHT"
+---@field label string
 
 ---@class AMTLayout
 local Layout = {}
@@ -57,6 +70,10 @@ local function SeedElement(elementKey, profile)
 		settings.nudge = { 0, 0 }
 	end
 
+	if settings.justify == nil then
+		settings.justify = profile.justify
+	end
+
 	settings.slot = elements[elementKey].slot
 end
 
@@ -64,7 +81,8 @@ end
 ---@param elementKey string
 ---@param frame Frame
 ---@param slot ("LEFT"|"CENTER"|"RIGHT")?
-function Layout.RegisterElement(groupKey, elementKey, frame, slot)
+---@param label string? shown on the layout page; falls back to the key, which is a visible bug
+function Layout.RegisterElement(groupKey, elementKey, frame, slot, label)
 	local existing = elements[elementKey]
 
 	if existing then
@@ -78,7 +96,7 @@ function Layout.RegisterElement(groupKey, elementKey, frame, slot)
 		return
 	end
 
-	elements[elementKey] = { group = groupKey, frame = frame, slot = slot or "LEFT" }
+	elements[elementKey] = { group = groupKey, frame = frame, slot = slot or "LEFT", label = label or elementKey }
 	registrationOrder[#registrationOrder + 1] = elementKey
 
 	SeedElement(elementKey, AMT.Profiles.active.timer)
@@ -89,25 +107,87 @@ end
 function Layout.Seed(profile)
 	profile = profile or AMT.Profiles.active.timer
 
-	-- Rebuilt rather than appended to: nothing can reorder a group until the layout page ships, so a
-	-- stored order is only ever a stale default.
-	for groupKey in pairs(groups) do
+	for _, groupKey in ipairs(GROUP_KEYS) do
 		local order = profile.order[groupKey]
 
 		if order then
-			wipe(order)
+			local seen = {}
+			local kept = 0
+
+			for index = 1, #order do
+				local elementKey = order[index]
+				local element = elements[elementKey]
+
+				if element and element.group == groupKey and not seen[elementKey] then
+					seen[elementKey] = true
+					kept = kept + 1
+					order[kept] = elementKey
+				end
+			end
+
+			for index = #order, kept + 1, -1 do
+				order[index] = nil
+			end
+
+			for _, elementKey in ipairs(registrationOrder) do
+				if elements[elementKey].group == groupKey and not seen[elementKey] then
+					order[#order + 1] = elementKey
+				end
+			end
 		end
 	end
 
 	for _, elementKey in ipairs(registrationOrder) do
-		local order = profile.order[elements[elementKey].group]
-
-		if order then
-			order[#order + 1] = elementKey
-		end
-
 		SeedElement(elementKey, profile)
 	end
+end
+
+---@return AMTLayoutGroupKey[]
+function Layout.GetGroupKeys()
+	return GROUP_KEYS
+end
+
+---@param groupKey AMTLayoutGroupKey
+---@return string
+function Layout.GetGroupLabel(groupKey)
+	return GROUP_LABELS[groupKey] or groupKey
+end
+
+---@param elementKey string
+---@return string
+function Layout.GetElementLabel(elementKey)
+	local element = elements[elementKey]
+
+	return element and element.label or elementKey
+end
+
+---@param elementKey string
+---@return boolean
+function Layout.IsElementRegistered(elementKey)
+	return elements[elementKey] ~= nil
+end
+
+---@param elementKey string
+---@return "LEFT"|"CENTER"|"RIGHT"
+function Layout.GetJustify(elementKey)
+	local profile = AMT.Profiles.active.timer
+	local settings = profile.elements[elementKey]
+
+	return settings and settings.justify or profile.justify
+end
+
+---@param groupKey AMTLayoutGroupKey
+---@return string[]
+function Layout.GetRegisteredMembers(groupKey)
+	local members = {}
+
+	for _, elementKey in ipairs(registrationOrder) do
+		if elements[elementKey].group == groupKey then
+			members[#members + 1] = elementKey
+		end
+	end
+
+	return members
 end
 
 ---@param elementKey string
@@ -280,6 +360,10 @@ local function ApplyGroup(groupKey, width)
 		if element then
 			local settings = profile.elements[elementKey]
 			local frame = element.frame
+
+			if frame.SetContentBudget then
+				frame:SetContentBudget(nil)
+			end
 
 			if settings and settings.enabled and not collapsed[elementKey] then
 				local nudge = settings.nudge

@@ -26,7 +26,7 @@ function module:OnInitialize()
 	self.percent = AMT.Mixins.NewText(self.bar)
 	self.split = AMT.Mixins.NewText(self.bar)
 
-	AMT.Layout.RegisterElement("forces", "forcesBar", self.element)
+	AMT.Layout.RegisterElement("forces", "forcesBar", self.element, nil, L["Forces Bar"])
 
 	AMT.Render.Register("forces", function()
 		self:Render()

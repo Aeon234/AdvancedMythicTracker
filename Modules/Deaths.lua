@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local SKULL = [[Interface\TargetingFrame\UI-RaidTargetingIcon_8]]
 
@@ -33,7 +34,7 @@ function module:OnInitialize()
 		return self.width
 	end
 
-	AMT.Layout.RegisterElement("keyInfo", "deaths", self.element, "RIGHT")
+	AMT.Layout.RegisterElement("keyInfo", "deaths", self.element, "RIGHT", L["Deaths"])
 
 	AMT.Render.Register("deaths", function()
 		self:Render()
@@ -118,7 +119,7 @@ function module:Render()
 	self:SetContentWidth(width)
 	self.row:SetSize(width, profile.height)
 	self.row:ClearAllPoints()
-	local justify = AMT.Profiles.active.timer.justify
+	local justify = AMT.Layout.GetJustify("deaths")
 
 	self.row:SetPoint(justify, self.element, justify, 0, 0)
 	self.row:Show()

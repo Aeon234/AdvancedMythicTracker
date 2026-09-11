@@ -21,10 +21,12 @@ local BODY_OVERLAP = 12
 ---@field enabledPath string? omit for a header with no checkbox
 ---@field enabledScope AMTBindingScope?
 ---@field labelWidth number? label column for rows built in the body
+---@field manualToggle boolean?
 
 ---@class AMTOptionsGroup
 ---@field frame Frame
 ---@field header Button
+---@field title FontString
 ---@field body Frame
 ---@field content AMTOptionsContainer
 ---@field chevron Texture
@@ -156,6 +158,8 @@ function Options.NewGroup(parent, config)
 	title:SetText(config.title)
 	title:SetTextColor(1, 1, 1)
 
+	group.title = title
+
 	group.chevron = header:CreateTexture(nil, "ARTWORK")
 	group.chevron:SetSize(CHEVRON_SIZE, CHEVRON_SIZE)
 	group.chevron:SetPoint("RIGHT", header, "RIGHT", -HEADER_INSET, 0)
@@ -223,9 +227,13 @@ function Options.NewGroup(parent, config)
 		end
 	end)
 
-	header:SetScript("OnClick", function()
-		group:Toggle()
-	end)
+	-- A header that has to be both a click and a drag cannot use OnClick, which fires on release
+	-- with no idea how far the cursor travelled. The layout page reads press and release itself.
+	if not config.manualToggle then
+		header:SetScript("OnClick", function()
+			group:Toggle()
+		end)
+	end
 
 	group:SetExpanded(config.expanded == true, true)
 

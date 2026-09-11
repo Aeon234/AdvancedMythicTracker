@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local ICON_DONE = [[Interface\RaidFrame\ReadyCheck-Ready]]
 local ICON_PENDING = [[Interface\RaidFrame\ReadyCheck-Waiting]]
@@ -20,7 +21,7 @@ function module:OnInitialize()
 	self.element:SetHeight(1)
 	self.rows = {}
 
-	AMT.Layout.RegisterElement("objectives", "objectiveRows", self.element)
+	AMT.Layout.RegisterElement("objectives", "objectiveRows", self.element, nil, L["Boss List"])
 
 	AMT.Render.Register("objectives", function()
 		self:Render()

@@ -254,7 +254,7 @@ end
 
 ---@param widgetType string
 ---@param parent Frame
----@param labelWidth number? defaults to CONST.LABEL_WIDTH; nested tab pages pass the narrower one
+---@param labelWidth number? defaults to CONST.LABEL_WIDTH; 0 gives a bare control, no label column
 ---@return AMTOptionWidget?
 function Options.NewWidget(widgetType, parent, labelWidth)
 	local prototype = prototypes[widgetType]

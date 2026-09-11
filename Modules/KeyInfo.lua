@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local TITLE_GAP = 4
 local ICON_INSET = 6 / 64
@@ -51,8 +52,8 @@ function module:OnInitialize()
 	end
 
 	-- Registration order is the stacked top-to-bottom order: affixes sit above the name.
-	AMT.Layout.RegisterElement("keyInfo", "keyInfoAffixes", self.affixElement, "LEFT")
-	AMT.Layout.RegisterElement("keyInfo", "keyInfoTitle", self.element, "LEFT")
+	AMT.Layout.RegisterElement("keyInfo", "keyInfoAffixes", self.affixElement, "LEFT", L["Affixes"])
+	AMT.Layout.RegisterElement("keyInfo", "keyInfoTitle", self.element, "LEFT", L["Dungeon Name"])
 
 	AMT.Render.Register("keyInfo", function()
 		self:Render()
@@ -73,7 +74,9 @@ function module:ApplyStyle()
 	self.affixElement:SetHeight(affixes.height)
 	self.affixText:ApplyStyle(affixes.text)
 	self.affixText:ClearAllPoints()
-	self.affixText:SetPoint(timer.justify, self.affixElement, timer.justify, 0, 0)
+	local affixSlot = AMT.Layout.GetJustify("keyInfoAffixes")
+
+	self.affixText:SetPoint(affixSlot, self.affixElement, affixSlot, 0, 0)
 
 	self:LayoutTitle()
 	self:RenderAffixes()
@@ -194,7 +197,7 @@ function module:RenderAffixes()
 	self:SetContentWidth("keyInfoAffixes", width)
 	self.affixRow:SetSize(width, size)
 	self.affixRow:ClearAllPoints()
-	local justify = AMT.Profiles.active.timer.justify
+	local justify = AMT.Layout.GetJustify("keyInfoAffixes")
 
 	self.affixRow:SetPoint(justify, self.affixElement, justify, 0, 0)
 	self.affixRow:Show()
@@ -244,7 +247,7 @@ function module:LayoutTitle()
 		previous = part
 	end
 
-	local justify = AMT.Profiles.active.timer.justify
+	local justify = AMT.Layout.GetJustify("keyInfoTitle")
 
 	self.dungeonName:SetJustifyH(justify)
 	self:SetContentWidth("keyInfoTitle", width)

@@ -36,7 +36,7 @@ function module:OnInitialize()
 
 	self.pbCompare = AMT.Mixins.NewText(self.overlay)
 
-	AMT.Layout.RegisterElement("timer", "timerBar", self.element)
+	AMT.Layout.RegisterElement("timer", "timerBar", self.element, nil, L["Timer Bar"])
 
 	AMT.Render.Register("timer", function()
 		self:Render()

@@ -20,7 +20,7 @@ Container.__index = Container
 Options.Container = Container
 
 ---@param parent Frame
----@param labelWidth number? nested tab pages pass CONST.LABEL_WIDTH_NESTED
+---@param labelWidth number?
 ---@param spacing number?
 ---@return AMTOptionsContainer
 function Options.NewContainer(parent, labelWidth, spacing)
