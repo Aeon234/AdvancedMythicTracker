@@ -29,6 +29,6 @@ Core\Core.xml
 Locales\Locales.xml
 State\State.xml
 Providers\Providers.xml
-UI\UI.xml
+Timer\Timer.xml
 Modules\Modules.xml
 Options\Options.xml
