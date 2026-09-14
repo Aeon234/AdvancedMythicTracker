@@ -6,5 +6,6 @@ local AMT = select(2, ...)
 ---@field NewIcon fun(parent: Frame, kind: AMTDashboardIconKind, size: number, corner: number): AMTDashboardIconMixin
 ---@field Panel AMTDashboardPanel
 ---@field Host AMTDashboardHost
+---@field Parts AMTDashboardParts
 local Dashboard = {}
 AMT.Dashboard = Dashboard
