@@ -11,6 +11,12 @@ local FIRST_TAB_X, FIRST_TAB_Y = 19, -30
 
 local BLIZZARD_PANELS = { "GroupFinderFrame", "PVPUIFrame", "ChallengesFrame" }
 
+---@class AMTDashboardHost
+---@field attached boolean
+---@field tab Button
+---@field panel Frame
+---@field lastWasTracker boolean
+---@field unavailableReason string?
 local Host = {}
 Dashboard.Host = Host
 
@@ -154,6 +160,7 @@ function Host:Attach()
 
 	tab:SetID(TAB_ID)
 	tab:SetText(L["Tracker"])
+	Dashboard.Skin:Register(tab, "tab")
 	tab:SetScript("OnClick", function()
 		self:Select(false)
 	end)

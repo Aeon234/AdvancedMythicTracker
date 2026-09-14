@@ -1,5 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
     <Script file="Init.lua" />
+    <Script file="Skin.lua" />
+    <Script file="Mixins\Icon.lua" />
+
     <Script file="Panel.lua" />
     <Script file="Host.lua" />
 </Ui>
