@@ -26,6 +26,35 @@ local AFFIX_ICON_SIZE = 30
 local AFFIX_ICON_CORNER = 16
 local AFFIX_SPACING = 8
 
+local COPY_URL_DIALOG = "ADVANCEDMYTHICTRACKER_COPY_URL"
+
+StaticPopupDialogs[COPY_URL_DIALOG] = {
+	text = L["Copy this link to open your Raider.IO profile."],
+	button1 = CLOSE,
+	hasEditBox = true,
+	editBoxWidth = 260,
+	OnShow = function(dialog, url)
+		local editBox = dialog:GetEditBox()
+
+		editBox:SetText(url)
+		editBox:SetFocus()
+		editBox:HighlightText()
+	end,
+	EditBoxOnTextChanged = function(editBox, url)
+		if editBox:IsVisible() and editBox:GetText() ~= url then
+			editBox:SetText(url)
+			editBox:HighlightText()
+		end
+	end,
+	EditBoxOnEnterPressed = function(editBox)
+		editBox:GetParent():Hide()
+	end,
+	EditBoxOnEscapePressed = StaticPopup_StandardEditBoxOnEscapePressed,
+	hideOnEscape = true,
+	whileDead = true,
+	timeout = 0,
+}
+
 ---@class AMTDashboardBand
 ---@field keystoneIcon AMTDashboardIconMixin
 ---@field keystoneLevel FontString
@@ -36,6 +65,7 @@ local AFFIX_SPACING = 8
 ---@field affixRow Frame
 ---@field affixIcons AMTDashboardIconMixin[]
 ---@field affixes AMTDashboardAffix[]
+---@field raiderIOURL string?
 local Band = {}
 Dashboard.Band = Band
 
@@ -91,10 +121,56 @@ end
 
 ---@param section Frame
 function Band:BuildRating(section)
-	local title = CreateSectionTitle(section, DUNGEON_SCORE)
+	local button = CreateFrame("Button", nil, section)
 
-	self.rating = Parts.CreateText(section, "GameFontNormal", RATING_SIZE)
+	button:SetAllPoints()
+	button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+	button:SetScript("OnEnter", function()
+		self:ShowRatingTooltip(button)
+	end)
+	button:SetScript("OnLeave", GameTooltip_Hide)
+	button:SetScript("OnClick", function(_, mouseButton)
+		self:OnRatingClick(mouseButton)
+	end)
+
+	local title = CreateSectionTitle(button, DUNGEON_SCORE)
+
+	self.rating = Parts.CreateText(button, "GameFontNormal", RATING_SIZE)
 	self.rating:SetPoint("TOP", title, "BOTTOM", 0, -VALUE_GAP)
+end
+
+-- Blizzard's own tooltip from Mythic+ tab.
+---@param owner Button
+function Band:ShowRatingTooltip(owner)
+	GameTooltip:SetOwner(owner, "ANCHOR_RIGHT")
+	GameTooltip_SetTitle(GameTooltip, DUNGEON_SCORE)
+	GameTooltip_AddNormalLine(GameTooltip, DUNGEON_SCORE_DESC)
+
+	if self.raiderIOURL then
+		GameTooltip_AddInstructionLine(GameTooltip, L["<Right Click for Raider.IO Link>"])
+	end
+
+	GameTooltip:Show()
+end
+
+---@param mouseButton string
+function Band:OnRatingClick(mouseButton)
+	if mouseButton == "RightButton" then
+		if self.raiderIOURL then
+			StaticPopup_Show(COPY_URL_DIALOG, nil, nil, self.raiderIOURL)
+		end
+
+		return
+	end
+
+	-- Built at click time from the live score, as Blizzard's own rating does.
+	if IsModifiedClick("CHATLINK") then
+		local link = GetDungeonScoreLink(C_ChallengeMode.GetOverallDungeonScore(), UnitName("player"))
+
+		if not ChatFrameUtil.InsertLink(link) then
+			ChatFrameUtil.OpenChat(link)
+		end
+	end
 end
 
 ---@param section Frame
@@ -140,6 +216,7 @@ end
 
 ---@param header AMTDashboardHeader
 function Band:Refresh(header)
+	self.raiderIOURL = header.raiderIOURL
 	self:RefreshKeystone(header.keystone)
 	self:RefreshRating(header.rating)
 	self.weeklyBest:SetRun(header.weeklyBest)
