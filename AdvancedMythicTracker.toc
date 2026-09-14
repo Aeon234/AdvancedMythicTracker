@@ -32,3 +32,5 @@ Providers\Providers.xml
 Timer\Timer.xml
 Modules\Modules.xml
 Options\Options.xml
+
+Dashboard\Dashboard.xml

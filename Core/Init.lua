@@ -33,6 +33,7 @@ local addonName = ...
 ---@field Tooltip AMTTooltip
 ---@field Animation AMTAnimation
 ---@field ObjectiveTracker AMTObjectiveTracker
+---@field Dashboard AMTDashboard
 local AMT = select(2, ...)
 
 AMT.name = addonName
