@@ -14,9 +14,10 @@ local BLIZZARD_PANELS = { "GroupFinderFrame", "PVPUIFrame", "ChallengesFrame" }
 ---@class AMTDashboardHost
 ---@field attached boolean
 ---@field tab Button
----@field panel Frame
+---@field panel AMTDashboardPanelRoot
 ---@field lastWasTracker boolean
 ---@field unavailableReason string?
+
 local Host = {}
 Dashboard.Host = Host
 
