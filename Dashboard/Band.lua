@@ -1,0 +1,196 @@
+local AMT = select(2, ...)
+local L = AMT.L
+
+local Dashboard = AMT.Dashboard
+local Parts = Dashboard.Parts
+
+local TITLE_SIZE = 12
+local TITLE_BASELINE = 10
+local VALUE_GAP = 2
+local ICON_GAP = 4
+local UNPLAYED = "-"
+
+local KEYSTONE_ICON_SIZE = 40
+local KEYSTONE_ICON_CORNER = 16
+local KEYSTONE_CENTRE_GAP = 5
+local KEYSTONE_LEVEL_SIZE = 22
+local KEYSTONE_LEVEL_DROP = 4
+local KEYSTONE_ABBREV_SIZE = 12
+local KEYSTONE_ABBREV_GAP = 1
+local KEYSTONE_ABBREV_GREY = 0.8
+local NO_KEYSTONE_TEXTURE = 4352494
+
+local RATING_SIZE = 30
+
+local AFFIX_ICON_SIZE = 30
+local AFFIX_ICON_CORNER = 16
+local AFFIX_SPACING = 8
+
+---@class AMTDashboardBand
+---@field keystoneIcon AMTDashboardIconMixin
+---@field keystoneLevel FontString
+---@field keystoneAbbrev FontString
+---@field rating FontString
+---@field weeklyBest AMTDashboardRunBlockMixin
+---@field seasonBest AMTDashboardRunBlockMixin
+---@field affixRow Frame
+---@field affixIcons AMTDashboardIconMixin[]
+---@field affixes AMTDashboardAffix[]
+local Band = {}
+Dashboard.Band = Band
+
+---@param section Frame
+---@param text string
+---@return FontString
+local function CreateSectionTitle(section, text)
+	local title = Parts.CreateText(section, "GameFontNormal", TITLE_SIZE)
+
+	title:SetPoint("BOTTOM", section, "CENTER", 0, TITLE_BASELINE)
+	title:SetText(text)
+
+	return title
+end
+
+---@param section Frame
+---@param text string
+---@return AMTDashboardRunBlockMixin
+local function CreateBestRun(section, text)
+	local block = Parts.NewRunBlock(section)
+
+	block:SetPoint("TOP", section, "CENTER", 0, TITLE_BASELINE - ICON_GAP)
+
+	local title = Parts.CreateText(section, "GameFontNormal", TITLE_SIZE)
+
+	title:SetPoint("BOTTOMLEFT", block, "TOPLEFT", 0, ICON_GAP)
+	title:SetText(text)
+
+	return block
+end
+
+---@param sections Frame[] the band's five sections, left to right
+function Band:Build(sections)
+	self:BuildKeystone(sections[1])
+	self:BuildRating(sections[2])
+	self.weeklyBest = CreateBestRun(sections[3], MYTHIC_PLUS_WEEKLY_BEST)
+	self.seasonBest = CreateBestRun(sections[4], MYTHIC_PLUS_SEASON_BEST)
+	self:BuildAffixes(sections[5])
+end
+
+---@param section Frame
+function Band:BuildKeystone(section)
+	self.keystoneIcon = Dashboard.NewIcon(section, "Frame", KEYSTONE_ICON_SIZE, KEYSTONE_ICON_CORNER)
+	self.keystoneIcon:SetPoint("RIGHT", section, "CENTER", -KEYSTONE_CENTRE_GAP, 0)
+
+	self.keystoneLevel = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_LEVEL_SIZE)
+	self.keystoneLevel:SetPoint("BOTTOMLEFT", section, "CENTER", KEYSTONE_CENTRE_GAP, -KEYSTONE_LEVEL_DROP)
+
+	self.keystoneAbbrev = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_ABBREV_SIZE)
+	self.keystoneAbbrev:SetPoint("TOPLEFT", self.keystoneLevel, "BOTTOMLEFT", 0, -KEYSTONE_ABBREV_GAP)
+	self.keystoneAbbrev:SetTextColor(KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY)
+end
+
+---@param section Frame
+function Band:BuildRating(section)
+	local title = CreateSectionTitle(section, DUNGEON_SCORE)
+
+	self.rating = Parts.CreateText(section, "GameFontNormal", RATING_SIZE)
+	self.rating:SetPoint("TOP", title, "BOTTOM", 0, -VALUE_GAP)
+end
+
+---@param section Frame
+function Band:BuildAffixes(section)
+	local title = CreateSectionTitle(section, L["Current Affixes"])
+
+	self.affixRow = CreateFrame("Frame", nil, section)
+	self.affixRow:SetPoint("TOP", title, "BOTTOM", 0, -ICON_GAP)
+	self.affixRow:SetHeight(AFFIX_ICON_SIZE)
+
+	self.affixIcons = {}
+	self.affixes = {}
+end
+
+---@param index integer
+function Band:CreateAffixIcon(index)
+	local icon = Dashboard.NewIcon(self.affixRow, "Frame", AFFIX_ICON_SIZE, AFFIX_ICON_CORNER)
+
+	icon:SetPoint("LEFT", (index - 1) * (AFFIX_ICON_SIZE + AFFIX_SPACING), 0)
+	icon:SetMouseMotionEnabled(true)
+	icon:SetScript("OnEnter", function()
+		self:ShowAffixTooltip(icon, index)
+	end)
+	icon:SetScript("OnLeave", GameTooltip_Hide)
+
+	self.affixIcons[index] = icon
+end
+
+---@param icon AMTDashboardIconMixin
+---@param index integer
+function Band:ShowAffixTooltip(icon, index)
+	local affix = self.affixes[index]
+
+	if not affix then
+		return
+	end
+
+	GameTooltip:SetOwner(icon, "ANCHOR_RIGHT")
+	GameTooltip_SetTitle(GameTooltip, affix.name)
+	GameTooltip_AddNormalLine(GameTooltip, affix.description)
+	GameTooltip:Show()
+end
+
+---@param header AMTDashboardHeader
+function Band:Refresh(header)
+	self:RefreshKeystone(header.keystone)
+	self:RefreshRating(header.rating)
+	self.weeklyBest:SetRun(header.weeklyBest)
+	self.seasonBest:SetRun(header.seasonBest)
+	self:RefreshAffixes(header.affixes)
+end
+
+---@param keystone AMTDashboardKeystone?
+function Band:RefreshKeystone(keystone)
+	local icon = self.keystoneIcon
+
+	if not keystone then
+		icon:SetIcon(NO_KEYSTONE_TEXTURE)
+		icon:SetIconDesaturated(true)
+		self.keystoneLevel:SetText(UNPLAYED)
+		self.keystoneAbbrev:SetText(L["No Keystone"])
+
+		return
+	end
+
+	icon:SetIcon(keystone.texture)
+	icon:SetIconDesaturated(false)
+	self.keystoneLevel:SetText(("+%d"):format(keystone.level))
+	self.keystoneAbbrev:SetText(keystone.abbrev)
+end
+
+---@param rating number
+function Band:RefreshRating(rating)
+	self.rating:SetText(tostring(rating))
+	self.rating:SetTextColor(C_ChallengeMode.GetDungeonScoreRarityColor(rating):GetRGB())
+end
+
+---@param affixes AMTDashboardAffix[]
+function Band:RefreshAffixes(affixes)
+	local count = #affixes
+
+	self.affixes = affixes
+
+	for index = #self.affixIcons + 1, count do
+		self:CreateAffixIcon(index)
+	end
+
+	for index, icon in ipairs(self.affixIcons) do
+		local affix = affixes[index]
+
+		if affix then
+			icon:SetIcon(affix.texture)
+		end
+
+		icon:SetShown(affix ~= nil)
+	end
+
+	self.affixRow:SetWidth(math.max(count * AFFIX_ICON_SIZE + (count - 1) * AFFIX_SPACING, 1))
+end

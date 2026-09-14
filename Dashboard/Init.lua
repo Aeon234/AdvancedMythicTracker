@@ -7,5 +7,7 @@ local AMT = select(2, ...)
 ---@field Panel AMTDashboardPanel
 ---@field Host AMTDashboardHost
 ---@field Parts AMTDashboardParts
+---@field Source AMTDashboardSource
+---@field Band AMTDashboardBand
 local Dashboard = {}
 AMT.Dashboard = Dashboard

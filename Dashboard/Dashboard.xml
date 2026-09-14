@@ -3,6 +3,9 @@
     <Script file="Skin.lua" />
     <Script file="Mixins\Icon.lua" />
     <Script file="Parts.lua" />
+    <Script file="Source.lua" />
+
+    <Script file="Band.lua" />
 
     <Script file="Panel.lua" />
     <Script file="Host.lua" />

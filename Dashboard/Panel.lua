@@ -3,6 +3,7 @@ local AMT = select(2, ...)
 local Dashboard = AMT.Dashboard
 local Parts = Dashboard.Parts
 
+local BACKGROUND_SUBLEVEL = -5
 local BACKGROUND_LEFT, BACKGROUND_TOP = 6, -21
 local BACKGROUND_RIGHT, BACKGROUND_BOTTOM = -2, 2
 
@@ -75,6 +76,7 @@ function Root:OnLoad()
 	self:CreateBackground()
 	self:CreateBand()
 	self:CreateColumns()
+	Dashboard.Band:Build(self.sections)
 
 	self:SetScript("OnShow", self.OnShow)
 	self:SetScript("OnHide", self.OnHide)
@@ -82,19 +84,13 @@ function Root:OnLoad()
 end
 
 function Root:CreateBackground()
-	local background = self:CreateTexture(nil, "BACKGROUND", nil, -6)
+	local background = self:CreateTexture(nil, "BACKGROUND", nil, BACKGROUND_SUBLEVEL)
 
 	background:SetAtlas("UI-Journeys-BG")
 	background:SetPoint("TOPLEFT", BACKGROUND_LEFT, BACKGROUND_TOP)
 	background:SetPoint("BOTTOMRIGHT", BACKGROUND_RIGHT, BACKGROUND_BOTTOM)
 
-	local streaks = self:CreateTexture(nil, "BACKGROUND", "_UI-Frame-TopTileStreaks", -5)
-
-	streaks:SetPoint("TOPLEFT", BACKGROUND_LEFT, BACKGROUND_TOP)
-	streaks:SetPoint("TOPRIGHT", BACKGROUND_RIGHT, BACKGROUND_TOP)
-
 	Dashboard.Skin:Register(background, "background")
-	Dashboard.Skin:Register(streaks, "background")
 end
 
 function Root:CreateBand()
@@ -193,6 +189,10 @@ function Root:CreateColumns()
 	self.runs = runs
 end
 
+function Root:Refresh()
+	Dashboard.Band:Refresh(Dashboard.Source:GetHeader())
+end
+
 ---@param event string
 ---@param handler fun(event: string, ...: any)
 function Root:RegisterShowEvent(event, handler)
@@ -223,6 +223,8 @@ function Root:RegisterShowTicker(interval, callback)
 end
 
 function Root:OnShow()
+	self:Refresh()
+
 	for event in pairs(self.showEvents) do
 		self:RegisterEvent(event)
 	end
@@ -257,7 +259,7 @@ end
 ---@param host Frame
 ---@return AMTDashboardPanelRoot
 function Panel.Build(host)
-	local root = CreateFrame("Frame", nil, host)
+	local root = CreateFrame("Frame", "AdvancedMythicTrackerDashboard", host)
 
 	Mixin(root, Root)
 	root:OnLoad()

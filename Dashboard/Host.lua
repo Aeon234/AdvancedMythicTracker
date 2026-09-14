@@ -157,7 +157,7 @@ function Host:Attach()
 		return
 	end
 
-	local tab = CreateFrame("Button", nil, PVEFrame, "PanelTabButtonTemplate")
+	local tab = CreateFrame("Button", "AdvancedMythicTrackerDashboardTab", PVEFrame, "PanelTabButtonTemplate")
 
 	tab:SetID(TAB_ID)
 	tab:SetText(L["Tracker"])
