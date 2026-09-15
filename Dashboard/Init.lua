@@ -10,5 +10,6 @@ local AMT = select(2, ...)
 ---@field Source AMTDashboardSource
 ---@field Band AMTDashboardBand
 ---@field RussianRealms table<string, string>
+---@field Vault AMTDashboardVault
 local Dashboard = {}
 AMT.Dashboard = Dashboard

@@ -77,6 +77,7 @@ function Root:OnLoad()
 	self:CreateBand()
 	self:CreateColumns()
 	Dashboard.Band:Build(self.sections)
+	Dashboard.Vault:Build(self)
 
 	self:SetScript("OnShow", self.OnShow)
 	self:SetScript("OnHide", self.OnHide)
@@ -190,7 +191,10 @@ function Root:CreateColumns()
 end
 
 function Root:Refresh()
-	Dashboard.Band:Refresh(Dashboard.Source:GetHeader())
+	local Source = Dashboard.Source
+
+	Dashboard.Band:Refresh(Source:GetHeader())
+	Dashboard.Vault:Refresh(Source:GetVault())
 end
 
 ---@param event string

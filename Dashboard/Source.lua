@@ -8,6 +8,12 @@ local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 18
 local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 1694, chests = 3 }
 local SAMPLE_AFFIXES = { 148, 9, 152, 147 }
 local SAMPLE_AFFIX_LEVELS = { 2, 5, 7, 10, 12 }
+local SAMPLE_VAULT_PROGRESS = 3
+local SAMPLE_VAULT_MILESTONES = {
+	{ threshold = 1, itemLevel = 662 },
+	{ threshold = 4, itemLevel = 658 },
+	{ threshold = 8, itemLevel = 655 },
+}
 
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
 local TYRANNICAL_BOSS_HEALTH, TYRANNICAL_BOSS_DAMAGE = 0.25, 0.15
@@ -43,6 +49,13 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field weeklyBest AMTDashboardRunSummary? nil before a run this week
 ---@field seasonBest AMTDashboardRunSummary? nil before a run this season
 ---@field affixes AMTDashboardAffix[]
+---@class AMTDashboardVaultMilestone
+---@field threshold integer runs that unlock this reward
+---@field itemLevel number? nil until the reward item has loaded
+
+---@class AMTDashboardVaultTrack
+---@field progress integer runs the vault counts this week, Heroic and Mythic 0 included
+---@field milestones AMTDashboardVaultMilestone[] in threshold order
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -175,4 +188,20 @@ function Source:GetHeader()
 		affixes = SampleAffixes(),
 		raiderIOURL = GetRaiderIOURL(),
 	}
+end
+
+---@return AMTDashboardVaultTrack
+function Source:GetVault()
+	local milestones = {}
+
+	for index, sample in ipairs(SAMPLE_VAULT_MILESTONES) do
+		milestones[index] = { threshold = sample.threshold, itemLevel = sample.itemLevel }
+	end
+
+	return { progress = SAMPLE_VAULT_PROGRESS, milestones = milestones }
+end
+
+---@return number seconds
+function Source:GetSecondsUntilWeeklyReset()
+	return C_DateAndTime.GetSecondsUntilWeeklyReset()
 end
