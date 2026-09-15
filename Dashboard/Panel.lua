@@ -79,6 +79,7 @@ function Root:OnLoad()
 	Dashboard.Band:Build(self.sections)
 	Dashboard.Vault:Build(self)
 	Dashboard.Party:Build(self)
+	Dashboard.Dungeons:Build(self)
 
 	self:SetScript("OnShow", self.OnShow)
 	self:SetScript("OnHide", self.OnHide)
@@ -197,6 +198,7 @@ function Root:Refresh()
 	Dashboard.Band:Refresh(Source:GetHeader())
 	Dashboard.Vault:Refresh(Source:GetVault())
 	Dashboard.Party:Refresh(Source:GetParty())
+	Dashboard.Dungeons:Refresh(Source:GetSeasonDungeons())
 end
 
 ---@param event string

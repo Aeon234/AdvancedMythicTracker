@@ -4,6 +4,7 @@ local Dashboard = AMT.Dashboard
 
 local CROP_MIN, CROP_MAX = 0.07, 0.93
 local FALLBACK_TEXTURE = 134400
+local MASK = [[Interface\AddOns\AdvancedMythicTracker\Media\Masks\IconMask]]
 
 ---@alias AMTDashboardIconKind "Frame"|"Button"|"Action"
 
@@ -26,6 +27,12 @@ function Icon:OnLoad(kind, size, corner)
 	self.iconTexture:SetAllPoints()
 	self.iconTexture:SetTexCoord(CROP_MIN, CROP_MAX, CROP_MIN, CROP_MAX)
 	self.iconTexture:SetTexture(FALLBACK_TEXTURE)
+
+	local mask = self:CreateMaskTexture()
+
+	mask:SetTexture(MASK, "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE")
+	mask:SetAllPoints(self.iconTexture)
+	self.iconTexture:AddMaskTexture(mask)
 
 	self.border = AMT.NineSlice.Apply(self, "Ring", corner, "OVERLAY")
 

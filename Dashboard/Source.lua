@@ -30,7 +30,7 @@ local SAMPLE_PARTY = {
 	{ name = "Anduin", classFile = "PRIEST" },
 	{ name = "Vol'jin", classFile = "HUNTER", level = 20, rating = 2710 },
 }
-local SAMPLE_PARTY_PACE = { 0.55, 0.7, 0.85, 1.0, 1.15 }
+local SAMPLE_PACE = { 0.55, 0.7, 0.85, 1.0, 1.15 }
 
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
 local TYRANNICAL_BOSS_HEALTH, TYRANNICAL_BOSS_DAMAGE = 0.25, 0.15
@@ -112,6 +112,22 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@class AMTDashboardPartyRoster
 ---@field inGroup boolean
 ---@field members AMTDashboardPartyMember[] the player included, in no particular order
+
+---@class AMTDashboardFastestRun
+---@field level integer
+---@field seconds number
+---@field overTime boolean
+
+---@class AMTDashboardSeasonDungeon
+---@field mapID integer
+---@field name string
+---@field abbrev string
+---@field texture number?
+---@field score number 0 when not run this season
+---@field level integer 0 when not run this season
+---@field seconds number
+---@field timed boolean
+---@field fastest AMTDashboardFastestRun? the fastest season-best run, nil when not run
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -293,7 +309,7 @@ local function SampleDungeons(seed)
 	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
 		local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID)
 		local step = index + seed
-		local seconds = timeLimit * SAMPLE_PARTY_PACE[step % #SAMPLE_PARTY_PACE + 1]
+		local seconds = timeLimit * SAMPLE_PACE[step % #SAMPLE_PACE + 1]
 		local level = step % 6 == 0 and 0 or 16 + step % 6
 
 		dungeons[index] = {
@@ -334,4 +350,37 @@ function Source:GetParty()
 	end
 
 	return { inGroup = true, members = members }
+end
+
+---@return AMTDashboardSeasonDungeon[] in no particular order
+function Source:GetSeasonDungeons()
+	local dungeons = {}
+
+	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(mapID)
+		-- The last two stay unplayed, so the sample shows both states.
+		local played = index <= 6
+		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
+		local level = played and 18 + index % 5 or 0
+		local timed = played and seconds <= timeLimit
+		local fastest
+
+		if played then
+			fastest = { level = level, seconds = seconds, overTime = not timed }
+		end
+
+		dungeons[index] = {
+			mapID = mapID,
+			name = name,
+			abbrev = name:sub(1, 3):upper(),
+			texture = texture,
+			score = played and 400 + (index * 37) % 40 or 0,
+			level = level,
+			seconds = seconds,
+			timed = timed,
+			fastest = fastest,
+		}
+	end
+
+	return dungeons
 end

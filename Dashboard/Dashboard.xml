@@ -6,6 +6,7 @@
     <Script file="Source.lua" />
 
     <Script file="Band.lua" />
+    <Script file="Dungeons.lua" />
     <Script file="Vault.lua" />
     <Script file="Party.lua" />
 
