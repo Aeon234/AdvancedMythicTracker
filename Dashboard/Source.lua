@@ -21,6 +21,17 @@ local SAMPLE_VAULT_RUNS = {
 	{ mapID = 78, level = 4 },
 }
 
+local SAMPLE_PARTY_MAP_ID, SAMPLE_PARTY_ABBREV = 78, "SM"
+---@type { name: string, classFile: string, specID: integer?, level: integer?, rating: number? }[]
+local SAMPLE_PARTY = {
+	{ name = "Tirion", classFile = "PALADIN", specID = 65, level = 21, rating = 3120 },
+	{ name = "Malfurion", classFile = "DRUID", level = 22, rating = 3285 },
+	{ name = "Jaina", classFile = "MAGE", level = 21, rating = 2950 },
+	{ name = "Anduin", classFile = "PRIEST" },
+	{ name = "Vol'jin", classFile = "HUNTER", level = 20, rating = 2710 },
+}
+local SAMPLE_PARTY_PACE = { 0.55, 0.7, 0.85, 1.0, 1.15 }
+
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
 local TYRANNICAL_BOSS_HEALTH, TYRANNICAL_BOSS_DAMAGE = 0.25, 0.15
 local FORTIFIED_MINION_HEALTH, FORTIFIED_MINION_DAMAGE = 0.20, 0.20
@@ -77,6 +88,30 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field mythicRuns integer Mythic 0 runs counted by the vault
 ---@field heroicRuns integer Heroic and Timewalking runs counted by the vault
 ---@field rewardsWaiting boolean last week's rewards are unclaimed
+
+---@class AMTDashboardPartyKey
+---@field name string dungeon name
+---@field abbrev string
+---@field texture number?
+---@field level integer
+
+---@class AMTDashboardPartyDungeon
+---@field name string
+---@field level integer 0 when not run this season
+---@field timed boolean
+---@field upgrades integer 0-3
+
+---@class AMTDashboardPartyMember
+---@field name string a plain string, never secret: the panel sorts by it
+---@field classFile string
+---@field specIcon number? nil until the spec is known
+---@field key AMTDashboardPartyKey? nil until the key is known
+---@field rating number? nil when the client returned no rating summary
+---@field dungeons AMTDashboardPartyDungeon[] every season dungeon, in no particular order
+
+---@class AMTDashboardPartyRoster
+---@field inGroup boolean
+---@field members AMTDashboardPartyMember[] the player included, in no particular order
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -248,4 +283,55 @@ end
 ---@return number seconds
 function Source:GetSecondsUntilWeeklyReset()
 	return C_DateAndTime.GetSecondsUntilWeeklyReset()
+end
+
+---@param seed integer varies the sample between members
+---@return AMTDashboardPartyDungeon[]
+local function SampleDungeons(seed)
+	local dungeons = {}
+
+	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID)
+		local step = index + seed
+		local seconds = timeLimit * SAMPLE_PARTY_PACE[step % #SAMPLE_PARTY_PACE + 1]
+		local level = step % 6 == 0 and 0 or 16 + step % 6
+
+		dungeons[index] = {
+			name = name,
+			level = level,
+			timed = level > 0 and seconds <= timeLimit,
+			upgrades = level > 0 and AMT.Util.CountUpgrades(seconds, timeLimit) or 0,
+		}
+	end
+
+	return dungeons
+end
+
+---@return AMTDashboardPartyRoster
+function Source:GetParty()
+	local mapName, _, _, texture = C_ChallengeMode.GetMapUIInfo(SAMPLE_PARTY_MAP_ID)
+	local members = {}
+
+	for index, sample in ipairs(SAMPLE_PARTY) do
+		local key, specIcon
+
+		if sample.level then
+			key = { name = mapName, abbrev = SAMPLE_PARTY_ABBREV, texture = texture, level = sample.level }
+		end
+
+		if sample.specID then
+			specIcon = select(4, GetSpecializationInfoByID(sample.specID))
+		end
+
+		members[index] = {
+			name = sample.name,
+			classFile = sample.classFile,
+			specIcon = specIcon,
+			key = key,
+			rating = sample.rating,
+			dungeons = sample.rating and SampleDungeons(index) or {},
+		}
+	end
+
+	return { inGroup = true, members = members }
 end

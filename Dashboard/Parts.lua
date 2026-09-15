@@ -30,18 +30,24 @@ local RUN_TEXT_SIZE = 14
 local Parts = {}
 Dashboard.Parts = Parts
 
+---@param text FontString
+---@param size number
+function Parts.ResizeText(text, size)
+	local path, _, flags = text:GetFont()
+
+	if path then
+		text:SetFont(path, size, flags)
+	end
+end
+
 ---@param parent Frame
 ---@param template "GameFontNormal"|"GameFontHighlight"
 ---@param size number
 ---@return FontString
 function Parts.CreateText(parent, template, size)
 	local text = parent:CreateFontString(nil, "ARTWORK", template)
-	local path, _, flags = text:GetFont()
 
-	if path then
-		text:SetFont(path, size, flags)
-	end
-
+	Parts.ResizeText(text, size)
 	Dashboard.Skin:Register(text, "text")
 
 	return text

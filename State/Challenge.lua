@@ -5,8 +5,7 @@ local State = AMT.State
 local CHALLENGERS_PERIL_AFFIX_ID = 152
 local CHALLENGERS_PERIL_BONUS = 90
 
--- Tick mark positions for +1,+2,+3 upgrades
-local UPGRADE_FRACTIONS = { 1.0, 0.8, 0.6 }
+local UPGRADE_FRACTIONS = AMT.Util.UPGRADE_FRACTIONS
 
 ---@class AMTChallenge
 local Challenge = {}

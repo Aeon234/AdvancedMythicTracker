@@ -165,3 +165,20 @@ function Util.SplitColor(settings, verdict)
 
 	return settings.equalColor
 end
+
+Util.UPGRADE_FRACTIONS = { 1.0, 0.8, 0.6 }
+
+---@param seconds number
+---@param timeLimit number
+---@return integer upgrades 0 over time, 1-3 within it
+function Util.CountUpgrades(seconds, timeLimit)
+	local upgrades = 0
+
+	for index, fraction in ipairs(Util.UPGRADE_FRACTIONS) do
+		if seconds <= timeLimit * fraction then
+			upgrades = index
+		end
+	end
+
+	return upgrades
+end
