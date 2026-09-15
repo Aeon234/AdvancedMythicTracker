@@ -9,10 +9,16 @@ local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 16
 local SAMPLE_AFFIXES = { 148, 9, 152, 147 }
 local SAMPLE_AFFIX_LEVELS = { 2, 5, 7, 10, 12 }
 local SAMPLE_VAULT_PROGRESS = 3
+---@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
 local SAMPLE_VAULT_MILESTONES = {
-	{ threshold = 1, itemLevel = 662 },
-	{ threshold = 4, itemLevel = 658 },
-	{ threshold = 8, itemLevel = 655 },
+	{ threshold = 1, level = 22, itemLevel = 662, upgradeItemLevel = 665, nextLevel = 23, lowestLevel = 22 },
+	{ threshold = 4, level = 0, nextLevel = 2, lowestLevel = 21 },
+	{ threshold = 8, level = 0, nextLevel = 2, lowestLevel = 21 },
+}
+local SAMPLE_VAULT_RUNS = {
+	{ mapID = 78, level = 20 },
+	{ mapID = 78, level = 10 },
+	{ mapID = 78, level = 4 },
 }
 
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
@@ -50,12 +56,26 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field seasonBest AMTDashboardRunSummary? nil before a run this season
 ---@field affixes AMTDashboardAffix[]
 ---@class AMTDashboardVaultMilestone
+---@field index integer the slot, 1-3
 ---@field threshold integer runs that unlock this reward
+---@field level integer the key level the slot is set at
+---@field heroic boolean the slot is set by a Heroic run
 ---@field itemLevel number? nil until the reward item has loaded
+---@field upgradeItemLevel number? nil when the slot is already at its highest item level
+---@field nextLevel integer the key level that would raise the slot
+---@field lowestLevel integer? the lowest of the top `threshold` runs; WeeklyRewardsUtil.HeroicLevel for Heroic
+
+---@class AMTDashboardVaultRun
+---@field level integer
+---@field name string
 
 ---@class AMTDashboardVaultTrack
 ---@field progress integer runs the vault counts this week, Heroic and Mythic 0 included
+---@field canClaim boolean last week's rewards can be claimed, which hides the reward preview
 ---@field milestones AMTDashboardVaultMilestone[] in threshold order
+---@field topRuns AMTDashboardVaultRun[] this week's Mythic+ runs, highest first
+---@field mythicRuns integer Mythic 0 runs counted by the vault
+---@field heroicRuns integer Heroic and Timewalking runs counted by the vault
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -195,10 +215,32 @@ function Source:GetVault()
 	local milestones = {}
 
 	for index, sample in ipairs(SAMPLE_VAULT_MILESTONES) do
-		milestones[index] = { threshold = sample.threshold, itemLevel = sample.itemLevel }
+		milestones[index] = {
+			index = index,
+			threshold = sample.threshold,
+			level = sample.level,
+			heroic = false,
+			itemLevel = sample.itemLevel,
+			upgradeItemLevel = sample.upgradeItemLevel,
+			nextLevel = sample.nextLevel,
+			lowestLevel = sample.lowestLevel,
+		}
 	end
 
-	return { progress = SAMPLE_VAULT_PROGRESS, milestones = milestones }
+	local topRuns = {}
+
+	for index, sample in ipairs(SAMPLE_VAULT_RUNS) do
+		topRuns[index] = { level = sample.level, name = (C_ChallengeMode.GetMapUIInfo(sample.mapID)) }
+	end
+
+	return {
+		progress = SAMPLE_VAULT_PROGRESS,
+		canClaim = false,
+		milestones = milestones,
+		topRuns = topRuns,
+		mythicRuns = 0,
+		heroicRuns = 0,
+	}
 end
 
 ---@return number seconds

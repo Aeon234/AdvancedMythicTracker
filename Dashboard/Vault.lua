@@ -27,6 +27,12 @@ local SECONDS_PER_DAY = 86400
 local SECONDS_PER_HOUR = 3600
 local SECONDS_PER_MINUTE = 60
 
+local UNLOCK_DESCRIPTIONS = {
+	GREAT_VAULT_REWARDS_MYTHIC_INCOMPLETE,
+	GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_FIRST,
+	GREAT_VAULT_REWARDS_MYTHIC_COMPLETED_SECOND,
+}
+
 ---@param seconds number
 ---@return string
 local function FormatReset(seconds)
@@ -92,6 +98,8 @@ function Milestone.New(parent, pipWidth)
 	local frame = CreateFrame("Frame", nil, parent)
 
 	frame:SetSize(pipWidth + PIP_GAP, MILESTONE_HEIGHT)
+	frame:SetMouseMotionEnabled(true)
+	frame:Hide()
 
 	local value = Parts.CreateText(frame, "GameFontNormal", MILESTONE_VALUE_SIZE)
 
@@ -100,8 +108,6 @@ function Milestone.New(parent, pipWidth)
 	local unit = Parts.CreateSubduedText(frame, MILESTONE_UNIT_SIZE)
 
 	unit:SetPoint("TOP", value, "BOTTOM", 0, -MILESTONE_UNIT_GAP)
-
-	frame:Hide()
 
 	return setmetatable({ frame = frame, value = value, unit = unit }, Milestone)
 end
@@ -132,6 +138,7 @@ end
 ---@field header AMTDashboardPanelHeader
 ---@field pips AMTDashboardVaultPip[]
 ---@field milestones AMTDashboardVaultMilestoneView[]
+---@field track AMTDashboardVaultTrack?
 local Vault = {}
 Dashboard.Vault = Vault
 
@@ -149,10 +156,23 @@ function Vault:Build(root)
 		self.pips[index] = Pip.New(frame, index, pipWidth)
 	end
 
+	local button = CreateFrame("Button", nil, frame)
+
+	button:SetPoint("TOPLEFT", PADDING, TRACK_Y)
+	button:SetPoint("BOTTOMRIGHT", -PADDING, BOTTOM_PADDING)
+	button:SetScript("OnClick", WeeklyRewards_ShowUI)
+
 	self.milestones = {}
 
 	for index = 1, MILESTONE_COUNT do
-		self.milestones[index] = Milestone.New(frame, pipWidth)
+		local view = Milestone.New(button, pipWidth)
+
+		view.frame:SetScript("OnEnter", function()
+			self:ShowMilestoneTooltip(index)
+		end)
+		view.frame:SetScript("OnLeave", GameTooltip_Hide)
+
+		self.milestones[index] = view
 	end
 
 	local rule = Parts.CreateRule(frame)
@@ -165,14 +185,39 @@ function Vault:Build(root)
 	root:RegisterShowTicker(RESET_TICK_SECONDS, function()
 		self:UpdateResetNote()
 	end)
+
+	root:RegisterShowEvent("ITEM_DATA_LOAD_RESULT", function()
+		if self:HasPendingItemLevel() then
+			self:Refresh(Dashboard.Source:GetVault())
+		end
+	end)
 end
 
 function Vault:UpdateResetNote()
 	self.header:SetNote(FormatReset(Dashboard.Source:GetSecondsUntilWeeklyReset()))
 end
 
+---@return boolean
+function Vault:HasPendingItemLevel()
+	local track = self.track
+
+	if not track then
+		return false
+	end
+
+	for _, milestone in ipairs(track.milestones) do
+		if track.progress >= milestone.threshold and not milestone.itemLevel then
+			return true
+		end
+	end
+
+	return false
+end
+
 ---@param track AMTDashboardVaultTrack
 function Vault:Refresh(track)
+	self.track = track
+
 	for index, pip in ipairs(self.pips) do
 		pip:SetLit(index <= track.progress)
 	end
@@ -186,5 +231,142 @@ function Vault:Refresh(track)
 		end
 
 		view.frame:SetShown(milestone ~= nil)
+
+		if milestone and GameTooltip:IsOwned(view.frame) then
+			self:ShowMilestoneTooltip(index)
+		end
 	end
+end
+
+---@param threshold integer
+function Vault:AddTopRuns(threshold)
+	local track = self.track
+
+	if not track then
+		return
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+	GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_MYTHIC_TOP_RUNS:format(threshold))
+
+	for index = 1, math.min(threshold, #track.topRuns) do
+		local run = track.topRuns[index]
+
+		GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_MYTHIC_RUN_INFO:format(run.level, run.name))
+	end
+
+	local missing = math.max(threshold - #track.topRuns, 0)
+	local mythic = math.min(track.mythicRuns, missing)
+	local heroic = math.min(track.heroicRuns, missing - mythic)
+
+	for _ = 1, mythic do
+		GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_MYTHIC:format(WeeklyRewardsUtil.MythicLevel))
+	end
+
+	for _ = 1, heroic do
+		GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_HEROIC)
+	end
+end
+
+---@param milestone AMTDashboardVaultMilestone
+function Vault:AddRewardLines(milestone)
+	GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_CURRENT_REWARD)
+
+	local itemLevel = milestone.itemLevel
+
+	if not itemLevel then
+		GameTooltip_AddErrorLine(GameTooltip, RETRIEVING_ITEM_INFO)
+
+		return
+	end
+
+	if milestone.heroic then
+		GameTooltip_AddNormalLine(GameTooltip, WEEKLY_REWARDS_ITEM_LEVEL_HEROIC:format(itemLevel))
+	else
+		GameTooltip_AddNormalLine(GameTooltip, WEEKLY_REWARDS_ITEM_LEVEL_MYTHIC:format(itemLevel, milestone.level))
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+
+	local upgradeItemLevel = milestone.upgradeItemLevel
+
+	if not upgradeItemLevel then
+		GameTooltip_AddColoredLine(GameTooltip, WEEKLY_REWARDS_MAXED_REWARD, GREEN_FONT_COLOR)
+
+		return
+	end
+
+	GameTooltip_AddColoredLine(
+		GameTooltip,
+		WEEKLY_REWARDS_IMPROVE_ITEM_LEVEL:format(upgradeItemLevel),
+		GREEN_FONT_COLOR
+	)
+
+	if milestone.threshold > 1 then
+		GameTooltip_AddHighlightLine(
+			GameTooltip,
+			WEEKLY_REWARDS_COMPLETE_MYTHIC:format(milestone.nextLevel, milestone.threshold)
+		)
+		self:AddTopRuns(milestone.threshold)
+	elseif milestone.heroic then
+		GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_HEROIC_SHORT)
+	else
+		GameTooltip_AddHighlightLine(GameTooltip, WEEKLY_REWARDS_COMPLETE_MYTHIC_SHORT:format(milestone.nextLevel))
+	end
+end
+
+---@param milestone AMTDashboardVaultMilestone
+---@param progress integer
+function Vault:AddUnlockLines(milestone, progress)
+	GameTooltip_SetTitle(GameTooltip, WEEKLY_REWARDS_UNLOCK_REWARD)
+
+	local description = UNLOCK_DESCRIPTIONS[milestone.index] or UNLOCK_DESCRIPTIONS[1]
+
+	if milestone.index > 1 then
+		description = description:format(math.max(milestone.threshold - progress, 0))
+	end
+
+	GameTooltip_AddNormalLine(GameTooltip, description)
+
+	local lowestLevel = milestone.lowestLevel
+
+	if progress == 0 or not lowestLevel then
+		return
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+
+	if lowestLevel == WeeklyRewardsUtil.HeroicLevel then
+		GameTooltip_AddNormalLine(GameTooltip, GREAT_VAULT_REWARDS_CURRENT_LEVEL_HEROIC:format(milestone.threshold))
+	else
+		GameTooltip_AddNormalLine(
+			GameTooltip,
+			GREAT_VAULT_REWARDS_CURRENT_LEVEL_MYTHIC:format(milestone.threshold, lowestLevel)
+		)
+	end
+
+	self:AddTopRuns(milestone.threshold)
+end
+
+-- Blizzard's own vault tooltip for the dungeon track.
+---@param index integer
+function Vault:ShowMilestoneTooltip(index)
+	local track = self.track
+	local milestone = track and track.milestones[index]
+
+	if not track or not milestone then
+		return
+	end
+
+	GameTooltip:SetOwner(self.milestones[index].frame, "ANCHOR_RIGHT")
+
+	if track.progress >= milestone.threshold and not track.canClaim then
+		self:AddRewardLines(milestone)
+	else
+		self:AddUnlockLines(milestone, track.progress)
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+	GameTooltip_AddInstructionLine(GameTooltip, L["Click to open the Great Vault"])
+	GameTooltip:Show()
 end
