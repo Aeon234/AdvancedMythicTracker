@@ -13,6 +13,7 @@ local RULE_ALPHA = 0.08
 local HEADER_TITLE_SIZE = 16
 local HEADER_TITLE_Y = -6
 local HEADER_NOTE_SIZE = 11
+local HEADER_NOTE_GAP = 8
 
 local STAR_ATLAS = "CampCollection-icon-star"
 local STAR_SIZE, STAR_SPACING = 11, 1
@@ -109,6 +110,8 @@ function Parts.NewHairline(parent)
 end
 
 ---@class AMTDashboardPanelHeader
+---@field panel Frame
+---@field padding number
 ---@field title FontString
 ---@field note FontString
 local PanelHeader = {}
@@ -117,11 +120,23 @@ PanelHeader.__index = PanelHeader
 ---@param text string
 function PanelHeader:SetTitle(text)
 	self.title:SetText(text)
+	self:FitNote()
 end
 
 ---@param text string?
 function PanelHeader:SetNote(text)
 	self.note:SetText(text or "")
+	self:FitNote()
+end
+
+function PanelHeader:FitNote()
+	local room = self.panel:GetWidth() - 2 * self.padding - self.title:GetStringWidth() - HEADER_NOTE_GAP
+
+	if room > 0 and self.note:GetUnboundedStringWidth() > room then
+		self.note:SetWidth(room)
+	else
+		self.note:SetWidth(0)
+	end
 end
 
 ---@param panel Frame
@@ -135,8 +150,9 @@ function Parts.NewPanelHeader(panel, padding)
 	local note = Parts.CreateSubduedText(panel, HEADER_NOTE_SIZE)
 
 	note:SetPoint("RIGHT", panel, "TOPRIGHT", -padding, HEADER_TITLE_Y - HEADER_TITLE_SIZE / 2)
+	note:SetJustifyH("RIGHT")
 
-	return setmetatable({ title = title, note = note }, PanelHeader)
+	return setmetatable({ panel = panel, padding = padding, title = title, note = note }, PanelHeader)
 end
 
 ---@class AMTDashboardStarRowMixin : Frame

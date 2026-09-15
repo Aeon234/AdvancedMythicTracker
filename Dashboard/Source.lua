@@ -76,6 +76,7 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field topRuns AMTDashboardVaultRun[] this week's Mythic+ runs, highest first
 ---@field mythicRuns integer Mythic 0 runs counted by the vault
 ---@field heroicRuns integer Heroic and Timewalking runs counted by the vault
+---@field rewardsWaiting boolean last week's rewards are unclaimed
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -240,6 +241,7 @@ function Source:GetVault()
 		topRuns = topRuns,
 		mythicRuns = 0,
 		heroicRuns = 0,
+		rewardsWaiting = false,
 	}
 end
 

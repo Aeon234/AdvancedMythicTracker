@@ -22,6 +22,12 @@ local MILESTONE_UNIT_GAP = 1
 local LOCKED_GREY = 0.5
 local PENDING = "..."
 
+local PULSE_ATLAS = "evergreen-weeklyrewards-reward-coin-selected"
+local PULSE_OUTSET_X = 11
+local PULSE_OUTSET_Y = 8
+local PULSE_PEAK_ALPHA = 0.5
+local PULSE_HALF_SECONDS = 1
+
 local RESET_TICK_SECONDS = 60
 local SECONDS_PER_DAY = 86400
 local SECONDS_PER_HOUR = 3600
@@ -85,7 +91,7 @@ function Pip:SetLit(lit)
 end
 
 ---@class AMTDashboardVaultMilestoneView
----@field frame Frame
+---@field frame Button
 ---@field value FontString
 ---@field unit FontString
 local Milestone = {}
@@ -95,10 +101,10 @@ Milestone.__index = Milestone
 ---@param pipWidth number
 ---@return AMTDashboardVaultMilestoneView
 function Milestone.New(parent, pipWidth)
-	local frame = CreateFrame("Frame", nil, parent)
+	local frame = CreateFrame("Button", nil, parent)
 
 	frame:SetSize(pipWidth + PIP_GAP, MILESTONE_HEIGHT)
-	frame:SetMouseMotionEnabled(true)
+	frame:SetScript("OnClick", WeeklyRewards_ShowUI)
 	frame:Hide()
 
 	local value = Parts.CreateText(frame, "GameFontNormal", MILESTONE_VALUE_SIZE)
@@ -139,6 +145,8 @@ end
 ---@field pips AMTDashboardVaultPip[]
 ---@field milestones AMTDashboardVaultMilestoneView[]
 ---@field track AMTDashboardVaultTrack?
+---@field pulse Texture
+---@field pulseAnimation AnimationGroup
 local Vault = {}
 Dashboard.Vault = Vault
 
@@ -156,16 +164,12 @@ function Vault:Build(root)
 		self.pips[index] = Pip.New(frame, index, pipWidth)
 	end
 
-	local button = CreateFrame("Button", nil, frame)
-
-	button:SetPoint("TOPLEFT", PADDING, TRACK_Y)
-	button:SetPoint("BOTTOMRIGHT", -PADDING, BOTTOM_PADDING)
-	button:SetScript("OnClick", WeeklyRewards_ShowUI)
+	self:CreatePulse(frame)
 
 	self.milestones = {}
 
 	for index = 1, MILESTONE_COUNT do
-		local view = Milestone.New(button, pipWidth)
+		local view = Milestone.New(frame, pipWidth)
 
 		view.frame:SetScript("OnEnter", function()
 			self:ShowMilestoneTooltip(index)
@@ -183,7 +187,7 @@ function Vault:Build(root)
 	frame:SetHeight(-TRACK_Y + PIP_HEIGHT + MILESTONE_GAP + MILESTONE_HEIGHT + BOTTOM_PADDING)
 
 	root:RegisterShowTicker(RESET_TICK_SECONDS, function()
-		self:UpdateResetNote()
+		self:UpdateNote()
 	end)
 
 	root:RegisterShowEvent("ITEM_DATA_LOAD_RESULT", function()
@@ -193,8 +197,62 @@ function Vault:Build(root)
 	end)
 end
 
-function Vault:UpdateResetNote()
+function Vault:UpdateNote()
+	if self.track and self.track.rewardsWaiting then
+		self.header:SetNote(MYTHIC_PLUS_COLLECT_GREAT_VAULT)
+
+		return
+	end
+
 	self.header:SetNote(FormatReset(Dashboard.Source:GetSecondsUntilWeeklyReset()))
+end
+
+---@param parent Frame
+function Vault:CreatePulse(parent)
+	local host = CreateFrame("Frame", nil, parent)
+
+	host:SetAllPoints()
+
+	local pulse = host:CreateTexture(nil, "OVERLAY")
+
+	pulse:SetAtlas(PULSE_ATLAS)
+	pulse:SetPoint("TOPLEFT", self.pips[1].frame, "TOPLEFT", -PULSE_OUTSET_X, PULSE_OUTSET_Y)
+	pulse:SetPoint("BOTTOMRIGHT", self.pips[PIP_COUNT].frame, "BOTTOMRIGHT", PULSE_OUTSET_X, -PULSE_OUTSET_Y)
+	pulse:SetAlpha(0)
+	pulse:Hide()
+
+	local animation = pulse:CreateAnimationGroup()
+
+	animation:SetLooping("REPEAT")
+
+	local fadeIn = animation:CreateAnimation("Alpha")
+
+	fadeIn:SetFromAlpha(0)
+	fadeIn:SetToAlpha(PULSE_PEAK_ALPHA)
+	fadeIn:SetDuration(PULSE_HALF_SECONDS)
+	fadeIn:SetOrder(1)
+
+	local fadeOut = animation:CreateAnimation("Alpha")
+
+	fadeOut:SetFromAlpha(PULSE_PEAK_ALPHA)
+	fadeOut:SetToAlpha(0)
+	fadeOut:SetDuration(PULSE_HALF_SECONDS)
+	fadeOut:SetStartDelay(PULSE_HALF_SECONDS)
+	fadeOut:SetOrder(1)
+
+	self.pulse = pulse
+	self.pulseAnimation = animation
+end
+
+---@param waiting boolean
+function Vault:SetRewardsWaiting(waiting)
+	self.pulse:SetShown(waiting)
+
+	if not waiting then
+		self.pulseAnimation:Stop()
+	elseif not self.pulseAnimation:IsPlaying() then
+		self.pulseAnimation:Play()
+	end
 end
 
 ---@return boolean
@@ -236,6 +294,9 @@ function Vault:Refresh(track)
 			self:ShowMilestoneTooltip(index)
 		end
 	end
+
+	self:SetRewardsWaiting(track.rewardsWaiting)
+	self:UpdateNote()
 end
 
 ---@param threshold integer
