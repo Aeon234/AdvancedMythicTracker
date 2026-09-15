@@ -19,6 +19,7 @@ local KEYSTONE_ABBREV_SIZE = 12
 local KEYSTONE_ABBREV_GAP = 1
 local KEYSTONE_ABBREV_GREY = 0.8
 local NO_KEYSTONE_TEXTURE = 4352494
+local PERCENT_INCREASE = "+%d%%"
 
 local RATING_SIZE = 30
 
@@ -66,6 +67,7 @@ StaticPopupDialogs[COPY_URL_DIALOG] = {
 ---@field affixIcons AMTDashboardIconMixin[]
 ---@field affixes AMTDashboardAffix[]
 ---@field raiderIOURL string?
+---@field keystone AMTDashboardKeystone?
 local Band = {}
 Dashboard.Band = Band
 
@@ -97,6 +99,44 @@ local function CreateBestRun(section, text)
 	return block
 end
 
+---@param heading string
+---@param health integer
+---@param damage integer
+local function AddModifierLines(heading, health, damage)
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+	GameTooltip_AddNormalLine(GameTooltip, heading)
+	GameTooltip_AddColoredDoubleLine(
+		GameTooltip,
+		HEALTH,
+		PERCENT_INCREASE:format(health),
+		HIGHLIGHT_FONT_COLOR,
+		HIGHLIGHT_FONT_COLOR
+	)
+	GameTooltip_AddColoredDoubleLine(
+		GameTooltip,
+		DAMAGE,
+		PERCENT_INCREASE:format(damage),
+		HIGHLIGHT_FONT_COLOR,
+		HIGHLIGHT_FONT_COLOR
+	)
+end
+
+---@param label string
+---@param itemLevel number?
+local function AddRewardLine(label, itemLevel)
+	if not itemLevel then
+		return
+	end
+
+	GameTooltip_AddColoredDoubleLine(
+		GameTooltip,
+		label,
+		ITEM_LEVEL:format(itemLevel),
+		NORMAL_FONT_COLOR,
+		HIGHLIGHT_FONT_COLOR
+	)
+end
+
 ---@param sections Frame[] the band's five sections, left to right
 function Band:Build(sections)
 	self:BuildKeystone(sections[1])
@@ -111,12 +151,43 @@ function Band:BuildKeystone(section)
 	self.keystoneIcon = Dashboard.NewIcon(section, "Frame", KEYSTONE_ICON_SIZE, KEYSTONE_ICON_CORNER)
 	self.keystoneIcon:SetPoint("RIGHT", section, "CENTER", -KEYSTONE_CENTRE_GAP, 0)
 
+	self.keystoneIcon:SetMouseMotionEnabled(true)
+	self.keystoneIcon:SetScript("OnEnter", function()
+		self:ShowKeystoneTooltip()
+	end)
+	self.keystoneIcon:SetScript("OnLeave", GameTooltip_Hide)
+
 	self.keystoneLevel = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_LEVEL_SIZE)
 	self.keystoneLevel:SetPoint("BOTTOMLEFT", section, "CENTER", KEYSTONE_CENTRE_GAP, -KEYSTONE_LEVEL_DROP)
 
 	self.keystoneAbbrev = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_ABBREV_SIZE)
 	self.keystoneAbbrev:SetPoint("TOPLEFT", self.keystoneLevel, "BOTTOMLEFT", 0, -KEYSTONE_ABBREV_GAP)
 	self.keystoneAbbrev:SetTextColor(KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY)
+end
+
+function Band:ShowKeystoneTooltip()
+	local keystone = self.keystone
+
+	if not keystone then
+		return
+	end
+
+	local modifiers = keystone.modifiers
+
+	GameTooltip:SetOwner(self.keystoneIcon, "ANCHOR_RIGHT")
+	GameTooltip:SetText(keystone.name, HIGHLIGHT_FONT_COLOR:GetRGB())
+	GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(keystone.level), HIGHLIGHT_FONT_COLOR)
+
+	AddModifierLines(BOSS, modifiers.bossHealth, modifiers.bossDamage)
+	AddModifierLines(UNIT_NAME_ENEMY_MINIONS, modifiers.minionHealth, modifiers.minionDamage)
+
+	if keystone.lootItemLevel or keystone.vaultItemLevel then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip)
+		AddRewardLine(LOOT_NOUN, keystone.lootItemLevel)
+		AddRewardLine(L["Great Vault"], keystone.vaultItemLevel)
+	end
+
+	GameTooltip:Show()
 end
 
 ---@param section Frame
@@ -226,6 +297,7 @@ end
 
 ---@param keystone AMTDashboardKeystone?
 function Band:RefreshKeystone(keystone)
+	self.keystone = keystone
 	local icon = self.keystoneIcon
 
 	if not keystone then
