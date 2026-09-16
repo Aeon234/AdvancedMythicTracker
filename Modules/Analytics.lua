@@ -9,9 +9,26 @@ local L = AMT.L
 ---@field runScore number
 ---@field thisWeek boolean
 
+---@class AMTRecordedMember
+---@field classFile string
+---@field specIcon number? nil until an inspect has seen the member
+
+---@class AMTRecordedRun
+---@field mapID integer
+---@field level integer
+---@field durationSec integer
+---@field completedAt integer epoch seconds
+---@field completedOnTime boolean
+---@field deaths integer
+---@field affixIDs integer[]
+---@field bosses AMTBossSplit[]
+---@field forcesMS integer?
+---@field party AMTRecordedMember[] in party order, the player first
+
 ---@class AMTHistoryEntry
 ---@field runs AMTRunRecord[]
 ---@field abandoned table<integer, table<integer, integer>> mapID > level > count
+---@field recorded AMTRecordedRun[] since the last weekly reset
 
 ---@class AMTAnalyticsModule : AMTModule
 local module = AMT.Modules.New("Analytics")
@@ -20,6 +37,9 @@ local module = AMT.Modules.New("Analytics")
 -- immediate read returns nil or inaccurate data.
 local LOGIN_DELAY = 10
 local COMPLETION_DELAY = 2
+local MILLISECONDS_PER_SECOND = 1000
+local SECONDS_PER_WEEK = 7 * SECONDS_PER_DAY
+local UNIT_ORDER = { player = 1, party1 = 2, party2 = 3, party3 = 4, party4 = 5 }
 
 ---@param seasonID integer
 ---@param mapID integer
@@ -104,8 +124,12 @@ local function EnsureEntry(seasonID, guid)
 	local entry = bucket[guid]
 
 	if not entry then
-		entry = { runs = {}, abandoned = {} }
+		entry = { runs = {}, abandoned = {}, recorded = {} }
 		bucket[guid] = entry
+	end
+
+	if not entry.recorded then
+		entry.recorded = {}
 	end
 
 	return entry
@@ -195,6 +219,123 @@ function module:OnAbandonVote(event, votePassed)
 	byLevel[state.level] = (byLevel[state.level] or 0) + 1
 end
 
+---@return integer epoch seconds of the most recent weekly reset
+local function LastWeeklyReset()
+	return time() + C_DateAndTime.GetSecondsUntilWeeklyReset() - SECONDS_PER_WEEK
+end
+
+-- The dashboard shows this week only, so the store keeps this week only.
+---@param entry AMTHistoryEntry
+local function PurgeRecorded(entry)
+	local since = LastWeeklyReset()
+	local kept = {}
+
+	for _, run in ipairs(entry.recorded) do
+		if run.completedAt >= since then
+			kept[#kept + 1] = run
+		end
+	end
+
+	entry.recorded = kept
+end
+
+---@param left AMTPartyMember
+---@param right AMTPartyMember
+---@return boolean
+local function ByUnitOrder(left, right)
+	return (UNIT_ORDER[left.unit] or math.huge) < (UNIT_ORDER[right.unit] or math.huge)
+end
+
+---@return AMTRecordedMember[]
+local function RecordedParty()
+	local snapshot = {}
+
+	for _, member in pairs(AMT.Deaths.GetPartySnapshot()) do
+		snapshot[#snapshot + 1] = member
+	end
+
+	table.sort(snapshot, ByUnitOrder)
+
+	local party = {}
+
+	for index, member in ipairs(snapshot) do
+		party[index] = { classFile = member.class }
+	end
+
+	return party
+end
+
+---@param affixIDs integer[]
+---@return integer[] copy
+local function CopyAffixes(affixIDs)
+	local copy = {}
+
+	for index, affixID in ipairs(affixIDs) do
+		copy[index] = affixID
+	end
+
+	return copy
+end
+
+---@return boolean stored
+function module:RecordRun()
+	if AMT.Demo.IsActive() or PlayerIsTimerunning() then
+		return false
+	end
+
+	local state = AMT.State.current
+	local guid = PlayerGUID()
+
+	if not guid or not state.seasonID or not state.mapID or state.level <= 0 or not state.completionMS then
+		return false
+	end
+
+	local entry = EnsureEntry(state.seasonID, guid)
+	local record = AMT.Splits.BuildRecord()
+
+	PurgeRecorded(entry)
+
+	entry.recorded[#entry.recorded + 1] = {
+		mapID = state.mapID,
+		level = state.level,
+		durationSec = math.floor(state.completionMS / MILLISECONDS_PER_SECOND),
+		completedAt = time(),
+		completedOnTime = state.completedOnTime == true,
+		deaths = state.deathCount,
+		affixIDs = CopyAffixes(state.affixIDs),
+		bosses = record and record.bosses or {},
+		forcesMS = record and record.forcesMS or nil,
+		party = RecordedParty(),
+	}
+
+	return true
+end
+
+---@class AMTHistory
+local History = {}
+AMT.History = History
+
+-- This week's runs AMT watched, in the order they were completed.
+---@return AMTRecordedRun[] runs
+function History.GetRecordedRuns()
+	local guid = PlayerGUID()
+	local seasonID = C_MythicPlus.GetCurrentSeason()
+
+	if not guid or not seasonID then
+		return {}
+	end
+
+	local bucket = AMT.DB.records.history[seasonID]
+	local entry = bucket and bucket[guid]
+
+	if not entry or not entry.recorded then
+		return {}
+	end
+
+	return entry.recorded
+end
+
 function module:OnChallengeComplete()
 	self:RecordBest()
+	self:RecordRun()
 end

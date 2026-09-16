@@ -5,6 +5,9 @@ local Dashboard = AMT.Dashboard
 
 local GCD_SECONDS = 2
 local MILLISECONDS_PER_SECOND = 1000
+-- The client dates a run to the minute and AMT stamps its own at completion, so the two never line up
+-- exactly; nothing else that week will be the same dungeon at the same level this close together.
+local RECORD_MATCH_SECONDS = 900
 
 local PARTY_UNITS = { "player", "party1", "party2", "party3", "party4" }
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
@@ -112,7 +115,13 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field classFile string
 ---@field specIcon number?
 
+---@class AMTDashboardRunSplit
+---@field name string
+---@field timeMS integer
+---@field diffMS integer? nil without a personal best to compare against
+
 ---@class AMTDashboardRun
+---@field mapID integer
 ---@field name string
 ---@field abbrev string
 ---@field texture number?
@@ -122,6 +131,7 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field score number score the run provided
 ---@field completedAt number
 ---@field party AMTDashboardRunMember[]? nil if AMT didn't record the run
+---@field splits AMTDashboardRunSplit[]? boss splits, only for a run AMT recorded
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -251,6 +261,7 @@ local function GetHistoryRuns()
 		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(info.mapChallengeModeID)
 
 		runs[index] = {
+			mapID = info.mapChallengeModeID,
 			name = name or UNKNOWN,
 			abbrev = GetAbbreviation(info.mapChallengeModeID, name),
 			texture = texture,
@@ -558,7 +569,7 @@ function Source:GetSeasonDungeons()
 end
 
 ---@param unit UnitToken
----@return AMTDashboardPartyDungeon[] every season dungeon, in map-table order
+---@return AMTDashboardPartyDungeon[] dungeons every season dungeon in map-table order
 ---@return number? rating nil when the client has no summary for the unit
 local function GetMemberDungeons(unit)
 	local byMap, rating = GetBestRunsByMap(unit)
@@ -653,7 +664,7 @@ function Source:GetParty()
 end
 
 ---Since cooldown is shared, first learned entry gives the cooldown.
----@return number? remaining seconds, 0 when ready; nil while it cannot be known
+---@return number? remaining seconds; 0 when ready; nil while it cannot be known
 function Source:GetTeleportCooldown()
 	if C_Secrets.ShouldCooldownsBeSecret() then
 		return nil
@@ -686,7 +697,67 @@ function Source:GetTeleportCooldown()
 	return nil
 end
 
+---@param recorded AMTRecordedRun[]
+---@param run AMTDashboardRun
+---@return AMTRecordedRun? match nil when AMT did not watch this run
+local function FindRecorded(recorded, run)
+	local match, closest
+
+	for _, candidate in ipairs(recorded) do
+		if candidate.mapID == run.mapID and candidate.level == run.level then
+			local distance = math.abs(candidate.completedAt - run.completedAt)
+
+			if distance <= RECORD_MATCH_SECONDS and (not closest or distance < closest) then
+				match, closest = candidate, distance
+			end
+		end
+	end
+
+	return match
+end
+
+---@param record AMTRecordedRun
+---@return AMTDashboardRunSplit[]
+local function BuildSplits(record)
+	local best = AMT.Splits.GetBest(C_MythicPlus.GetCurrentSeason(), record.mapID, record.level)
+	local splits = {}
+
+	for index, boss in ipairs(record.bosses) do
+		local reference = best and best.bosses[index]
+
+		splits[index] = {
+			name = boss.name or UNKNOWN,
+			timeMS = boss.timeMS,
+			diffMS = reference and boss.timeMS - reference.timeMS or nil,
+		}
+	end
+
+	return splits
+end
+
+---@param runs AMTDashboardRun[]
+local function MergeRecordedRuns(runs)
+	local recorded = AMT.History.GetRecordedRuns()
+
+	if #recorded == 0 then
+		return
+	end
+
+	for _, run in ipairs(runs) do
+		local record = FindRecorded(recorded, run)
+
+		if record then
+			run.party = record.party
+			run.splits = BuildSplits(record)
+		end
+	end
+end
+
 ---@return AMTDashboardRun[] newest first
 function Source:GetWeeklyRuns()
-	return GetHistoryRuns()
+	local runs = GetHistoryRuns()
+
+	MergeRecordedRuns(runs)
+
+	return runs
 end

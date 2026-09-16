@@ -35,6 +35,11 @@ function Deaths.SnapshotParty()
 	end
 end
 
+---@return table<string, AMTPartyMember> read-only
+function Deaths.GetPartySnapshot()
+	return partyByGUID
+end
+
 ---@param guid string
 function Deaths.RecordDeath(guid)
 	if issecretvalue(guid) then

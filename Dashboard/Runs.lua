@@ -33,6 +33,7 @@ local CLASS_ICON_SPACING = 2
 local CROP_MIN, CROP_MAX = 0.07, 0.93
 
 local TIMED_COLOR = CreateColor(0.69, 0.69, 0.69)
+local MILLISECONDS_PER_SECOND = 1000
 
 ---@param completedAt number
 ---@return string
@@ -180,6 +181,33 @@ function Card:SetRun(run)
 	self:SetHighlighted(false)
 end
 
+---@param splits AMTDashboardRunSplit[]
+function Card:AddSplitLines(splits)
+	if #splits == 0 then
+		return
+	end
+
+	local settings = AMT.Profiles.active.timer.splits
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+
+	for _, split in ipairs(splits) do
+		local elapsed = AMT.Util.FormatTime(split.timeMS / MILLISECONDS_PER_SECOND)
+
+		if split.diffMS then
+			local colour = AMT.Util.SplitColor(settings, AMT.Splits.Classify(split.diffMS))
+			local difference = AMT.Util.FormatTime(split.diffMS / MILLISECONDS_PER_SECOND, settings.decimals, true)
+
+			elapsed = ("%s %s"):format(
+				elapsed,
+				CreateColor(colour[1], colour[2], colour[3]):WrapTextInColorCode(difference)
+			)
+		end
+
+		GameTooltip_AddColoredDoubleLine(GameTooltip, split.name, elapsed, NORMAL_FONT_COLOR, HIGHLIGHT_FONT_COLOR)
+	end
+end
+
 function Card:ShowTooltip()
 	local run = self.run
 
@@ -202,6 +230,11 @@ function Card:ShowTooltip()
 		)
 	)
 	GameTooltip_AddDisabledLine(GameTooltip, FormatDay(run.completedAt))
+
+	if run.splits then
+		self:AddSplitLines(run.splits)
+	end
+
 	GameTooltip:Show()
 end
 
