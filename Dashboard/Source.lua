@@ -6,17 +6,7 @@ local Dashboard = AMT.Dashboard
 local GCD_SECONDS = 2
 local MILLISECONDS_PER_SECOND = 1000
 
-local SAMPLE_PARTY_MAP_ID, SAMPLE_PARTY_ABBREV = 78, "SM"
----@type { name: string, classFile: string, specID: integer?, level: integer?, rating: number? }[]
-local SAMPLE_PARTY = {
-	{ name = "Tirion", classFile = "PALADIN", specID = 65, level = 21, rating = 3120 },
-	{ name = "Malfurion", classFile = "DRUID", level = 22, rating = 3285 },
-	{ name = "Jaina", classFile = "MAGE", level = 21, rating = 2950 },
-	{ name = "Anduin", classFile = "PRIEST" },
-	{ name = "Vol'jin", classFile = "HUNTER", level = 20, rating = 2710 },
-}
-local SAMPLE_PACE = { 0.55, 0.7, 0.85, 1.0, 1.15 }
-
+local PARTY_UNITS = { "player", "party1", "party2", "party3", "party4" }
 local TYRANNICAL_ID, FORTIFIED_ID = 9, 10
 local TYRANNICAL_BOSS_HEALTH, TYRANNICAL_BOSS_DAMAGE = 0.25, 0.15
 local FORTIFIED_MINION_HEALTH, FORTIFIED_MINION_DAMAGE = 0.20, 0.20
@@ -499,71 +489,22 @@ function Source:GetSecondsUntilWeeklyReset()
 	return C_DateAndTime.GetSecondsUntilWeeklyReset()
 end
 
----@param seed integer varies the sample between members
----@return AMTDashboardPartyDungeon[]
-local function SampleDungeons(seed)
-	local dungeons = {}
-
-	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
-		local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID)
-		local step = index + seed
-		local seconds = timeLimit * SAMPLE_PACE[step % #SAMPLE_PACE + 1]
-		local level = step % 6 == 0 and 0 or 16 + step % 6
-
-		dungeons[index] = {
-			name = name,
-			level = level,
-			timed = level > 0 and seconds <= timeLimit,
-			upgrades = level > 0 and AMT.Util.CountUpgrades(seconds, timeLimit) or 0,
-		}
-	end
-
-	return dungeons
-end
-
----@return AMTDashboardPartyRoster
-function Source:GetParty()
-	local mapName, _, _, texture = C_ChallengeMode.GetMapUIInfo(SAMPLE_PARTY_MAP_ID)
-	local members = {}
-
-	for index, sample in ipairs(SAMPLE_PARTY) do
-		local key, specIcon
-
-		if sample.level then
-			key = { name = mapName, abbrev = SAMPLE_PARTY_ABBREV, texture = texture, level = sample.level }
-		end
-
-		if sample.specID then
-			specIcon = select(4, GetSpecializationInfoByID(sample.specID))
-		end
-
-		members[index] = {
-			name = sample.name,
-			classFile = sample.classFile,
-			specIcon = specIcon,
-			key = key,
-			rating = sample.rating,
-			dungeons = sample.rating and SampleDungeons(index) or {},
-		}
-	end
-
-	return { inGroup = true, members = members }
-end
-
+---@param unit UnitToken
 ---@return table<integer, MythicPlusRatingMapSummary>
-local function GetBestRunsByMap()
+---@return number? rating nil when the client has no summary for the unit
+local function GetBestRunsByMap(unit)
 	local byMap = {}
-	local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
+	local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary(unit)
 
 	if not summary then
-		return byMap
+		return byMap, nil
 	end
 
 	for _, run in ipairs(summary.runs) do
 		byMap[run.challengeModeID] = run
 	end
 
-	return byMap
+	return byMap, summary.currentSeasonScore
 end
 
 ---@param challengeMapID integer
@@ -589,7 +530,7 @@ end
 ---@return AMTDashboardSeasonDungeon[] in no particular order
 function Source:GetSeasonDungeons()
 	local dungeons = {}
-	local byMap = GetBestRunsByMap()
+	local byMap = GetBestRunsByMap("player")
 
 	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
 		local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(mapID)
@@ -614,6 +555,101 @@ function Source:GetSeasonDungeons()
 	end
 
 	return dungeons
+end
+
+---@param unit UnitToken
+---@return AMTDashboardPartyDungeon[] every season dungeon, in map-table order
+---@return number? rating nil when the client has no summary for the unit
+local function GetMemberDungeons(unit)
+	local byMap, rating = GetBestRunsByMap(unit)
+	local dungeons = {}
+
+	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local name, _, timeLimit = C_ChallengeMode.GetMapUIInfo(mapID)
+		local best = byMap[mapID]
+		local seconds = best and best.bestRunDurationMS / MILLISECONDS_PER_SECOND or 0
+
+		dungeons[index] = {
+			name = name or UNKNOWN,
+			level = best and best.bestRunLevel or 0,
+			timed = best ~= nil and best.finishedSuccess,
+			upgrades = best and timeLimit and AMT.Util.CountUpgrades(seconds, timeLimit) or 0,
+		}
+	end
+
+	return dungeons, rating
+end
+
+---@return AMTDashboardPartyKey? nil when the character holds no key
+local function GetPlayerKey()
+	local challengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
+	local level = C_MythicPlus.GetOwnedKeystoneLevel()
+
+	if not challengeMapID or not level then
+		return nil
+	end
+
+	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(challengeMapID)
+
+	return {
+		name = name or UNKNOWN,
+		abbrev = GetAbbreviation(challengeMapID, name),
+		texture = texture,
+		level = level,
+	}
+end
+
+---@return number? icon
+local function GetPlayerSpecIcon()
+	local index = C_SpecializationInfo.GetSpecialization()
+
+	if not index then
+		return nil
+	end
+
+	return select(4, C_SpecializationInfo.GetSpecializationInfo(index))
+end
+
+---@param unit UnitToken
+---@param isPlayer boolean
+---@return AMTDashboardPartyMember? nil where the unit is absent or its identity cannot be read
+local function GetMember(unit, isPlayer)
+	if not UnitExists(unit) then
+		return nil
+	end
+
+	local name = UnitName(unit)
+	local _, classFile = UnitClass(unit)
+
+	if issecretvalue(name) or issecretvalue(classFile) then
+		return nil
+	end
+
+	local dungeons, rating = GetMemberDungeons(unit)
+
+	return {
+		name = name,
+		classFile = classFile,
+		specIcon = isPlayer and GetPlayerSpecIcon() or nil,
+		key = isPlayer and GetPlayerKey() or nil,
+		rating = rating,
+		dungeons = dungeons,
+	}
+end
+
+---@return AMTDashboardPartyRoster
+function Source:GetParty()
+	local members = {}
+
+	for index, unit in ipairs(PARTY_UNITS) do
+		local member = GetMember(unit, index == 1)
+
+		if member then
+			members[#members + 1] = member
+		end
+	end
+
+	return { inGroup = IsInGroup(), members = members }
 end
 
 ---Since cooldown is shared, first learned entry gives the cooldown.
