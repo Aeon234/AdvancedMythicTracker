@@ -9,7 +9,6 @@ local SAMPLE_KEYSTONE = { mapID = 78, abbrev = "SM", level = 21 }
 local SAMPLE_RATING = 3285
 local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 1868, chests = 2 }
 local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 1694, chests = 3 }
-local SAMPLE_AFFIXES = { 148, 9, 152, 147 }
 local SAMPLE_VAULT_PROGRESS = 3
 ---@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
 local SAMPLE_VAULT_MILESTONES = {
@@ -173,17 +172,24 @@ local function SampleRun(sample)
 	}
 end
 
----@return AMTDashboardAffix[]
-local function SampleAffixes()
-	local affixes = {}
+---@return AMTDashboardAffix[] affixes
+---@return integer[] affixIDs in activation order
+local function GetAffixes()
+	local affixes, affixIDs = {}, {}
+	local current = C_MythicPlus.GetCurrentAffixes()
 
-	for index, affixID in ipairs(SAMPLE_AFFIXES) do
-		local name, description, texture = C_ChallengeMode.GetAffixInfo(affixID)
-
-		affixes[index] = { name = name, description = description, texture = texture }
+	if not current then
+		return affixes, affixIDs
 	end
 
-	return affixes
+	for index, affix in ipairs(current) do
+		local name, description, texture = C_ChallengeMode.GetAffixInfo(affix.id)
+
+		affixes[index] = { name = name, description = description, texture = texture }
+		affixIDs[index] = affix.id
+	end
+
+	return affixes, affixIDs
 end
 
 -- 0 is returned when no info available.
@@ -268,6 +274,7 @@ end
 function Source:GetHeader()
 	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(SAMPLE_KEYSTONE.mapID)
 	local vaultItemLevel, lootItemLevel = C_MythicPlus.GetRewardLevelForDifficultyLevel(SAMPLE_KEYSTONE.level)
+	local affixes, affixIDs = GetAffixes()
 
 	return {
 		keystone = {
@@ -275,14 +282,14 @@ function Source:GetHeader()
 			abbrev = SAMPLE_KEYSTONE.abbrev,
 			texture = texture,
 			level = SAMPLE_KEYSTONE.level,
-			modifiers = GetModifiers(SAMPLE_KEYSTONE.level, SAMPLE_AFFIXES, AMT.Season.affixLevels),
+			modifiers = GetModifiers(SAMPLE_KEYSTONE.level, affixIDs, AMT.Season.affixLevels),
 			lootItemLevel = KnownItemLevel(lootItemLevel),
 			vaultItemLevel = KnownItemLevel(vaultItemLevel),
 		},
 		rating = SAMPLE_RATING,
 		weeklyBest = SampleRun(SAMPLE_WEEKLY_BEST),
 		seasonBest = SampleRun(SAMPLE_SEASON_BEST),
-		affixes = SampleAffixes(),
+		affixes = affixes,
 		raiderIOURL = GetRaiderIOURL(),
 	}
 end

@@ -82,6 +82,13 @@ function Root:OnLoad()
 	Dashboard.Dungeons:Build(self)
 	Dashboard.Runs:Build(self)
 
+	self:RegisterShowEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", function()
+		self:Refresh()
+	end)
+	self:RegisterShowEvent("CHALLENGE_MODE_MAPS_UPDATE", function()
+		self:Refresh()
+	end)
+
 	self:SetScript("OnShow", self.OnShow)
 	self:SetScript("OnHide", self.OnHide)
 	self:SetScript("OnEvent", self.OnEvent)
@@ -233,6 +240,8 @@ function Root:RegisterShowTicker(interval, callback)
 end
 
 function Root:OnShow()
+	C_MythicPlus.RequestCurrentAffixes()
+	C_MythicPlus.RequestMapInfo()
 	self:Refresh()
 
 	for event in pairs(self.showEvents) do
