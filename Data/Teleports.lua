@@ -101,6 +101,8 @@ Teleports.groups = {
 			{ spell = 410074, challengeIDs = { [251] = "UNDR" } }, -- The Underrot
 			{ factionSpell = { Alliance = 445418, Horde = 464256 }, challengeIDs = { [353] = "SIEGE" } }, -- Siege of Boralus
 			{ spell = 373274, challengeIDs = { [369] = "JY", [370] = "WORK" } }, -- Operation: Mechagon
+			{ spell = 1286831, challengeIDs = { [249] = "KR" } }, -- Kings' Rest
+			{ spell = 1286828, challengeIDs = { [250] = "TOS" } }, -- Temple of Sethraliss
 		},
 		raids = {},
 	},
