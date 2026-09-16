@@ -214,6 +214,7 @@ function Row:AddTeleportLines()
 	GameTooltip_AddHighlightLine(GameTooltip, dungeon.teleportName)
 
 	if not dungeon.teleportKnown then
+		GameTooltip_AddBlankLineToTooltip(GameTooltip)
 		GameTooltip_AddErrorLine(
 			GameTooltip,
 			L["Time this dungeon at Mythic %d or higher to unlock its teleport."]:format(dungeon.teleportUnlockLevel)
@@ -232,6 +233,7 @@ function Row:AddTeleportLines()
 		end
 	end
 
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
 	GameTooltip_AddInstructionLine(GameTooltip, L["Click the dungeon icon to teleport."])
 end
 
