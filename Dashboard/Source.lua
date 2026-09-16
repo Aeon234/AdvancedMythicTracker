@@ -4,6 +4,7 @@ local L = AMT.L
 local Dashboard = AMT.Dashboard
 
 local GCD_SECONDS = 2
+local MILLISECONDS_PER_SECOND = 1000
 
 local SAMPLE_VAULT_PROGRESS = 3
 ---@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
@@ -504,38 +505,66 @@ function Source:GetParty()
 	return { inGroup = true, members = members }
 end
 
+---@return table<integer, MythicPlusRatingMapSummary>
+local function GetBestRunsByMap()
+	local byMap = {}
+	local summary = C_PlayerInfo.GetPlayerMythicPlusRatingSummary("player")
+
+	if not summary then
+		return byMap
+	end
+
+	for _, run in ipairs(summary.runs) do
+		byMap[run.challengeModeID] = run
+	end
+
+	return byMap
+end
+
+---@param challengeMapID integer
+---@return AMTDashboardFastestRun? nil when the dungeon has never been run
+local function GetFastestRun(challengeMapID)
+	local affixScores = C_MythicPlus.GetSeasonBestAffixScoreInfoForMap(challengeMapID)
+
+	if not affixScores then
+		return nil
+	end
+
+	local fastest = TableUtil.FindMin(affixScores, function(affixScore)
+		return affixScore.durationSec
+	end)
+
+	if not fastest then
+		return nil
+	end
+
+	return { level = fastest.level, seconds = fastest.durationSec, overTime = fastest.overTime }
+end
+
 ---@return AMTDashboardSeasonDungeon[] in no particular order
 function Source:GetSeasonDungeons()
 	local dungeons = {}
+	local byMap = GetBestRunsByMap()
 
 	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
-		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(mapID)
-		-- The last two stay unplayed, so the sample shows both states.
-		local played = index <= 6
-		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
-		local level = played and 18 + index % 5 or 0
-		local timed = played and seconds <= timeLimit
+		local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(mapID)
+		local best = byMap[mapID]
 		local teleport = AMT.Teleports.ForChallengeID(mapID)
-		local fastest
-
-		if played then
-			fastest = { level = level, seconds = seconds, overTime = not timed }
-		end
 
 		dungeons[index] = {
 			mapID = mapID,
-			name = name,
+			name = name or UNKNOWN,
 			abbrev = GetAbbreviation(mapID, name),
 			texture = texture,
-			score = played and 400 + (index * 37) % 40 or 0,
-			level = level,
-			seconds = seconds,
-			timed = timed,
+			score = best and best.mapScore or 0,
+			level = best and best.bestRunLevel or 0,
+			seconds = best and best.bestRunDurationMS / MILLISECONDS_PER_SECOND or 0,
+			timed = best ~= nil and best.finishedSuccess,
 			teleportSpellID = teleport and teleport.id,
 			teleportName = teleport and C_Spell.GetSpellName(teleport.id) or TELEPORT_TO_DUNGEON,
 			teleportKnown = teleport ~= nil and teleport.known,
 			teleportUnlockLevel = AMT.Season.teleportUnlockLevel,
-			fastest = fastest,
+			fastest = GetFastestRun(mapID),
 		}
 	end
 
