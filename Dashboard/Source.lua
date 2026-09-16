@@ -10,7 +10,6 @@ local SAMPLE_RATING = 3285
 local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 1868, chests = 2 }
 local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 1694, chests = 3 }
 local SAMPLE_AFFIXES = { 148, 9, 152, 147 }
-local SAMPLE_AFFIX_LEVELS = { 2, 5, 7, 10, 12 }
 local SAMPLE_VAULT_PROGRESS = 3
 ---@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
 local SAMPLE_VAULT_MILESTONES = {
@@ -276,7 +275,7 @@ function Source:GetHeader()
 			abbrev = SAMPLE_KEYSTONE.abbrev,
 			texture = texture,
 			level = SAMPLE_KEYSTONE.level,
-			modifiers = GetModifiers(SAMPLE_KEYSTONE.level, SAMPLE_AFFIXES, SAMPLE_AFFIX_LEVELS),
+			modifiers = GetModifiers(SAMPLE_KEYSTONE.level, SAMPLE_AFFIXES, AMT.Season.affixLevels),
 			lootItemLevel = KnownItemLevel(lootItemLevel),
 			vaultItemLevel = KnownItemLevel(vaultItemLevel),
 		},
