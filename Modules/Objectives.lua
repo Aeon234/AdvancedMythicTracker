@@ -102,7 +102,8 @@ end
 ---Panel and Aeon span the frame: the icon leads, the name takes the slack, and the times sit at the
 ---far edge.
 ---@param row AMTObjectiveRow
-function module:LayoutSpanRow(row)
+---@param timeColumn number widest kill time across the rows, so splits line up whatever each time's width
+function module:LayoutSpanRow(row, timeColumn)
 	local profile = AMT.Profiles.active.timer.objectives
 	local available = self.element:GetWidth()
 	local reserved = 0
@@ -125,17 +126,12 @@ function module:LayoutSpanRow(row)
 	row.time:ClearAllPoints()
 	row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
-	if row.time:IsShown() then
-		reserved = reserved + row.time:GetStringWidth() + ROW_GAP
+	if timeColumn > 0 then
+		reserved = reserved + timeColumn + ROW_GAP
 	end
 
 	row.split:ClearAllPoints()
-
-	if row.time:IsShown() then
-		row.split:SetPoint("RIGHT", row.time, "LEFT", -ROW_GAP, 0)
-	else
-		row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-	end
+	row.split:SetPoint("RIGHT", row, "RIGHT", timeColumn > 0 and -(timeColumn + ROW_GAP) or 0, 0)
 
 	if row.split:IsShown() then
 		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
@@ -144,16 +140,14 @@ function module:LayoutSpanRow(row)
 	row.name:SetWidth(math.max(available - reserved, 1))
 end
 
----Minimal is one packed run flush to the alignment edge, and the order mirrors with it: icon, name,
----split, time going left; split, time, name, icon going right. Only the name gives ground when the
----run does not fit.
 ---@param row AMTObjectiveRow
-function module:LayoutRow(row)
+---@param timeColumn number
+function module:LayoutRow(row, timeColumn)
 	local timer = AMT.Profiles.active.timer
 	local justify = timer.justify
 
 	if timer.style ~= "MINIMAL" then
-		self:LayoutSpanRow(row)
+		self:LayoutSpanRow(row, timeColumn)
 
 		return
 	end
@@ -265,11 +259,24 @@ function module:Render()
 		end
 
 		self:RenderSplit(row, showSplits and AMT.Splits.BossDiffMS(index) or nil)
-		self:LayoutRow(row)
 
 		row:Show()
 
 		y = y + profile.rowHeight + spacing
+	end
+
+	local timeColumn = 0
+
+	for index = 1, #objectives do
+		local time = self.rows[index].time
+
+		if time:IsShown() then
+			timeColumn = math.max(timeColumn, time:GetStringWidth())
+		end
+	end
+
+	for index = 1, #objectives do
+		self:LayoutRow(self.rows[index], timeColumn)
 	end
 
 	for index = #objectives + 1, #self.rows do

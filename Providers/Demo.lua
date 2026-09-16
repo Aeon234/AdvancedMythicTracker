@@ -10,6 +10,8 @@ local TOTAL_FORCES = 388
 local TIME_SCALE = 10
 
 local FORCES_FULL_AT = TIME_LIMIT * 0.9
+local FINISH_AT = TIME_LIMIT * 0.95
+local SPLIT_SPREAD_SECONDS = 60
 local DEATH_PENALTY = 5
 
 local MAX_AFFIXES = 4
@@ -104,9 +106,14 @@ local function UpdateForces()
 	AMT.Forces.SetTotal(TOTAL_FORCES)
 	AMT.Forces.SetCurrent(current)
 
+	if not state.forcesCompletedAtMS then
+		state.forcesCompletedAtMS = math.floor(FORCES_FULL_AT * 1000)
+
+		State.MarkDirty("forces")
+	end
+
 	if current >= TOTAL_FORCES and not state.forcesCompleted then
 		state.forcesCompleted = true
-		state.forcesCompletedAtMS = math.floor(state.elapsed * 1000)
 
 		State.MarkDirty("forces")
 	end
@@ -164,6 +171,23 @@ local function UpdateDeaths()
 	State.MarkDirty("deaths")
 end
 
+---@param seconds number
+---@return integer ms
+local function NearMS(seconds)
+	return math.floor((seconds + math.random(-SPLIT_SPREAD_SECONDS, SPLIT_SPREAD_SECONDS)) * 1000)
+end
+
+---@return AMTSplitRecord
+local function BuildBest()
+	local bosses = {}
+
+	for index, name in ipairs(BOSS_NAMES) do
+		bosses[index] = { name = name, timeMS = NearMS(index * BOSS_INTERVAL) }
+	end
+
+	return { finishMS = NearMS(FINISH_AT), forcesMS = NearMS(FORCES_FULL_AT), bosses = bosses }
+end
+
 ---The snapshot has to agree with what the ticker would have produced at the same elapsed, or the
 ---first animated tick rewrites everything it disagrees about.
 local function Populate()
@@ -218,6 +242,7 @@ function Demo.Enter(animated)
 	State.Reset()
 	AMT.Providers.Use("demo")
 	AMT.Providers.active.LoadKey()
+	AMT.Splits.SetOverride(BuildBest())
 	AMT.Frames.SetShown(true)
 
 	Populate()
@@ -238,6 +263,7 @@ function Demo.Exit()
 
 	AMT.Render.StopTicker()
 	AMT.Providers.Use("live")
+	AMT.Splits.SetOverride(nil)
 	State.Reset()
 	State.MarkAllDirty()
 	AMT.Frames.SetShown(false)

@@ -20,6 +20,14 @@ local EQUAL_TOLERANCE_MS = 500
 local Splits = {}
 AMT.Splits = Splits
 
+---@type AMTSplitRecord?
+local override
+
+---@param record AMTSplitRecord?
+function Splits.SetOverride(record)
+	override = record
+end
+
 ---@param seasonID integer?
 ---@param mapID integer?
 ---@param level integer
@@ -52,6 +60,10 @@ end
 ---@return integer? recordLevel
 function Splits.GetCurrentBest()
 	local state = State.current
+
+	if override then
+		return override, state.level
+	end
 
 	return Splits.GetBest(state.seasonID, state.mapID, state.level)
 end
