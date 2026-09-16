@@ -13,5 +13,6 @@ local AMT = select(2, ...)
 ---@field Vault AMTDashboardVault
 ---@field Party AMTDashboardParty
 ---@field Dungeons AMTDashboardDungeons
+---@field Runs AMTDashboardRuns
 local Dashboard = {}
 AMT.Dashboard = Dashboard

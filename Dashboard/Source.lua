@@ -42,6 +42,10 @@ local FORTIFIED_MINION_HEALTH, FORTIFIED_MINION_DAMAGE = 0.20, 0.20
 local RAIDER_IO_URL = "https://raider.io/characters/%s/%s/%s"
 local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 
+local SAMPLE_RUN_CLASSES = { "PALADIN", "PRIEST", "MAGE", "ROGUE", "SHAMAN" }
+local SAMPLE_RUN_SPECS = { 65, 257, 63, 260, 264 }
+local DAY_SECONDS = 86400
+
 ---@class AMTDashboardKeystoneModifiers
 ---@field bossHealth integer percent
 ---@field bossDamage integer percent
@@ -135,6 +139,21 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field teleportName string the spell's name, or TELEPORT_TO_DUNGEON
 ---@field teleportKnown boolean
 ---@field teleportUnlockLevel integer
+
+---@class AMTDashboardRunMember
+---@field classFile string
+---@field specIcon number?
+
+---@class AMTDashboardRun
+---@field name string
+---@field abbrev string
+---@field texture number?
+---@field level integer
+---@field seconds number
+---@field chests integer 0 = depleted
+---@field score number score the run provided
+---@field completedAt number
+---@field party AMTDashboardRunMember[]? nil if AMT didn't record the run
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -431,4 +450,42 @@ function Source:GetTeleportCooldown()
 	end
 
 	return nil
+end
+
+---@return AMTDashboardRun[] newest first
+function Source:GetWeeklyRuns()
+	local runs = {}
+	local now = time()
+
+	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(mapID)
+		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
+		local party
+
+		-- Every third run stands in for one AMT never saw.
+		if index % 3 ~= 0 then
+			party = {}
+
+			for member = 1, #SAMPLE_RUN_CLASSES do
+				party[member] = {
+					classFile = SAMPLE_RUN_CLASSES[member],
+					specIcon = index % 2 == 0 and select(4, GetSpecializationInfoByID(SAMPLE_RUN_SPECS[member])) or nil,
+				}
+			end
+		end
+
+		runs[index] = {
+			name = name,
+			abbrev = AMT.Teleports.AbbreviationFor(mapID) or name,
+			texture = texture,
+			level = 16 + index % 6,
+			seconds = seconds,
+			chests = AMT.Util.CountUpgrades(seconds, timeLimit),
+			score = 380 + (index * 23) % 50,
+			completedAt = now - (index - 1) * DAY_SECONDS,
+			party = party,
+		}
+	end
+
+	return runs
 end
