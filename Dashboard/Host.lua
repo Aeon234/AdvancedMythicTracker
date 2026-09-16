@@ -6,9 +6,6 @@ local Dashboard = AMT.Dashboard
 local TAB_ID = 4
 local PANEL_WIDTH = 950
 
-local TAB_GAP = 3
-local FIRST_TAB_X, FIRST_TAB_Y = 19, -30
-
 local BLIZZARD_PANELS = { "GroupFinderFrame", "PVPUIFrame", "ChallengesFrame" }
 
 ---@class AMTDashboardHost
@@ -62,6 +59,7 @@ end
 
 function Host:AnchorTab()
 	local tab = self.tab
+	local anchor = Dashboard.Skin:GetTabAnchor()
 
 	tab:ClearAllPoints()
 
@@ -69,13 +67,13 @@ function Host:AnchorTab()
 		local previous = PVEFrame.Tabs[index]
 
 		if previous:IsShown() then
-			tab:SetPoint("TOPLEFT", previous, "TOPRIGHT", TAB_GAP, 0)
+			tab:SetPoint("TOPLEFT", previous, "TOPRIGHT", anchor.gap, 0)
 
 			return
 		end
 	end
 
-	tab:SetPoint("BOTTOMLEFT", PVEFrame, "BOTTOMLEFT", FIRST_TAB_X, FIRST_TAB_Y)
+	tab:SetPoint(anchor.point, PVEFrame, "BOTTOMLEFT", anchor.x, anchor.y)
 end
 
 ---@param silent boolean
@@ -172,6 +170,8 @@ function Host:Attach()
 	self.tab = tab
 	self.panel = Dashboard.Panel.Build(PVEFrame)
 	self.attached = true
+
+	Dashboard.Skin:Start()
 
 	PanelTemplates_SetNumTabs(PVEFrame, TAB_ID)
 
