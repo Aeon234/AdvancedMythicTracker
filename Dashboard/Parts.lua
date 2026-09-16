@@ -2,6 +2,8 @@ local AMT = select(2, ...)
 
 local Dashboard = AMT.Dashboard
 
+local NO_KEYSTONE_TEXTURE = 4352494
+
 local SUBDUED = 0.6
 local UNPLAYED = "-"
 local TIMED_COLOR = CreateColor(0.69, 0.69, 0.69)
@@ -260,7 +262,8 @@ function RunBlock:SetRun(run)
 	self.run = run
 
 	if not run then
-		self.icon:SetIcon(nil)
+		self.icon:SetIcon(NO_KEYSTONE_TEXTURE)
+		self.icon:SetIconDesaturated(true)
 		self.level:SetText(UNPLAYED)
 		self.level:SetTextColor(NORMAL_FONT_COLOR:GetRGB())
 		self.abbrev:SetText("")
@@ -274,6 +277,7 @@ function RunBlock:SetRun(run)
 	local timeColor = run.chests == 0 and RED_FONT_COLOR or TIMED_COLOR
 
 	self.icon:SetIcon(run.texture)
+	self.icon:SetIconDesaturated(false)
 	self.level:SetText(tostring(run.level))
 	self.level:SetTextColor(C_ChallengeMode.GetKeystoneLevelRarityColor(run.level):GetRGB())
 	self.abbrev:SetText(run.abbrev)
