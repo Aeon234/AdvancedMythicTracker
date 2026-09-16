@@ -11,6 +11,7 @@ local function StartChallenge()
 	AMT.State.current.inChallenge = true
 
 	AMT.Challenge.Load()
+	AMT.Frames.SetShown(true)
 
 	for module in Modules.Iterate() do
 		if module.OnChallengeStart then
@@ -33,6 +34,7 @@ local function EndChallenge()
 
 	AMT.Events.UnregisterChallenge()
 	AMT.State.Reset()
+	AMT.Frames.SetShown(false)
 end
 
 local function CheckForChallenge()

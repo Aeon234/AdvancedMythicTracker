@@ -21,17 +21,33 @@ local function EnsureHook()
 	end)
 end
 
+---@return { Toggle: fun(self: table, show: boolean?) }?
+local function GetKalielsTracker()
+	local api = _G.KalielsTracker
+
+	return api and api.Toggle and api or nil
+end
+
 ---@param value boolean
 function Tracker.SetHidden(value)
+	if hidden == value then
+		return
+	end
+
+	local kaliels = GetKalielsTracker()
+
+	if kaliels then
+		hidden = value
+		kaliels:Toggle(not value)
+
+		return
+	end
+
 	if not ObjectiveTrackerFrame then
 		return
 	end
 
 	EnsureHook()
-
-	if hidden == value then
-		return
-	end
 
 	hidden = value
 
