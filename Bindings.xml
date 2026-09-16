@@ -1,5 +1,5 @@
 <Bindings>
     <Binding name="AMT_DASHBOARD" category="Advanced Mythic Tracker">
-        AdvancedMythicTracker_OpenDashboard()
+        AdvancedMythicTracker_ToggleDashboard()
     </Binding>
 </Bindings>

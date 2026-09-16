@@ -130,8 +130,18 @@ function Host:ShowUnavailableTooltip()
 	tooltip:Show()
 end
 
-function Host:Open()
-	if not self.attached or GetUnavailableReason() then
+function Host:Toggle()
+	if not self.attached then
+		return
+	end
+
+	if PVEFrame:IsShown() and self.panel:IsShown() then
+		HideUIPanel(PVEFrame)
+
+		return
+	end
+
+	if GetUnavailableReason() then
 		return
 	end
 
@@ -185,10 +195,10 @@ function Host:Attach()
 	end)
 end
 
-BINDING_NAME_AMT_DASHBOARD = L["Open Dashboard"]
+BINDING_NAME_AMT_DASHBOARD = L["Toggle Dashboard"]
 
-function AdvancedMythicTracker_OpenDashboard()
-	Host:Open()
+function AdvancedMythicTracker_ToggleDashboard()
+	Host:Toggle()
 end
 
 local loader = CreateFrame("Frame")
