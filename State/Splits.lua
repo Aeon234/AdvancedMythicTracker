@@ -26,7 +26,7 @@ AMT.Splits = Splits
 ---@return AMTSplitRecord? record
 ---@return integer? recordLevel the level the record was actually found at
 function Splits.GetBest(seasonID, mapID, level)
-	if not seasonID or not mapID or level <= 0 then
+	if not seasonID or not mapID or level <= 0 or PlayerIsTimerunning() then
 		return nil, nil
 	end
 

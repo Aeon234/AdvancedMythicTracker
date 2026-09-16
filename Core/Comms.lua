@@ -275,6 +275,10 @@ local function FlushRequest()
 end
 
 local function ScheduleRequest()
+	if PlayerIsTimerunning() then
+		return
+	end
+
 	requestPending = true
 
 	if not requestTimer then

@@ -151,7 +151,7 @@ function Step()
 end
 
 function Rebuild()
-	if InCombatLockdown() then
+	if InCombatLockdown() or PlayerIsTimerunning() then
 		return
 	end
 

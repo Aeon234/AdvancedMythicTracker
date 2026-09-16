@@ -26,7 +26,7 @@ Host.lastWasTracker = false
 
 ---@return string?
 local function GetUnavailableReason()
-	if TimerunningUtil.TimerunningEnabledForPlayer() then
+	if PlayerIsTimerunning() then
 		return L["The Tracker is not available to Timerunners."]
 	end
 

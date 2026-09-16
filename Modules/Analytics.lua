@@ -65,7 +65,7 @@ end
 
 ---@return boolean stored
 function module:RecordBest()
-	if AMT.Demo.IsActive() then
+	if AMT.Demo.IsActive() or PlayerIsTimerunning() then
 		return false
 	end
 
@@ -156,7 +156,7 @@ end
 function module:RefreshHistory()
 	local guid = PlayerGUID()
 
-	if not guid then
+	if not guid or PlayerIsTimerunning() then
 		return
 	end
 
@@ -194,7 +194,7 @@ end
 function module:OnAbandonVote(event, votePassed)
 	local state = AMT.State.current
 
-	if not AMT.DB.settings.recordAbandons then
+	if not AMT.DB.settings.recordAbandons or PlayerIsTimerunning() then
 		return
 	end
 
