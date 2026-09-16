@@ -57,7 +57,7 @@ local EXPORT_FORMAT = 1
 
 -- Timer Forces
 ---@class AMTPlacedTextSettings
----@field placement "BAR"|"ABOVE"|"BELOW"
+---@field placement "BAR"|"ABOVE"|"BELOW"|"BESIDE"
 ---@field slot "LEFT"|"CENTER"|"RIGHT" o
 ---@field nudge number[] {x, y}
 ---@field text AMTTextStyle
@@ -306,8 +306,8 @@ local profileDefaults = {
 			behindColor = { 1, 0, 0, 1 },
 			pbCompare = {
 				enabled = true,
-				placement = "BAR",
-				slot = "RIGHT",
+				placement = "BESIDE",
+				slot = "LEFT",
 				nudge = { 0, 0 },
 				text = { font = "Friz Quadrata TT", size = 12, outline = "OUTLINE", color = { 1, 1, 1, 1 } },
 			},

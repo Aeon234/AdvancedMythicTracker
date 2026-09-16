@@ -3,6 +3,15 @@ local L = AMT.L
 
 local Options = AMT.Options
 
+local PLACEMENTS = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } }
+
+local BESIDE_PLACEMENTS = {
+	{ "ABOVE", L["Above"] },
+	{ "BAR", L["On Bar"] },
+	{ "BESIDE", L["Beside"] },
+	{ "BELOW", L["Below"] },
+}
+
 ---@return boolean
 local function IsMinimal()
 	return Options.Get("timer.style") == "MINIMAL"
@@ -65,7 +74,7 @@ Options.RegisterPage({
 		})
 
 		local texts = {
-			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare", placed = true },
+			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare", placed = true, beside = true },
 			{ title = L["Boss Split Text"], prefix = "timer.splits.bossSplit" },
 			-- Drawn on the forces bar, so it carries the same placement controls as that bar's overlays.
 			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit", placed = true },
@@ -78,13 +87,18 @@ Options.RegisterPage({
 			})
 
 			if entry.placed then
+				local placements = entry.beside and BESIDE_PLACEMENTS or PLACEMENTS
+				local placementTooltip = entry.beside
+						and L["Whether this text sits on the bar, beside it, or on a row above or below it."]
+					or L["Whether this text sits on the bar or on a row above or below it."]
+
 				group.content:AddWidgets({
 					{
 						type = "segmented",
 						label = L["Placement"],
 						path = entry.prefix .. ".placement",
-						values = { { "ABOVE", L["Above"] }, { "BAR", L["On Bar"] }, { "BELOW", L["Below"] } },
-						tooltip = L["Whether this text sits on the bar or on a row above or below it."],
+						values = placements,
+						tooltip = placementTooltip,
 					},
 
 					{

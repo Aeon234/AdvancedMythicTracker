@@ -126,6 +126,17 @@ function Bar:AttachToSlot(region, slot, x, y)
 end
 
 ---@param region AMTAnchorable
+---@param side "LEFT"|"RIGHT"
+---@param x number?
+---@param y number?
+function Bar:AttachBeside(region, side, x, y)
+	local outward = side == "LEFT" and -SLOT_INSET or SLOT_INSET
+
+	region:ClearAllPoints()
+	region:SetPoint(side == "LEFT" and "RIGHT" or "LEFT", self, side, outward + (x or 0), y or 0)
+end
+
+---@param region AMTAnchorable
 ---@param parent Frame
 ---@param slot "LEFT"|"CENTER"|"RIGHT"
 ---@param x number?
@@ -225,6 +236,12 @@ function Bar:Place(region, settings, above, below)
 
 	if settings.placement == "ABOVE" or settings.placement == "BELOW" then
 		Bar.AttachToRow(region, settings.placement == "ABOVE" and above or below, slot, nudge[1], nudge[2])
+
+		return
+	end
+
+	if settings.placement == "BESIDE" and slot ~= "CENTER" then
+		self:AttachBeside(region, slot, nudge[1], nudge[2])
 
 		return
 	end
