@@ -304,7 +304,7 @@ function Band:RefreshKeystone(keystone)
 		icon:SetIcon(NO_KEYSTONE_TEXTURE)
 		icon:SetIconDesaturated(true)
 		self.keystoneLevel:SetText(UNPLAYED)
-		self.keystoneAbbrev:SetText(L["No Keystone"])
+		self.keystoneAbbrev:SetText(UNPLAYED)
 
 		return
 	end
