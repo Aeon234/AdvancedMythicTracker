@@ -272,6 +272,7 @@ function Root:OnShow()
 	end
 
 	AMT.Inspect:RegisterCallback(AMT.Inspect.Event.SpecUpdated, self.RequestRefresh, self)
+	AMT.Comms:RegisterCallback(AMT.Comms.Event.KeystoneUpdated, self.RequestRefresh, self)
 
 	for _, ticker in ipairs(self.showTickers) do
 		StartTicker(ticker)
@@ -281,6 +282,7 @@ end
 function Root:OnHide()
 	self:UnregisterAllEvents()
 	AMT.Inspect:UnregisterCallback(AMT.Inspect.Event.SpecUpdated, self)
+	AMT.Comms:UnregisterCallback(AMT.Comms.Event.KeystoneUpdated, self)
 
 	if self.refreshTimer then
 		self.refreshTimer:Cancel()

@@ -596,6 +596,20 @@ local function GetMemberDungeons(unit)
 	return dungeons, rating
 end
 
+---@param challengeMapID integer
+---@param level integer
+---@return AMTDashboardPartyKey
+local function BuildPartyKey(challengeMapID, level)
+	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(challengeMapID)
+
+	return {
+		name = name or UNKNOWN,
+		abbrev = GetAbbreviation(challengeMapID, name),
+		texture = texture,
+		level = level,
+	}
+end
+
 ---@return AMTDashboardPartyKey? nil when the character holds no key
 local function GetPlayerKey()
 	local challengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
@@ -605,14 +619,15 @@ local function GetPlayerKey()
 		return nil
 	end
 
-	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(challengeMapID)
+	return BuildPartyKey(challengeMapID, level)
+end
 
-	return {
-		name = name or UNKNOWN,
-		abbrev = GetAbbreviation(challengeMapID, name),
-		texture = texture,
-		level = level,
-	}
+---@param guid string?
+---@return AMTDashboardPartyKey?
+local function GetReportedKey(guid)
+	local keystone = guid and AMT.Comms:GetKeystone(guid)
+
+	return keystone and BuildPartyKey(keystone.challengeMapID, keystone.level) or nil
 end
 
 ---@param unit UnitToken
@@ -633,11 +648,23 @@ local function GetMember(unit, isPlayer)
 	local dungeons, rating = GetMemberDungeons(unit)
 	local guid = UnitGUID(unit)
 
+	if issecretvalue(guid) then
+		guid = nil
+	end
+
+	local key
+
+	if isPlayer then
+		key = GetPlayerKey()
+	else
+		key = GetReportedKey(guid)
+	end
+
 	return {
 		name = name,
 		classFile = classFile,
-		specIcon = guid and not issecretvalue(guid) and AMT.Inspect:GetSpecIcon(guid) or nil,
-		key = isPlayer and GetPlayerKey() or nil,
+		specIcon = guid and AMT.Inspect:GetSpecIcon(guid) or nil,
+		key = key,
 		rating = rating,
 		dungeons = dungeons,
 	}

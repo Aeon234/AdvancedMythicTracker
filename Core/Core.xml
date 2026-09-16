@@ -7,6 +7,7 @@
     <Script file="NineSlice.lua" />
     <Script file="Animation.lua" />
     <Script file="Events.lua" />
+    <Script file="Comms.lua" />
     <Script file="Inspect.lua" />
     <Script file="Module.lua" />
     <Script file="DB.lua" />
