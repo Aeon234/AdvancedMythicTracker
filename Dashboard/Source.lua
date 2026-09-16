@@ -6,19 +6,6 @@ local Dashboard = AMT.Dashboard
 local GCD_SECONDS = 2
 local MILLISECONDS_PER_SECOND = 1000
 
-local SAMPLE_VAULT_PROGRESS = 3
----@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
-local SAMPLE_VAULT_MILESTONES = {
-	{ threshold = 1, level = 22, itemLevel = 662, upgradeItemLevel = 665, nextLevel = 23, lowestLevel = 22 },
-	{ threshold = 4, level = 0, nextLevel = 2, lowestLevel = 21 },
-	{ threshold = 8, level = 0, nextLevel = 2, lowestLevel = 21 },
-}
-local SAMPLE_VAULT_RUNS = {
-	{ mapID = 78, level = 20 },
-	{ mapID = 78, level = 10 },
-	{ mapID = 78, level = 4 },
-}
-
 local SAMPLE_PARTY_MAP_ID, SAMPLE_PARTY_ABBREV = 78, "SM"
 ---@type { name: string, classFile: string, specID: integer?, level: integer?, rating: number? }[]
 local SAMPLE_PARTY = {
@@ -415,37 +402,95 @@ function Source:GetHeader()
 	}
 end
 
----@return AMTDashboardVaultTrack
-function Source:GetVault()
-	local milestones = {}
+---@param left WeeklyRewardActivityInfo
+---@param right WeeklyRewardActivityInfo
+---@return boolean
+local function ByActivityIndex(left, right)
+	return left.index < right.index
+end
 
-	for index, sample in ipairs(SAMPLE_VAULT_MILESTONES) do
-		milestones[index] = {
-			index = index,
-			threshold = sample.threshold,
-			level = sample.level,
-			heroic = false,
-			itemLevel = sample.itemLevel,
-			upgradeItemLevel = sample.upgradeItemLevel,
-			nextLevel = sample.nextLevel,
-			lowestLevel = sample.lowestLevel,
+---@param activityInfo WeeklyRewardActivityInfo
+---@return number? itemLevel nil until the example item has loaded
+---@return number? upgradeItemLevel nil when the slot is already at its highest
+---@return integer nextLevel
+local function GetRewardLevels(activityInfo)
+	local itemLink, upgradeItemLink = C_WeeklyRewards.GetExampleRewardItemHyperlinks(activityInfo.id)
+	local itemLevel = itemLink and C_Item.GetDetailedItemLevelInfo(itemLink) or nil
+	local upgradeItemLevel = upgradeItemLink and C_Item.GetDetailedItemLevelInfo(upgradeItemLink) or nil
+	local hasSeasonData, _, nextLevel, nextItemLevel =
+		C_WeeklyRewards.GetNextActivitiesIncrease(activityInfo.activityTierID, activityInfo.level)
+
+	if hasSeasonData then
+		upgradeItemLevel = nextItemLevel
+	end
+
+	return itemLevel, upgradeItemLevel, nextLevel or WeeklyRewardsUtil.GetNextMythicLevel(activityInfo.level)
+end
+
+---@param left MythicPlusRunInfo
+---@param right MythicPlusRunInfo
+---@return boolean
+local function ByRunLevel(left, right)
+	if left.level ~= right.level then
+		return left.level > right.level
+	end
+
+	return left.mapChallengeModeID < right.mapChallengeModeID
+end
+
+---@return AMTDashboardVaultRun[] highest first
+local function GetTopRuns()
+	local history = C_MythicPlus.GetRunHistory(false, true)
+	local runs = {}
+
+	table.sort(history, ByRunLevel)
+
+	for index, info in ipairs(history) do
+		runs[index] = {
+			level = info.level,
+			name = C_ChallengeMode.GetMapUIInfo(info.mapChallengeModeID) or UNKNOWN,
 		}
 	end
 
-	local topRuns = {}
+	return runs
+end
 
-	for index, sample in ipairs(SAMPLE_VAULT_RUNS) do
-		topRuns[index] = { level = sample.level, name = (C_ChallengeMode.GetMapUIInfo(sample.mapID)) }
+---@return AMTDashboardVaultTrack
+function Source:GetVault()
+	local activities = C_WeeklyRewards.GetActivities(Enum.WeeklyRewardChestThresholdType.Activities)
+	local numHeroic, numMythic = C_WeeklyRewards.GetNumCompletedDungeonRuns()
+	local milestones = {}
+	local progress = 0
+
+	table.sort(activities, ByActivityIndex)
+
+	for index, activityInfo in ipairs(activities) do
+		local itemLevel, upgradeItemLevel, nextLevel = GetRewardLevels(activityInfo)
+		local difficultyID = C_WeeklyRewards.GetDifficultyIDForActivityTier(activityInfo.activityTierID)
+
+		-- One counter drives all three slots; the thresholds are what differ.
+		progress = math.max(progress, activityInfo.progress)
+
+		milestones[index] = {
+			index = activityInfo.index,
+			threshold = activityInfo.threshold,
+			level = activityInfo.level,
+			heroic = difficultyID == DifficultyUtil.ID.DungeonHeroic,
+			itemLevel = itemLevel,
+			upgradeItemLevel = upgradeItemLevel,
+			nextLevel = nextLevel,
+			lowestLevel = (WeeklyRewardsUtil.GetLowestLevelInTopDungeonRuns(activityInfo.threshold)),
+		}
 	end
 
 	return {
-		progress = SAMPLE_VAULT_PROGRESS,
-		canClaim = false,
+		progress = progress,
+		canClaim = C_WeeklyRewards.CanClaimRewards(),
 		milestones = milestones,
-		topRuns = topRuns,
-		mythicRuns = 0,
-		heroicRuns = 0,
-		rewardsWaiting = false,
+		topRuns = GetTopRuns(),
+		mythicRuns = numMythic,
+		heroicRuns = numHeroic,
+		rewardsWaiting = C_WeeklyRewards.HasAvailableRewards(),
 	}
 end
 

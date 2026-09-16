@@ -190,6 +190,10 @@ function Vault:Build(root)
 		self:UpdateNote()
 	end)
 
+	root:RegisterShowEvent("WEEKLY_REWARDS_UPDATE", function()
+		self:Refresh(Dashboard.Source:GetVault())
+	end)
+
 	root:RegisterShowEvent("ITEM_DATA_LOAD_RESULT", function()
 		if self:HasPendingItemLevel() then
 			self:Refresh(Dashboard.Source:GetVault())
