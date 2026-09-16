@@ -135,7 +135,15 @@ function Host:Toggle()
 		return
 	end
 
-	if PVEFrame:IsShown() and self.panel:IsShown() then
+	local closing = PVEFrame:IsShown() and self.panel:IsShown()
+
+	if InCombatLockdown() and (closing or not PVEFrame:IsShown()) then
+		AMT.Util.Warn(L["The dashboard cannot be opened or closed in combat."])
+
+		return
+	end
+
+	if closing then
 		HideUIPanel(PVEFrame)
 
 		return

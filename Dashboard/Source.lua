@@ -231,13 +231,13 @@ local function GetKeystone(affixIDs)
 	}
 end
 
----@param completionDate MythicPlusDate
+---@param completionDate CalendarTime
 ---@return number epoch seconds
 local function CompletedAt(completionDate)
 	return time({
 		year = completionDate.year,
 		month = completionDate.month,
-		day = completionDate.day,
+		day = completionDate.monthDay,
 		hour = completionDate.hour,
 		min = completionDate.minute,
 	})
@@ -272,7 +272,7 @@ local function GetHistoryRuns()
 			completed = info.completed,
 			chests = chests or 0,
 			score = info.runScore,
-			completedAt = CompletedAt(info.completionDate),
+			completedAt = CompletedAt(info.completionDate --[[@as CalendarTime]]),
 		}
 	end
 
