@@ -49,6 +49,13 @@ function Util.Trim(text)
 	return (text:gsub("^%s*(.-)%s*$", "%1"))
 end
 
+-- English client names only
+---@param name string
+---@return string
+function Util.StripLeadingArticle(name)
+	return (name:gsub("^The%s+", ""))
+end
+
 ---@param target table<any, any>?
 ---@param defaults table<any, any>
 function Util.MergeDefaults(target, defaults)
