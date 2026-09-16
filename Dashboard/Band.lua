@@ -13,10 +13,8 @@ local UNPLAYED = "-"
 local KEYSTONE_ICON_SIZE = 40
 local KEYSTONE_ICON_CORNER = 16
 local KEYSTONE_CENTRE_GAP = 5
-local KEYSTONE_LEVEL_SIZE = 22
-local KEYSTONE_LEVEL_DROP = 4
-local KEYSTONE_ABBREV_SIZE = 12
-local KEYSTONE_ABBREV_GAP = 1
+local KEYSTONE_LEVEL_SIZE = 20
+local KEYSTONE_ABBREV_SIZE = 16
 local KEYSTONE_ABBREV_GREY = 0.8
 local NO_KEYSTONE_TEXTURE = 4352494
 local PERCENT_INCREASE = "+%d%%"
@@ -158,10 +156,12 @@ function Band:BuildKeystone(section)
 	self.keystoneIcon:SetScript("OnLeave", GameTooltip_Hide)
 
 	self.keystoneLevel = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_LEVEL_SIZE)
-	self.keystoneLevel:SetPoint("BOTTOMLEFT", section, "CENTER", KEYSTONE_CENTRE_GAP, -KEYSTONE_LEVEL_DROP)
+	-- self.keystoneLevel:SetPoint("BOTTOMLEFT", section, "CENTER", KEYSTONE_CENTRE_GAP, -KEYSTONE_LEVEL_DROP)
+	self.keystoneLevel:SetPoint("TOPLEFT", self.keystoneIcon, "TOPRIGHT", KEYSTONE_CENTRE_GAP, 0)
 
 	self.keystoneAbbrev = Parts.CreateText(section, "GameFontHighlight", KEYSTONE_ABBREV_SIZE)
-	self.keystoneAbbrev:SetPoint("TOPLEFT", self.keystoneLevel, "BOTTOMLEFT", 0, -KEYSTONE_ABBREV_GAP)
+	-- self.keystoneAbbrev:SetPoint("TOPLEFT", self.keystoneLevel, "BOTTOMLEFT", 0, -KEYSTONE_ABBREV_GAP)
+	self.keystoneAbbrev:SetPoint("BOTTOMLEFT", self.keystoneIcon, "BOTTOMRIGHT", KEYSTONE_CENTRE_GAP, 0)
 	self.keystoneAbbrev:SetTextColor(KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY, KEYSTONE_ABBREV_GREY)
 end
 
