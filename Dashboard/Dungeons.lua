@@ -200,7 +200,6 @@ function Row:SetCooldown(cooldown)
 
 	self.icon:SetIconDesaturated(unlearned or onCooldown)
 	self.icon:SetAlpha(unlearned and UNLEARNED_ALPHA or 1)
-	self.icon:SetBorderShown(not unlearned)
 end
 
 function Row:AddTeleportLines()

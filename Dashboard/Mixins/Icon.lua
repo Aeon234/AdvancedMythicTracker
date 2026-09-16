@@ -25,8 +25,7 @@ function Icon:OnLoad(kind, size, corner)
 
 	self.iconTexture = self:CreateTexture(nil, "ARTWORK")
 	self.iconTexture:SetAllPoints()
-	self.iconTexture:SetTexCoord(CROP_MIN, CROP_MAX, CROP_MIN, CROP_MAX)
-	self.iconTexture:SetTexture(FALLBACK_TEXTURE)
+	self:SetIcon(nil)
 
 	local mask = self:CreateMaskTexture()
 
@@ -42,18 +41,17 @@ end
 ---@param texture number|string|nil
 function Icon:SetIcon(texture)
 	self.iconTexture:SetTexture(texture or FALLBACK_TEXTURE)
+	self.iconTexture:SetTexCoord(CROP_MIN, CROP_MAX, CROP_MIN, CROP_MAX)
+end
+
+---@param atlas string
+function Icon:SetIconAtlas(atlas)
+	self.iconTexture:SetAtlas(atlas)
 end
 
 ---@param desaturated boolean
 function Icon:SetIconDesaturated(desaturated)
 	self.iconTexture:SetDesaturated(desaturated)
-end
-
----@param shown boolean
-function Icon:SetBorderShown(shown)
-	if self.border then
-		self.border:SetShown(shown)
-	end
 end
 
 ---@param spellID number

@@ -10,11 +10,10 @@ local ROW_COUNT = 5
 local PARTY_SIZE = 5
 local ROW_TEXT_SIZE = 13
 local ROW_ICON_SIZE = 22
-local KEY_ICON_CORNER = 10
+local ROW_ICON_CORNER = 10
 local ICON_TEXT_GAP = 8
 local KEY_X = 150
 local LEVEL_RIGHT = 18
-local CROP_MIN, CROP_MAX = 0.07, 0.93
 
 local NOTE_SIZE = 13
 local COUNT_FORMAT = "%d / %d"
@@ -77,7 +76,7 @@ end
 
 ---@class AMTDashboardPartyRow
 ---@field frame Frame
----@field specIcon Texture
+---@field specIcon AMTDashboardIconMixin
 ---@field name FontString
 ---@field keyIcon AMTDashboardIconMixin
 ---@field abbrev FontString
@@ -102,9 +101,8 @@ function Row.New(parent, previous, withRule)
 		frame:SetPoint("TOPRIGHT", 0, ROWS_Y)
 	end
 
-	local specIcon = frame:CreateTexture(nil, "ARTWORK")
+	local specIcon = Dashboard.NewIcon(frame, "Frame", ROW_ICON_SIZE, ROW_ICON_CORNER)
 
-	specIcon:SetSize(ROW_ICON_SIZE, ROW_ICON_SIZE)
 	specIcon:SetPoint("LEFT", PADDING, 0)
 
 	local name = Parts.CreateText(frame, "GameFontHighlight", ROW_TEXT_SIZE)
@@ -115,7 +113,7 @@ function Row.New(parent, previous, withRule)
 	name:SetJustifyH("LEFT")
 	name:SetWordWrap(false)
 
-	local keyIcon = Dashboard.NewIcon(frame, "Frame", ROW_ICON_SIZE, KEY_ICON_CORNER)
+	local keyIcon = Dashboard.NewIcon(frame, "Frame", ROW_ICON_SIZE, ROW_ICON_CORNER)
 
 	keyIcon:SetPoint("LEFT", KEY_X, 0)
 
@@ -178,10 +176,9 @@ function Row:SetMember(member)
 	end
 
 	if member.specIcon then
-		self.specIcon:SetTexture(member.specIcon)
-		self.specIcon:SetTexCoord(CROP_MIN, CROP_MAX, CROP_MIN, CROP_MAX)
+		self.specIcon:SetIcon(member.specIcon)
 	else
-		self.specIcon:SetAtlas(GetClassAtlas(member.classFile))
+		self.specIcon:SetIconAtlas(GetClassAtlas(member.classFile))
 	end
 
 	self.name:SetText(member.name)
