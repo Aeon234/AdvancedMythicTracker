@@ -22,7 +22,6 @@ local WHEN_SIZE = 11
 local MIDDLE_X = 100
 local TIME_X = 190
 
-local STAR_ATLAS = "CampCollection-icon-star"
 local STAR_SIZE, STAR_SPACING = 11, 1
 local MAX_STARS = 3
 local UNEARNED_STAR_ALPHA = 0.5
@@ -100,7 +99,7 @@ function Card:OnLoad()
 	for index = 1, MAX_STARS do
 		local star = self:CreateTexture(nil, "ARTWORK")
 
-		star:SetAtlas(STAR_ATLAS)
+		star:SetAtlas(Parts.STAR_ATLAS)
 		star:SetSize(STAR_SIZE, STAR_SIZE)
 		star:SetPoint("TOPLEFT", MIDDLE_X + (index - 1) * (STAR_SIZE + STAR_SPACING), -CARD_INSET)
 

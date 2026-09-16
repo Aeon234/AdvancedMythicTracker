@@ -17,10 +17,10 @@ local HEADER_TITLE_Y = -6
 local HEADER_NOTE_SIZE = 11
 local HEADER_NOTE_GAP = 8
 
-local STAR_ATLAS = "CampCollection-icon-star"
 local STAR_SIZE, STAR_SPACING = 11, 1
 local MAX_STARS = 3
 local UNEARNED_STAR_ALPHA = 0.5
+local STAR_KEEPER_ALPHA = 0.01
 
 local RUN_ICON_SIZE = 30
 local RUN_ICON_CORNER = 16
@@ -31,6 +31,17 @@ local RUN_TEXT_SIZE = 14
 ---@class AMTDashboardParts
 local Parts = {}
 Dashboard.Parts = Parts
+
+Parts.STAR_ATLAS = "CampCollection-icon-star"
+
+function Parts.KeepStarLoaded()
+	local keeper = UIParent:CreateTexture(nil, "BACKGROUND")
+
+	keeper:SetAtlas(Parts.STAR_ATLAS)
+	keeper:SetSize(1, 1)
+	keeper:SetPoint("TOPLEFT")
+	keeper:SetAlpha(STAR_KEEPER_ALPHA)
+end
 
 ---@param text FontString
 ---@param size number
@@ -176,7 +187,7 @@ function StarRow:OnLoad()
 	for index = 1, MAX_STARS do
 		local star = self:CreateTexture(nil, "ARTWORK")
 
-		star:SetAtlas(STAR_ATLAS)
+		star:SetAtlas(Parts.STAR_ATLAS)
 		star:SetSize(STAR_SIZE, STAR_SIZE)
 		star:SetPoint("LEFT", (index - 1) * (STAR_SIZE + STAR_SPACING), 0)
 

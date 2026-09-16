@@ -315,6 +315,7 @@ function Panel.Build(host)
 
 	Mixin(root, Root)
 	root:OnLoad()
+	Parts.KeepStarLoaded()
 
 	return root
 end
