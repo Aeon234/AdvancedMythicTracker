@@ -121,21 +121,24 @@ function module:LayoutSpanRow(row)
 		row.name:SetPoint("LEFT", row, "LEFT", 0, 0)
 	end
 
-	row.split:ClearAllPoints()
-	row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-
+	-- Kill times hold the edge so they stay put when splits appear at the end of the key.
 	row.time:ClearAllPoints()
-
-	if row.split:IsShown() then
-		row.time:SetPoint("RIGHT", row.split, "LEFT", -ROW_GAP, 0)
-
-		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
-	else
-		row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
-	end
+	row.time:SetPoint("RIGHT", row, "RIGHT", 0, 0)
 
 	if row.time:IsShown() then
 		reserved = reserved + row.time:GetStringWidth() + ROW_GAP
+	end
+
+	row.split:ClearAllPoints()
+
+	if row.time:IsShown() then
+		row.split:SetPoint("RIGHT", row.time, "LEFT", -ROW_GAP, 0)
+	else
+		row.split:SetPoint("RIGHT", row, "RIGHT", 0, 0)
+	end
+
+	if row.split:IsShown() then
+		reserved = reserved + row.split:GetStringWidth() + ROW_GAP
 	end
 
 	row.name:SetWidth(math.max(available - reserved, 1))
