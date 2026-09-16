@@ -5,8 +5,6 @@ local Dashboard = AMT.Dashboard
 
 local GCD_SECONDS = 2
 
-local SAMPLE_KEYSTONE = { mapID = 78, abbrev = "SM", level = 21 }
-local SAMPLE_RATING = 3285
 local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 1868, chests = 2 }
 local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 1694, chests = 3 }
 local SAMPLE_VAULT_PROGRESS = 3
@@ -157,6 +155,15 @@ local DAY_SECONDS = 86400
 local Source = {}
 Dashboard.Source = Source
 
+---@param challengeMapID integer
+---@param name string? the dungeon's name from GetMapUIInfo
+---@return string
+local function GetAbbreviation(challengeMapID, name)
+	local abbr = AMT.Teleports.AbbreviationFor(challengeMapID)
+
+	return abbr and L[abbr] or name or UNKNOWN
+end
+
 ---@param sample { mapID: number, abbrev: string, level: integer, seconds: number, chests: integer }
 ---@return AMTDashboardRunSummary
 local function SampleRun(sample)
@@ -232,6 +239,30 @@ local function GetModifiers(level, affixIDs, affixLevels)
 	}
 end
 
+---@param affixIDs integer[] this week's affixes, in activation order
+---@return AMTDashboardKeystone?
+local function GetKeystone(affixIDs)
+	local challengeMapID = C_MythicPlus.GetOwnedKeystoneChallengeMapID()
+	local level = C_MythicPlus.GetOwnedKeystoneLevel()
+
+	if not challengeMapID or not level then
+		return nil
+	end
+
+	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(challengeMapID)
+	local vaultItemLevel, lootItemLevel = C_MythicPlus.GetRewardLevelForDifficultyLevel(level)
+
+	return {
+		name = name or UNKNOWN,
+		abbrev = GetAbbreviation(challengeMapID, name),
+		texture = texture,
+		level = level,
+		modifiers = GetModifiers(level, affixIDs, AMT.Season.affixLevels),
+		lootItemLevel = KnownItemLevel(lootItemLevel),
+		vaultItemLevel = KnownItemLevel(vaultItemLevel),
+	}
+end
+
 ---@param realm string the realm name as GetRealmName returns it, spaces intact
 ---@return string? slug nil when the page cannot be named with confidence
 local function GetRaiderIOSlug(realm)
@@ -272,21 +303,11 @@ end
 
 ---@return AMTDashboardHeader
 function Source:GetHeader()
-	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(SAMPLE_KEYSTONE.mapID)
-	local vaultItemLevel, lootItemLevel = C_MythicPlus.GetRewardLevelForDifficultyLevel(SAMPLE_KEYSTONE.level)
 	local affixes, affixIDs = GetAffixes()
 
 	return {
-		keystone = {
-			name = name,
-			abbrev = SAMPLE_KEYSTONE.abbrev,
-			texture = texture,
-			level = SAMPLE_KEYSTONE.level,
-			modifiers = GetModifiers(SAMPLE_KEYSTONE.level, affixIDs, AMT.Season.affixLevels),
-			lootItemLevel = KnownItemLevel(lootItemLevel),
-			vaultItemLevel = KnownItemLevel(vaultItemLevel),
-		},
-		rating = SAMPLE_RATING,
+		keystone = GetKeystone(affixIDs),
+		rating = C_ChallengeMode.GetOverallDungeonScore(),
 		weeklyBest = SampleRun(SAMPLE_WEEKLY_BEST),
 		seasonBest = SampleRun(SAMPLE_SEASON_BEST),
 		affixes = affixes,
@@ -396,8 +417,6 @@ function Source:GetSeasonDungeons()
 		local level = played and 18 + index % 5 or 0
 		local timed = played and seconds <= timeLimit
 		local teleport = AMT.Teleports.ForChallengeID(mapID)
-		local abbr = AMT.Teleports.AbbreviationFor(mapID)
-		local abbrev = abbr and L[abbr] or name
 		local fastest
 
 		if played then
@@ -407,7 +426,7 @@ function Source:GetSeasonDungeons()
 		dungeons[index] = {
 			mapID = mapID,
 			name = name,
-			abbrev = abbrev,
+			abbrev = GetAbbreviation(mapID, name),
 			texture = texture,
 			score = played and 400 + (index * 37) % 40 or 0,
 			level = level,
@@ -482,7 +501,7 @@ function Source:GetWeeklyRuns()
 
 		runs[index] = {
 			name = name,
-			abbrev = AMT.Teleports.AbbreviationFor(mapID) or name,
+			abbrev = GetAbbreviation(mapID, name),
 			texture = texture,
 			level = 16 + index % 6,
 			seconds = seconds,
