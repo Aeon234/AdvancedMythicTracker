@@ -34,6 +34,8 @@ local CROP_MIN, CROP_MAX = 0.07, 0.93
 
 local TIMED_COLOR = CreateColor(0.69, 0.69, 0.69)
 local MILLISECONDS_PER_SECOND = 1000
+local ABANDONED_ALPHA = 0.6
+local NO_SCORE = "-"
 
 ---@param completedAt number
 ---@return string
@@ -168,13 +170,20 @@ function Card:SetRun(run)
 		member:SetShown(recorded ~= nil)
 	end
 
-	self.unrecorded:SetShown(run.party == nil)
+	self.unrecorded:SetShown(run.completed and run.party == nil)
 
 	self.time:SetText(AMT.Util.FormatTime(run.seconds))
 	self.time:SetTextColor((run.chests == 0 and RED_FONT_COLOR or TIMED_COLOR):GetRGB())
 
-	self.score:SetText(tostring(run.score))
-	self.score:SetTextColor(C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(run.score):GetRGB())
+	if run.completed then
+		self.score:SetText(tostring(run.score))
+		self.score:SetTextColor(C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(run.score):GetRGB())
+	else
+		self.score:SetText(NO_SCORE)
+		self.score:SetTextColor(GRAY_FONT_COLOR:GetRGB())
+	end
+
+	self:SetAlpha(run.completed and 1 or ABANDONED_ALPHA)
 
 	self.when:SetText(FormatDay(run.completedAt))
 
@@ -215,20 +224,31 @@ function Card:ShowTooltip()
 		return
 	end
 
-	local result = run.chests == 0 and L["Depleted"]
-		or L["Timed +%d in %s"]:format(run.chests, AMT.Util.FormatTime(run.seconds))
+	local result
+
+	if not run.completed then
+		result = L["Abandoned"]
+	elseif run.chests == 0 then
+		result = L["Depleted"]
+	else
+		result = L["Timed +%d in %s"]:format(run.chests, AMT.Util.FormatTime(run.seconds))
+	end
 
 	GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
 	GameTooltip:SetText(run.name, HIGHLIGHT_FONT_COLOR:GetRGB())
 	GameTooltip_AddColoredLine(GameTooltip, MYTHIC_PLUS_POWER_LEVEL:format(run.level), HIGHLIGHT_FONT_COLOR)
 	GameTooltip_AddNormalLine(GameTooltip, result)
-	GameTooltip_AddNormalLine(
-		GameTooltip,
-		DUNGEON_SCORE_TOTAL_SCORE:format(
-			C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(run.score)
-				:WrapTextInColorCode(tostring(run.score))
+
+	if run.completed then
+		GameTooltip_AddNormalLine(
+			GameTooltip,
+			DUNGEON_SCORE_TOTAL_SCORE:format(
+				C_ChallengeMode.GetSpecificDungeonOverallScoreRarityColor(run.score)
+					:WrapTextInColorCode(tostring(run.score))
+			)
 		)
-	)
+	end
+
 	GameTooltip_AddDisabledLine(GameTooltip, FormatDay(run.completedAt))
 
 	if run.splits then

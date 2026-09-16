@@ -127,6 +127,7 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field texture number?
 ---@field level integer
 ---@field seconds number
+---@field completed boolean false for a key the player left
 ---@field chests integer 0 = depleted
 ---@field score number score the run provided
 ---@field completedAt number
@@ -257,8 +258,9 @@ end
 local function GetHistoryRuns()
 	local runs = {}
 
-	for index, info in ipairs(C_MythicPlus.GetRunHistory(false, false, true)) do
+	for index, info in ipairs(C_MythicPlus.GetRunHistory(false, true, true)) do
 		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(info.mapChallengeModeID)
+		local chests = info.completed and timeLimit and AMT.Util.CountUpgrades(info.durationSec, timeLimit)
 
 		runs[index] = {
 			mapID = info.mapChallengeModeID,
@@ -267,7 +269,8 @@ local function GetHistoryRuns()
 			texture = texture,
 			level = info.level,
 			seconds = info.durationSec,
-			chests = timeLimit and AMT.Util.CountUpgrades(info.durationSec, timeLimit) or 0,
+			completed = info.completed,
+			chests = chests or 0,
 			score = info.runScore,
 			completedAt = CompletedAt(info.completionDate),
 		}
@@ -298,7 +301,9 @@ local function GetWeeklyBest(runs)
 	local best
 
 	for _, run in ipairs(runs) do
-		if not best or run.level > best.level or (run.level == best.level and run.seconds < best.seconds) then
+		local better = not best or run.level > best.level or (run.level == best.level and run.seconds < best.seconds)
+
+		if run.completed and better then
 			best = run
 		end
 	end
@@ -744,7 +749,7 @@ local function MergeRecordedRuns(runs)
 	end
 
 	for _, run in ipairs(runs) do
-		local record = FindRecorded(recorded, run)
+		local record = run.completed and FindRecorded(recorded, run) or nil
 
 		if record then
 			run.party = record.party
