@@ -77,7 +77,7 @@ Options.RegisterPage({
 			{ title = L["Dungeon PB Text"], prefix = "timer.splits.pbCompare", placed = true, beside = true },
 			{ title = L["Boss Split Text"], prefix = "timer.splits.bossSplit" },
 			-- Drawn on the forces bar, so it carries the same placement controls as that bar's overlays.
-			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit", placed = true },
+			{ title = L["Forces Split Text"], prefix = "timer.splits.forcesSplit", placed = true, beside = true },
 		}
 
 		for _, entry in ipairs(texts) do
