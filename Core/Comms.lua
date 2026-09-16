@@ -141,7 +141,10 @@ function SpecializationLibrary:Attach()
 	end)
 end
 
----@class AMTCommsPlayerInfo
+---@class AMTCommsReceiver
+---@field RegisterComm fun(self: AMTCommsReceiver, prefix: string, method: string)
+
+---@class AMTCommsPlayerInfo : AMTCommsReceiver
 local PlayerInfo = {}
 
 function PlayerInfo:Attach()
@@ -216,7 +219,7 @@ function PlayerInfo:OnMessage(_, message, channel, sender)
 	end
 end
 
----@class AMTCommsOpenKeystone
+---@class AMTCommsOpenKeystone : AMTCommsReceiver
 ---@field deflate table LibDeflate
 local OpenKeystone = {}
 
