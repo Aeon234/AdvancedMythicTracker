@@ -370,7 +370,7 @@ function Source:GetSeasonDungeons()
 		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
 		local level = played and 18 + index % 5 or 0
 		local timed = played and seconds <= timeLimit
-		local teleport = AMT.Teleports.ForChallengeMap(mapID)
+		local teleport = AMT.Teleports.ForChallengeID(mapID)
 		local abbr = AMT.Teleports.AbbreviationFor(mapID)
 		local abbrev = abbr and L[abbr] or name
 		local fastest
@@ -407,7 +407,7 @@ function Source:GetTeleportCooldown()
 	end
 
 	for _, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
-		local teleport = AMT.Teleports.ForChallengeMap(mapID)
+		local teleport = AMT.Teleports.ForChallengeID(mapID)
 
 		if teleport and teleport.known then
 			local cooldown = C_Spell.GetSpellCooldown(teleport.id)
