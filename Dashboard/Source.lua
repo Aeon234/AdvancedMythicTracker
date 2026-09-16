@@ -1,4 +1,5 @@
 local AMT = select(2, ...)
+local L = AMT.L
 
 local Dashboard = AMT.Dashboard
 
@@ -370,6 +371,8 @@ function Source:GetSeasonDungeons()
 		local level = played and 18 + index % 5 or 0
 		local timed = played and seconds <= timeLimit
 		local teleport = AMT.Teleports.ForChallengeMap(mapID)
+		local abbr = AMT.Teleports.AbbreviationFor(mapID)
+		local abbrev = abbr and L[abbr] or name
 		local fastest
 
 		if played then
@@ -379,7 +382,7 @@ function Source:GetSeasonDungeons()
 		dungeons[index] = {
 			mapID = mapID,
 			name = name,
-			abbrev = name:sub(1, 3):upper(),
+			abbrev = abbrev,
 			texture = texture,
 			score = played and 400 + (index * 37) % 40 or 0,
 			level = level,
@@ -401,10 +404,6 @@ end
 function Source:GetTeleportCooldown()
 	if C_Secrets.ShouldCooldownsBeSecret() then
 		return nil
-	end
-
-	for mapID in pairs(AMT.Teleports.groups) do
-		local _ = mapID
 	end
 
 	for _, mapID in ipairs(C_ChallengeMode.GetMapTable()) do

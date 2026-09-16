@@ -20,6 +20,7 @@ local SCORE_X = 125
 local BEST_X = 182
 local TIME_X = 245
 local UNPLAYED = "-"
+local ABBREV_SCORE_GAP = 26
 
 local UNLEARNED_ALPHA = 0.5
 local TELEPORT_TICK_SECONDS = 1
@@ -98,6 +99,9 @@ function Row.New(parent, previous, withRule)
 	local abbrev = Parts.CreateText(frame, "GameFontHighlight", ROW_TEXT_SIZE)
 
 	abbrev:SetPoint("LEFT", icon, "RIGHT", ICON_TEXT_GAP, 0)
+	abbrev:SetPoint("RIGHT", frame, "LEFT", SCORE_X - ABBREV_SCORE_GAP, 0)
+	abbrev:SetJustifyH("LEFT")
+	abbrev:SetWordWrap(false)
 
 	if withRule then
 		local rule = Parts.CreateRule(frame)
