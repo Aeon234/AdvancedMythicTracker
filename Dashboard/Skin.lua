@@ -49,10 +49,31 @@ local TAB_ANCHORS = {
 
 ---@alias AMTDashboardSkinHandler fun(region: Region)
 
+---@param region Region
+local function HideRegion(region)
+	region:Hide()
+end
+
+---@param tab Region
+local function AuroraTab(tab)
+	_G.Aurora.Skin.PanelTabButtonTemplate(tab)
+end
+
+---@param scrollBar Region
+local function AuroraScrollBar(scrollBar)
+	_G.Aurora.Skin.MinimalScrollBar(scrollBar)
+end
+
 ---@type table<AMTDashboardSkinPack, table<AMTDashboardSkinRole, AMTDashboardSkinHandler>>
 local HANDLERS = {
-	ElvUI = {},
-	Aurora = {},
+	ElvUI = {
+		background = HideRegion,
+	},
+	Aurora = {
+		tab = AuroraTab,
+		scrollbar = AuroraScrollBar,
+		background = HideRegion,
+	},
 }
 
 ---@class AMTDashboardSkinEntry
