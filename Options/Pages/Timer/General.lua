@@ -244,6 +244,7 @@ Options.RegisterPage({
 				type = "color",
 				label = L["Background Color"],
 				path = "timer.background.color",
+				hasOpacity = true,
 				hidden = function()
 					return CurrentStyle() ~= "AEON"
 				end,
