@@ -68,6 +68,17 @@ function Icon:SetSpell(spellID)
 	self:SetAttribute("spell", spellID)
 end
 
+function Icon:ClearSpell()
+	if self.kind ~= "Action" then
+		AMT.Util.Warn("icon of kind %q has no spell to clear.", self.kind)
+
+		return
+	end
+
+	self:SetAttribute("type", nil)
+	self:SetAttribute("spell", nil)
+end
+
 ---@param parent Frame
 ---@param kind AMTDashboardIconKind
 ---@param size number

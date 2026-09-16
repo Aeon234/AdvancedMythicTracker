@@ -21,6 +21,9 @@ local BEST_X = 182
 local TIME_X = 245
 local UNPLAYED = "-"
 
+local UNLEARNED_ALPHA = 0.5
+local TELEPORT_TICK_SECONDS = 1
+
 ---@param left AMTDashboardSeasonDungeon
 ---@param right AMTDashboardSeasonDungeon
 ---@return boolean
@@ -68,6 +71,8 @@ end
 ---@field best FontString
 ---@field time FontString
 ---@field dungeon AMTDashboardSeasonDungeon?
+---@field cooldown number? seconds
+---@field cooldownKnown boolean
 local Row = {}
 Row.__index = Row
 
@@ -137,6 +142,12 @@ end
 function Row:SetDungeon(dungeon)
 	self.dungeon = dungeon
 
+	if dungeon and dungeon.teleportKnown and dungeon.teleportSpellID then
+		self.icon:SetSpell(dungeon.teleportSpellID)
+	else
+		self.icon:ClearSpell()
+	end
+
 	if not dungeon then
 		self.icon:SetIcon(nil)
 		self.abbrev:SetText(UNPLAYED)
@@ -169,6 +180,55 @@ function Row:SetDungeon(dungeon)
 	self.best:SetText(("+%d"):format(dungeon.level))
 	self.time:SetText(AMT.Util.FormatTime(dungeon.seconds))
 	self.time:SetTextColor(timeColor:GetRGB())
+end
+
+---@param cooldown number? nil keeps the last state (for secret values)
+function Row:SetCooldown(cooldown)
+	if cooldown ~= nil then
+		self.cooldown = cooldown
+	end
+
+	self.cooldownKnown = cooldown ~= nil
+
+	local dungeon = self.dungeon
+	local unlearned = dungeon ~= nil and not dungeon.teleportKnown
+	local onCooldown = dungeon ~= nil and not unlearned and (self.cooldown or 0) > 0
+
+	self.icon:SetIconDesaturated(unlearned or onCooldown)
+	self.icon:SetAlpha(unlearned and UNLEARNED_ALPHA or 1)
+	self.icon:SetBorderShown(not unlearned)
+end
+
+function Row:AddTeleportLines()
+	local dungeon = self.dungeon
+
+	if not dungeon or not dungeon.teleportSpellID then
+		return
+	end
+
+	GameTooltip_AddBlankLineToTooltip(GameTooltip)
+	GameTooltip_AddHighlightLine(GameTooltip, dungeon.teleportName)
+
+	if not dungeon.teleportKnown then
+		GameTooltip_AddErrorLine(
+			GameTooltip,
+			L["Time this dungeon at Mythic %d or higher to unlock its teleport."]:format(dungeon.teleportUnlockLevel)
+		)
+
+		return
+	end
+
+	local cooldown = self.cooldown
+
+	if self.cooldownKnown and cooldown then
+		if cooldown > 0 then
+			GameTooltip_AddErrorLine(GameTooltip, SecondsToTime(cooldown))
+		else
+			GameTooltip_AddColoredLine(GameTooltip, READY, GREEN_FONT_COLOR)
+		end
+	end
+
+	GameTooltip_AddInstructionLine(GameTooltip, L["Click the dungeon icon to teleport."])
 end
 
 -- Blizzard's dungeon icon tooltip from the Mythic+ tab.
@@ -207,6 +267,8 @@ function Row:ShowTooltip()
 		end
 	end
 
+	self:AddTeleportLines()
+
 	GameTooltip:Show()
 end
 
@@ -243,6 +305,10 @@ function Dungeons:Build(root)
 		self:LayoutRows(height)
 	end)
 	self:LayoutRows(frame:GetHeight())
+
+	root:RegisterShowTicker(TELEPORT_TICK_SECONDS, function()
+		self:UpdateTeleports()
+	end)
 end
 
 ---@param height number
@@ -258,6 +324,24 @@ function Dungeons:LayoutRows(height)
 	end
 end
 
+function Dungeons:UpdateTeleports()
+	local cooldown = Dashboard.Source:GetTeleportCooldown()
+
+	for _, row in ipairs(self.rows) do
+		row:SetCooldown(cooldown)
+
+		if GameTooltip:IsOwned(row.frame) then
+			row:ShowTooltip()
+		end
+	end
+
+	if cooldown and cooldown > 0 then
+		self.header:SetNote(L["Teleports ready in %s"]:format(SecondsToTime(cooldown, false, false, 2)))
+	else
+		self.header:SetNote(nil)
+	end
+end
+
 ---@param dungeons AMTDashboardSeasonDungeon[]
 function Dungeons:Refresh(dungeons)
 	table.sort(dungeons, ByScore)
@@ -265,4 +349,6 @@ function Dungeons:Refresh(dungeons)
 	for index, row in ipairs(self.rows) do
 		row:SetDungeon(dungeons[index])
 	end
+
+	self:UpdateTeleports()
 end

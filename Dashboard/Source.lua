@@ -2,6 +2,8 @@ local AMT = select(2, ...)
 
 local Dashboard = AMT.Dashboard
 
+local GCD_SECONDS = 2
+
 local SAMPLE_KEYSTONE = { mapID = 78, abbrev = "SM", level = 21 }
 local SAMPLE_RATING = 3285
 local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 1868, chests = 2 }
@@ -128,6 +130,10 @@ local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
 ---@field seconds number
 ---@field timed boolean
 ---@field fastest AMTDashboardFastestRun? the fastest season-best run, nil when not run
+---@field teleportSpellID integer? nil when no teleport entry a given dungeon
+---@field teleportName string the spell's name, or TELEPORT_TO_DUNGEON
+---@field teleportKnown boolean
+---@field teleportUnlockLevel integer
 
 ---@class AMTDashboardSource
 local Source = {}
@@ -363,6 +369,7 @@ function Source:GetSeasonDungeons()
 		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
 		local level = played and 18 + index % 5 or 0
 		local timed = played and seconds <= timeLimit
+		local teleport = AMT.Teleports.ForChallengeMap(mapID)
 		local fastest
 
 		if played then
@@ -378,9 +385,51 @@ function Source:GetSeasonDungeons()
 			level = level,
 			seconds = seconds,
 			timed = timed,
+			teleportSpellID = teleport and teleport.id,
+			teleportName = teleport and C_Spell.GetSpellName(teleport.id) or TELEPORT_TO_DUNGEON,
+			teleportKnown = teleport ~= nil and teleport.known,
+			teleportUnlockLevel = AMT.Season.teleportUnlockLevel,
 			fastest = fastest,
 		}
 	end
 
 	return dungeons
+end
+
+---Since cooldown is shared, first learned entry gives the cooldown.
+---@return number? remaining seconds, 0 when ready; nil while it cannot be known
+function Source:GetTeleportCooldown()
+	if C_Secrets.ShouldCooldownsBeSecret() then
+		return nil
+	end
+
+	for mapID in pairs(AMT.Teleports.groups) do
+		local _ = mapID
+	end
+
+	for _, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local teleport = AMT.Teleports.ForChallengeMap(mapID)
+
+		if teleport and teleport.known then
+			local cooldown = C_Spell.GetSpellCooldown(teleport.id)
+
+			if not cooldown.isActive then
+				return 0
+			end
+
+			local startTime, duration = cooldown.startTime, cooldown.duration
+
+			if issecretvalue(startTime) or issecretvalue(duration) then
+				return nil
+			end
+
+			if duration <= GCD_SECONDS then
+				return 0
+			end
+
+			return math.max(startTime + duration - GetTime(), 0)
+		end
+	end
+
+	return nil
 end
