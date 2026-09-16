@@ -43,6 +43,24 @@ function module:OnInitialize()
 	self:ApplyStyle()
 end
 
+local function UpdateDeaths()
+	AMT.Providers.active.UpdateDeaths()
+end
+
+---@param guid string
+local function OnUnitDied(_, _, guid)
+	AMT.Deaths.RecordDeath(guid)
+end
+
+function module:OnChallengeStart()
+	AMT.Deaths.SnapshotParty()
+
+	AMT.Events.RegisterChallenge("CHALLENGE_MODE_DEATH_COUNT_UPDATED", self, UpdateDeaths)
+	AMT.Events.RegisterChallenge("UNIT_DIED", self, OnUnitDied)
+
+	UpdateDeaths()
+end
+
 function module:ApplyStyle()
 	local profile = AMT.Profiles.active.timer.deaths
 

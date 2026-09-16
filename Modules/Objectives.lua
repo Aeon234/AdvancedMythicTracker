@@ -63,6 +63,18 @@ function module:StyleRow(row)
 	row.split:ApplyStyle(timer.splits.bossSplit.text)
 end
 
+local function UpdateObjectives()
+	AMT.Providers.active.UpdateObjectives()
+end
+
+function module:OnChallengeStart()
+	AMT.Events.RegisterChallenge("SCENARIO_CRITERIA_UPDATE", self, UpdateObjectives)
+	AMT.Events.RegisterChallenge("SCENARIO_POI_UPDATE", self, UpdateObjectives)
+
+	-- A /reload mid-key starts here with bosses already down.
+	UpdateObjectives()
+end
+
 function module:ApplyStyle()
 	for _, row in ipairs(self.rows) do
 		self:StyleRow(row)

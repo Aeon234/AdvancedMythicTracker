@@ -35,6 +35,18 @@ function module:OnInitialize()
 	self:ApplyStyle()
 end
 
+local function UpdateForces()
+	AMT.Providers.active.UpdateForces()
+end
+
+function module:OnChallengeStart()
+	AMT.Events.RegisterChallenge("SCENARIO_CRITERIA_UPDATE", self, UpdateForces)
+	AMT.Events.RegisterChallenge("SCENARIO_POI_UPDATE", self, UpdateForces)
+
+	-- A /reload mid-key starts here with the count already moved.
+	UpdateForces()
+end
+
 function module:ApplyStyle()
 	local timer = AMT.Profiles.active.timer
 	local profile = timer.forces

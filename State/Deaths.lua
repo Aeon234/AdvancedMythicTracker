@@ -21,14 +21,17 @@ function Deaths.SnapshotParty()
 	for index = 0, 4 do
 		local unit = index == 0 and "player" or ("party" .. index)
 
-		if UnitExists(unit) then
+		local exists = UnitExists(unit)
+
+		-- A /reload in combat snapshots here too, when identity may be secret.
+		if not issecretvalue(exists) and exists then
 			local guid = UnitGUID(unit)
 
 			if guid and not issecretvalue(guid) then
 				local name = UnitName(unit)
 				local class = select(2, UnitClass(unit))
 
-				if name and class then
+				if not issecretvalue(name) and not issecretvalue(class) and name and class then
 					partyByGUID[guid] = { guid = guid, unit = unit, name = name, class = class }
 				end
 			end
@@ -53,7 +56,9 @@ function Deaths.RecordDeath(guid)
 		return
 	end
 
-	if UnitIsFeignDeath(member.unit) then
+	local feigning = UnitIsFeignDeath(member.unit)
+
+	if issecretvalue(feigning) or feigning then
 		return
 	end
 

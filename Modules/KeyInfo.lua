@@ -268,7 +268,7 @@ function module:Render()
 	local mapName = state.mapID and C_ChallengeMode.GetMapUIInfo(state.mapID)
 	local levelText = self:FormatLevel()
 
-	mapName = mapName or UNKNOWN
+	mapName = mapName and AMT.Util.StripLeadingArticle(mapName) or UNKNOWN
 
 	self.dungeonName:SetText(mapName)
 	self.dungeonName:SetShown(profile.show ~= "LEVEL")
