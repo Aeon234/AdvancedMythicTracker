@@ -5,6 +5,7 @@
 ## Version: @project-version@
 
 ## SavedVariables: AdvancedMythicTrackerDB
+## OptionalDeps: ElvUI, ElvUI_WindTools, Aurora
 
 ## IconTexture: 4352494
 
@@ -25,12 +26,19 @@
 
 Libs\embeds.xml
 
+# Core
 Core\Core.xml
 Locales\Locales.xml
+
+# Timer
 State\State.xml
 Providers\Providers.xml
 Timer\Timer.xml
+
+# Modules & Options
 Modules\Modules.xml
 Options\Options.xml
 
+# Dashboard
+Data\Data.xml
 Dashboard\Dashboard.xml
