@@ -29,6 +29,8 @@ local RUNS_GAP = 8
 ---@field callback fun()
 ---@field handle FunctionContainer?
 
+---@alias AMTDashboardShowEventHandler fun(event: string, ...: any)
+
 ---@class AMTDashboardPanel
 local Panel = {}
 Dashboard.Panel = Panel
@@ -40,7 +42,7 @@ Dashboard.Panel = Panel
 ---@field runs Frame
 ---@field vault Frame
 ---@field party Frame
----@field showEvents table<string, fun(event: string, ...: any)[]>
+---@field showEvents table<string, AMTDashboardShowEventHandler[]>
 ---@field showTickers AMTDashboardShowTicker[]
 local Root = {}
 Panel.RootMixin = Root
@@ -89,6 +91,9 @@ function Root:OnLoad()
 		self:Refresh()
 	end)
 	self:RegisterShowEvent("BAG_UPDATE", function()
+		self:Refresh()
+	end)
+	self:RegisterShowEvent("CHALLENGE_MODE_COMPLETED", function()
 		self:Refresh()
 	end)
 
@@ -214,7 +219,7 @@ function Root:Refresh()
 end
 
 ---@param event string
----@param handler fun(event: string, ...: any)
+---@param handler AMTDashboardShowEventHandler
 function Root:RegisterShowEvent(event, handler)
 	local handlers = self.showEvents[event]
 

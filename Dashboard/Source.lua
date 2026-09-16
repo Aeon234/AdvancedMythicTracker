@@ -5,8 +5,6 @@ local Dashboard = AMT.Dashboard
 
 local GCD_SECONDS = 2
 
-local SAMPLE_WEEKLY_BEST = { mapID = 78, abbrev = "SM", level = 22, seconds = 1868, chests = 2 }
-local SAMPLE_SEASON_BEST = { mapID = 78, abbrev = "SM", level = 23, seconds = 1694, chests = 3 }
 local SAMPLE_VAULT_PROGRESS = 3
 ---@type { threshold: integer, level: integer, itemLevel: number?, upgradeItemLevel: number?, nextLevel: integer, lowestLevel: integer? }[]
 local SAMPLE_VAULT_MILESTONES = {
@@ -37,10 +35,6 @@ local FORTIFIED_MINION_HEALTH, FORTIFIED_MINION_DAMAGE = 0.20, 0.20
 
 local RAIDER_IO_URL = "https://raider.io/characters/%s/%s/%s"
 local RAIDER_IO_REGIONS = { [1] = "us", [2] = "kr", [3] = "eu", [4] = "tw" }
-
-local SAMPLE_RUN_CLASSES = { "PALADIN", "PRIEST", "MAGE", "ROGUE", "SHAMAN" }
-local SAMPLE_RUN_SPECS = { 65, 257, 63, 260, 264 }
-local DAY_SECONDS = 86400
 
 ---@class AMTDashboardKeystoneModifiers
 ---@field bossHealth integer percent
@@ -164,21 +158,6 @@ local function GetAbbreviation(challengeMapID, name)
 	return abbr and L[abbr] or name or UNKNOWN
 end
 
----@param sample { mapID: number, abbrev: string, level: integer, seconds: number, chests: integer }
----@return AMTDashboardRunSummary
-local function SampleRun(sample)
-	local name, _, _, texture = C_ChallengeMode.GetMapUIInfo(sample.mapID)
-
-	return {
-		name = name,
-		abbrev = sample.abbrev,
-		texture = texture,
-		level = sample.level,
-		seconds = sample.seconds,
-		chests = sample.chests,
-	}
-end
-
 ---@return AMTDashboardAffix[] affixes
 ---@return integer[] affixIDs in activation order
 local function GetAffixes()
@@ -263,6 +242,126 @@ local function GetKeystone(affixIDs)
 	}
 end
 
+---@param completionDate MythicPlusDate
+---@return number epoch seconds
+local function CompletedAt(completionDate)
+	return time({
+		year = completionDate.year,
+		month = completionDate.month,
+		day = completionDate.day,
+		hour = completionDate.hour,
+		min = completionDate.minute,
+	})
+end
+
+---@param left AMTDashboardRun
+---@param right AMTDashboardRun
+---@return boolean
+local function ByRecency(left, right)
+	if left.completedAt ~= right.completedAt then
+		return left.completedAt > right.completedAt
+	end
+
+	return left.level > right.level
+end
+
+---@return AMTDashboardRun[] newest first
+local function GetHistoryRuns()
+	local runs = {}
+
+	for index, info in ipairs(C_MythicPlus.GetRunHistory(false, false, true)) do
+		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(info.mapChallengeModeID)
+
+		runs[index] = {
+			name = name or UNKNOWN,
+			abbrev = GetAbbreviation(info.mapChallengeModeID, name),
+			texture = texture,
+			level = info.level,
+			seconds = info.durationSec,
+			chests = timeLimit and AMT.Util.CountUpgrades(info.durationSec, timeLimit) or 0,
+			score = info.runScore,
+			completedAt = CompletedAt(info.completionDate),
+		}
+	end
+
+	table.sort(runs, ByRecency)
+
+	return runs
+end
+
+---@param run AMTDashboardRun
+---@return AMTDashboardRunSummary
+local function Summarise(run)
+	return {
+		name = run.name,
+		abbrev = run.abbrev,
+		texture = run.texture,
+		level = run.level,
+		seconds = run.seconds,
+		chests = run.chests,
+	}
+end
+
+-- Highest>Fastest>Timed>Untimed
+---@param runs AMTDashboardRun[]
+---@return AMTDashboardRunSummary? nil before a run this week
+local function GetWeeklyBest(runs)
+	local best
+
+	for _, run in ipairs(runs) do
+		if not best or run.level > best.level or (run.level == best.level and run.seconds < best.seconds) then
+			best = run
+		end
+	end
+
+	return best and Summarise(best)
+end
+
+---@param intime MapSeasonBestInfo?
+---@param overtime MapSeasonBestInfo?
+---@return MapSeasonBestInfo?
+local function BetterSeasonRun(intime, overtime)
+	if intime and overtime then
+		return intime.dungeonScore > overtime.dungeonScore and intime or overtime
+	end
+
+	return intime or overtime
+end
+
+---@return AMTDashboardRunSummary? nil before a run this season
+local function GetSeasonBest()
+	local best, bestMapID
+
+	for _, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
+		local info = BetterSeasonRun(C_MythicPlus.GetSeasonBestForMap(mapID))
+
+		if info then
+			local better = not best
+				or info.level > best.level
+				or (info.level == best.level and info.durationSec < best.durationSec)
+
+			if better then
+				best, bestMapID = info, mapID
+			end
+		end
+	end
+
+	if not best or not bestMapID then
+		return nil
+	end
+
+	local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(bestMapID)
+
+	return {
+		name = name or UNKNOWN,
+		abbrev = GetAbbreviation(bestMapID, name),
+		texture = texture,
+		level = best.level,
+		seconds = best.durationSec,
+		chests = timeLimit and AMT.Util.CountUpgrades(best.durationSec, timeLimit) or 0,
+	}
+end
+
 ---@param realm string the realm name as GetRealmName returns it, spaces intact
 ---@return string? slug nil when the page cannot be named with confidence
 local function GetRaiderIOSlug(realm)
@@ -308,8 +407,8 @@ function Source:GetHeader()
 	return {
 		keystone = GetKeystone(affixIDs),
 		rating = C_ChallengeMode.GetOverallDungeonScore(),
-		weeklyBest = SampleRun(SAMPLE_WEEKLY_BEST),
-		seasonBest = SampleRun(SAMPLE_SEASON_BEST),
+		weeklyBest = GetWeeklyBest(GetHistoryRuns()),
+		seasonBest = GetSeasonBest(),
 		affixes = affixes,
 		raiderIOURL = GetRaiderIOURL(),
 	}
@@ -479,38 +578,5 @@ end
 
 ---@return AMTDashboardRun[] newest first
 function Source:GetWeeklyRuns()
-	local runs = {}
-	local now = time()
-
-	for index, mapID in ipairs(C_ChallengeMode.GetMapTable()) do
-		local name, _, timeLimit, texture = C_ChallengeMode.GetMapUIInfo(mapID)
-		local seconds = timeLimit * SAMPLE_PACE[index % #SAMPLE_PACE + 1]
-		local party
-
-		-- Every third run stands in for one AMT never saw.
-		if index % 3 ~= 0 then
-			party = {}
-
-			for member = 1, #SAMPLE_RUN_CLASSES do
-				party[member] = {
-					classFile = SAMPLE_RUN_CLASSES[member],
-					specIcon = index % 2 == 0 and select(4, GetSpecializationInfoByID(SAMPLE_RUN_SPECS[member])) or nil,
-				}
-			end
-		end
-
-		runs[index] = {
-			name = name,
-			abbrev = GetAbbreviation(mapID, name),
-			texture = texture,
-			level = 16 + index % 6,
-			seconds = seconds,
-			chests = AMT.Util.CountUpgrades(seconds, timeLimit),
-			score = 380 + (index * 23) % 50,
-			completedAt = now - (index - 1) * DAY_SECONDS,
-			party = party,
-		}
-	end
-
-	return runs
+	return GetHistoryRuns()
 end
