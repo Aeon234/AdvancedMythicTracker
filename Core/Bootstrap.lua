@@ -112,7 +112,10 @@ frame:SetScript("OnEvent", function(self, event, ...)
 		C_MythicPlus.RequestMapInfo()
 		CheckForChallenge()
 
+		-- Zoning in before the keystone goes in starts the challenge with no key to load, and the key's arrival
+		-- does not restart it.
 		if event == "CHALLENGE_MODE_START" and AMT.State.current.inChallenge then
+			AMT.Challenge.Load()
 			AMT.Frames.SetShown(true)
 		end
 	end
