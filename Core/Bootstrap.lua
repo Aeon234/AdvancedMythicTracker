@@ -11,7 +11,7 @@ local function StartChallenge()
 	AMT.State.current.inChallenge = true
 
 	AMT.Challenge.Load()
-	AMT.Frames.SetShown(true)
+	AMT.Frames.SetShown(AMT.Challenge.HasActiveKey())
 
 	for module in Modules.Iterate() do
 		if module.OnChallengeStart then
@@ -111,5 +111,9 @@ frame:SetScript("OnEvent", function(self, event, ...)
 	else
 		C_MythicPlus.RequestMapInfo()
 		CheckForChallenge()
+
+		if event == "CHALLENGE_MODE_START" and AMT.State.current.inChallenge then
+			AMT.Frames.SetShown(true)
+		end
 	end
 end)

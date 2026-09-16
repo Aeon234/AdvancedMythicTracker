@@ -20,6 +20,15 @@ function Challenge.IsInChallengeInstance()
 	return instanceType == "party" and difficultyID == DifficultyUtil.ID.DungeonChallenge
 end
 
+---@return boolean
+function Challenge.HasActiveKey()
+	if not C_ChallengeMode.GetActiveChallengeMapID() then
+		return false
+	end
+
+	return C_ChallengeMode.GetActiveKeystoneInfo() > 0
+end
+
 ---@param timeLimit number seconds as reported by GetMapUIInfo
 function Challenge.SetTimeLimit(timeLimit)
 	local state = State.current
