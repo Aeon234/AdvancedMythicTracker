@@ -259,7 +259,7 @@ local function RecordedParty()
 	local party = {}
 
 	for index, member in ipairs(snapshot) do
-		party[index] = { classFile = member.class }
+		party[index] = { classFile = member.class, specIcon = AMT.Inspect:GetSpecIcon(member.guid) }
 	end
 
 	return party

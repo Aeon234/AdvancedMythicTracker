@@ -3,6 +3,7 @@ local AMT = select(2, ...)
 local State = AMT.State
 
 ---@class AMTPartyMember
+---@field guid string
 ---@field unit string
 ---@field name string
 ---@field class string
@@ -28,7 +29,7 @@ function Deaths.SnapshotParty()
 				local class = select(2, UnitClass(unit))
 
 				if name and class then
-					partyByGUID[guid] = { unit = unit, name = name, class = class }
+					partyByGUID[guid] = { guid = guid, unit = unit, name = name, class = class }
 				end
 			end
 		end

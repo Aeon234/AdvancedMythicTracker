@@ -44,6 +44,7 @@ Dashboard.Panel = Panel
 ---@field party Frame
 ---@field showEvents table<string, AMTDashboardShowEventHandler[]>
 ---@field showTickers AMTDashboardShowTicker[]
+---@field refreshTimer FunctionContainer?
 local Root = {}
 Panel.RootMixin = Root
 
@@ -85,19 +86,19 @@ function Root:OnLoad()
 	Dashboard.Runs:Build(self)
 
 	self:RegisterShowEvent("MYTHIC_PLUS_CURRENT_AFFIX_UPDATE", function()
-		self:Refresh()
+		self:RequestRefresh()
 	end)
 	self:RegisterShowEvent("CHALLENGE_MODE_MAPS_UPDATE", function()
-		self:Refresh()
+		self:RequestRefresh()
 	end)
 	self:RegisterShowEvent("BAG_UPDATE", function()
-		self:Refresh()
+		self:RequestRefresh()
 	end)
 	self:RegisterShowEvent("CHALLENGE_MODE_COMPLETED", function()
-		self:Refresh()
+		self:RequestRefresh()
 	end)
 	self:RegisterShowEvent("GROUP_ROSTER_UPDATE", function()
-		self:Refresh()
+		self:RequestRefresh()
 	end)
 
 	self:SetScript("OnShow", self.OnShow)
@@ -211,6 +212,17 @@ function Root:CreateColumns()
 	self.runs = runs
 end
 
+function Root:RequestRefresh()
+	if self.refreshTimer then
+		return
+	end
+
+	self.refreshTimer = C_Timer.NewTimer(0, function()
+		self.refreshTimer = nil
+		self:Refresh()
+	end)
+end
+
 function Root:Refresh()
 	local Source = Dashboard.Source
 
@@ -259,6 +271,8 @@ function Root:OnShow()
 		self:RegisterEvent(event)
 	end
 
+	AMT.Inspect:RegisterCallback(AMT.Inspect.Event.SpecUpdated, self.RequestRefresh, self)
+
 	for _, ticker in ipairs(self.showTickers) do
 		StartTicker(ticker)
 	end
@@ -266,6 +280,12 @@ end
 
 function Root:OnHide()
 	self:UnregisterAllEvents()
+	AMT.Inspect:UnregisterCallback(AMT.Inspect.Event.SpecUpdated, self)
+
+	if self.refreshTimer then
+		self.refreshTimer:Cancel()
+		self.refreshTimer = nil
+	end
 
 	for _, ticker in ipairs(self.showTickers) do
 		StopTicker(ticker)

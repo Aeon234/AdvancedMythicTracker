@@ -615,17 +615,6 @@ local function GetPlayerKey()
 	}
 end
 
----@return number? icon
-local function GetPlayerSpecIcon()
-	local index = C_SpecializationInfo.GetSpecialization()
-
-	if not index then
-		return nil
-	end
-
-	return select(4, C_SpecializationInfo.GetSpecializationInfo(index))
-end
-
 ---@param unit UnitToken
 ---@param isPlayer boolean
 ---@return AMTDashboardPartyMember? nil where the unit is absent or its identity cannot be read
@@ -642,11 +631,12 @@ local function GetMember(unit, isPlayer)
 	end
 
 	local dungeons, rating = GetMemberDungeons(unit)
+	local guid = UnitGUID(unit)
 
 	return {
 		name = name,
 		classFile = classFile,
-		specIcon = isPlayer and GetPlayerSpecIcon() or nil,
+		specIcon = guid and not issecretvalue(guid) and AMT.Inspect:GetSpecIcon(guid) or nil,
 		key = isPlayer and GetPlayerKey() or nil,
 		rating = rating,
 		dungeons = dungeons,
