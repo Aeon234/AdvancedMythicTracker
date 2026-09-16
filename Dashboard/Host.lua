@@ -39,6 +39,16 @@ local function GetUnavailableReason()
 	end
 end
 
+-- Premade Groups Filter compatibility
+local function UpdatePremadeGroupsFilter()
+	local addon = _G.PremadeGroupsFilter
+	local dialog = addon and addon.DialogFrame
+
+	if dialog and dialog.Toggle then
+		dialog:Toggle()
+	end
+end
+
 ---@return string
 local function GetTitle()
 	local season = C_MythicPlus.GetCurrentUIDisplaySeason()
@@ -93,6 +103,8 @@ function Host:Select(silent)
 			panel:Hide()
 		end
 	end
+
+	UpdatePremadeGroupsFilter()
 
 	PanelTemplates_SetTab(PVEFrame, TAB_ID)
 	PVEFrame:SetWidth(PANEL_WIDTH)
