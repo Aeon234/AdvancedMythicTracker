@@ -5,72 +5,205 @@ local AMT = select(2, ...)
 ---@type table<AMTStyleKey, table>
 local definitions = {
 	MINIMAL = {
-		background = { enabled = false },
+		affixes = {
+			widget = "TEXT",
+		},
+		background = {
+			enabled = false,
+		},
+		bar = {
+			border = false,
+			height = 16,
+			mode = "SEGMENTED",
+			texture = "Atrocity",
+		},
+		clock = {
+			placement = "ABOVE",
+			slot = "RIGHT",
+		},
+		decimals = 3,
+		forces = {
+			bar = {
+				border = false,
+				texture = "Atrocity",
+			},
+			percent = {
+				slot = "LEFT",
+			},
+		},
 		geometry = "SIZED",
-		justify = "RIGHT",
-		clock = { placement = "ABOVE", slot = "RIGHT" },
-		keyInfo = { inline = false },
-		thresholds = { [2] = { marks = "BOTH" }, [3] = { marks = "BOTH" } },
-		affixes = { widget = "TEXT" },
+		keyInfo = {
+			inline = false,
+		},
+		objectives = {
+			icon = false,
+		},
+		order = {
+			forces = { "forcesBar" },
+			groups = { "keyInfo", "timer", "forces", "objectives" },
+			keyInfo = { "deaths", "keyInfoAffixes", "keyInfoTitle" },
+			objectives = { "objectiveRows" },
+			timer = { "timerBar" },
+		},
+		splits = {
+			decimals = 2,
+			forcesSplit = {
+				placement = "BESIDE",
+			},
+		},
+		thresholds = {
+			[2] = {
+				marks = "BOTH",
+			},
+			[3] = {
+				marks = "BOTH",
+			},
+		},
 	},
 
 	PANEL = {
-		width = 330,
-		order = { groups = { "keyInfo", "timer", "forces", "objectives" } },
-		background = { color = { 0.06, 0.06, 0.07, 0.94 }, padding = 10 },
+		affixes = {
+			text = {
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+			},
+		},
+		background = {
+			color = { 0.06, 0.06, 0.07, 0.94 },
+			padding = 10,
+		},
 		bar = {
-			texture = "Solid",
-			height = 20,
-			color = { 0.2, 0.45, 0.85, 1 },
 			background = { 0.1, 0.1, 0.12, 0.9 },
+			border = false,
+			color = { 0.2, 0.45, 0.85, 1 },
+			height = 20,
+			texture = "Solid",
 			tickWidth = 2,
 		},
-		clock = { text = { size = 13, font = "Expressway", outline = "SLUG, OUTLINE" } },
-		thresholds = {
-			[1] = { text = { size = 13, font = "Expressway", outline = "SLUG, OUTLINE" } },
-			[2] = { text = { size = 13, font = "Expressway", outline = "SLUG, OUTLINE" } },
-			[3] = { text = { size = 13, font = "Expressway", outline = "SLUG, OUTLINE" } },
+		clock = {
+			text = {
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+				size = 13,
+			},
 		},
-		keyInfo = {
-			inline = true,
-			text = { size = 15, color = { 1, 0.82, 0, 1 }, font = "Expressway", outline = "SLUG, OUTLINE" },
-			level = { size = 15, color = { 1, 0.82, 0, 1 }, font = "Expressway", outline = "SLUG, OUTLINE" },
-		},
-		affixes = { text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" } },
 		deaths = {
 			label = "TEXT",
-			text = { size = 15, color = { 1, 0.25, 0.25, 1 }, font = "Expressway", outline = "SLUG, OUTLINE" },
+			text = {
+				color = { 1, 0.25, 0.25, 1 },
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+				size = 15,
+			},
 		},
 		forces = {
 			bar = {
-				texture = "Solid",
-				height = 18,
-				color = { 0.3, 0.7, 0.35, 1 },
 				background = { 0.1, 0.1, 0.12, 0.9 },
-			},
-			title = {
-				enabled = true,
-				text = { size = 11, color = { 0.6, 0.6, 0.63, 1 }, font = "Expressway", outline = "SLUG, OUTLINE" },
+				border = false,
+				color = { 0.3, 0.7, 0.35, 1 },
+				height = 18,
+				texture = "Solid",
 			},
 			count = {
 				placement = "ABOVE",
-				slot = "RIGHT",
-				text = { size = 11, color = { 0.6, 0.6, 0.63, 1 }, font = "Expressway", outline = "SLUG, OUTLINE" },
+				text = {
+					color = { 0.6, 0.6, 0.63, 1 },
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+					size = 11,
+				},
 			},
-			percent = { text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" } },
+			percent = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			title = {
+				enabled = true,
+				text = {
+					color = { 0.6, 0.6, 0.63, 1 },
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+					size = 11,
+				},
+			},
+		},
+		keyInfo = {
+			inline = true,
+			level = {
+				color = { 1, 0.82, 0, 1 },
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+				size = 15,
+			},
+			text = {
+				color = { 1, 0.82, 0, 1 },
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+				size = 15,
+			},
 		},
 		objectives = {
-			rowHeight = 20,
-			iconSize = 14,
-			text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" },
-			time = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" },
-			pendingColor = { 0.6, 0.6, 0.63, 1 },
 			completedColor = { 0.35, 0.85, 0.35, 1 },
+			iconSize = 14,
+			pendingColor = { 0.6, 0.6, 0.63, 1 },
+			rowHeight = 20,
+			text = {
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+			},
+			time = {
+				font = "Expressway",
+				outline = "SLUG, OUTLINE",
+			},
+		},
+		order = {
+			forces = { "forcesBar" },
+			keyInfo = { "deaths", "keyInfoAffixes", "keyInfoTitle" },
+			objectives = { "objectiveRows" },
+			timer = { "timerBar" },
 		},
 		splits = {
-			pbCompare = { text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" } },
-			bossSplit = { text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" } },
-			forcesSplit = { text = { size = 12, font = "Expressway", outline = "SLUG, OUTLINE" } },
+			bossSplit = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			forcesSplit = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			pbCompare = {
+				nudge = { -6, 0 },
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+		},
+		thresholds = {
+			[1] = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			[2] = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
+			[3] = {
+				text = {
+					font = "Expressway",
+					outline = "SLUG, OUTLINE",
+				},
+			},
 		},
 	},
 
