@@ -233,11 +233,10 @@ end
 ---@return number seconds to add to a UTC date read by time()
 local function LocalReadOffset()
 	local now = time()
-	local utc = date("!*t", now)
+	local utc = date("!*t", now) --[[@as osdate]]
 
-	utc.isdst = nil
-
-	return now - time(utc)
+	return now
+		- time({ year = utc.year, month = utc.month, day = utc.day, hour = utc.hour, min = utc.min, sec = utc.sec })
 end
 
 -- Run dates are UTC, not the machine's zone and not realm time.

@@ -250,7 +250,7 @@ local function MemberRole(member)
 	local specID = AMT.Inspect:GetSpecID(member.guid)
 	local role = specID and select(5, GetSpecializationInfoByID(specID))
 
-	if ROLE_ORDER[role] then
+	if role and ROLE_ORDER[role] then
 		return role
 	end
 
@@ -268,8 +268,8 @@ end
 ---@param right AMTRankedMember
 ---@return boolean
 local function ByRole(left, right)
-	local leftRole = ROLE_ORDER[left.role] or math.huge
-	local rightRole = ROLE_ORDER[right.role] or math.huge
+	local leftRole = left.role and ROLE_ORDER[left.role] or math.huge
+	local rightRole = right.role and ROLE_ORDER[right.role] or math.huge
 
 	if leftRole ~= rightRole then
 		return leftRole < rightRole

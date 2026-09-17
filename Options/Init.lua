@@ -30,6 +30,9 @@ local AMT = select(2, ...)
 ---@field GetPages fun(categoryID: string): AMTOptionsPage[]
 ---@field GetPage fun(id: string): AMTOptionsPage?
 ---@field GetFirstPage fun(): AMTOptionsPage?
+---@field IsPageHidden fun(page: AMTOptionsPage): boolean
+---@field IsTimerDisabled fun(): boolean
+---@field RefreshSidebar fun()
 ---@field NewWidgetPrototype fun(widgetType: string): AMTOptionWidget
 ---@field NewWidget fun(widgetType: string, parent: Frame, labelWidth: number?): AMTOptionWidget?
 ---@field NotifyValueChanged fun()
