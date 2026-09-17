@@ -1,18 +1,44 @@
-## Interface: 120001
-## Title:|cff18a8ffAdvanced Mythic Tracker|r
-## Notes: Track your |cffffd200Raid|r, |cffffd200Mythic+|r, and |cffffd200World|r activities.
+## Interface: 120100
+## Title: Advanced Mythic Tracker
+## Notes: WIP
 ## Author: Aeon
-## Version: 2.3.2
-## SavedVariables: AMT_DB
-## IconTexture: Interface\Addons\AdvancedMythicTracker\Media\Icons\AMT
+## Version: @project-version@
+
+## SavedVariables: AdvancedMythicTrackerDB
+## OptionalDeps: ElvUI, ElvUI_WindTools, Aurora
+
+## IconTexture: 4352494
+
 ## X-Curse-Project-ID: 1037826
-## X-Wago-ID: 
-## OptionalDeps: ElvUI, Details, RaiderIO
+## X-Wago-ID:
 
-AMT_Frames.xml
+## Category: Dungeons & Raids
+## Category-deDE: Dungeons & Schlachtzüge
+## Category-esES: Mazmorras y bandas
+## Category-esMX: Calabozos y bandas
+## Category-frFR: Donjons et raids
+## Category-itIT: Spedizioni e incursioni
+## Category-koKR: 던전 및 공격대
+## Category-ptBR: Masmorras e Raides
+## Category-ruRU: Подземелья и рейды
+## Category-zhCN: 地下城和团队副本
+## Category-zhTW: 地城與團隊
 
-Database.lua
-Util.lua
-Tracker.lua
-# SeasonalInfo.lua
-# Portals.lua
+Libs\embeds.xml
+
+# Core
+Core\Core.xml
+Locales\Locales.xml
+
+# Timer
+State\State.xml
+Providers\Providers.xml
+Timer\Timer.xml
+
+# Modules & Options
+Modules\Modules.xml
+Options\Options.xml
+
+# Dashboard
+Data\Data.xml
+Dashboard\Dashboard.xml
