@@ -12,11 +12,6 @@ local BESIDE_PLACEMENTS = {
 	{ "BELOW", L["Below"] },
 }
 
----@return boolean
-local function IsMinimal()
-	return Options.Get("timer.style") == "MINIMAL"
-end
-
 Options.RegisterPage({
 	id = "timer.splits",
 	hidden = Options.IsTimerDisabled,
@@ -105,7 +100,6 @@ Options.RegisterPage({
 					{
 						type = "segmented",
 						label = L["Alignment"],
-						hidden = IsMinimal,
 						path = entry.prefix .. ".slot",
 						values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
 					},

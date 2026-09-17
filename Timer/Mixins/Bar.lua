@@ -212,27 +212,13 @@ function Bar:LayoutRows(element, above, below, aboveHeight, belowHeight, barHeig
 	return top + barHeight + bottom
 end
 
----Minimal arranges the whole frame from one alignment toggle, so an edge slot resolves to whichever
----edge that is. Centre is not an edge and is left alone.
----@param slot "LEFT"|"CENTER"|"RIGHT"
----@return "LEFT"|"CENTER"|"RIGHT"
-function Bar.ResolveSlot(slot)
-	local timer = AMT.Profiles.active.timer
-
-	if timer.style ~= "MINIMAL" or slot == "CENTER" then
-		return slot
-	end
-
-	return timer.justify
-end
-
 ---@param region AMTAnchorable
 ---@param settings AMTPlacedTextSettings
 ---@param above Frame
 ---@param below Frame
 function Bar:Place(region, settings, above, below)
 	local nudge = settings.nudge
-	local slot = Bar.ResolveSlot(settings.slot)
+	local slot = settings.slot
 
 	if settings.placement == "ABOVE" or settings.placement == "BELOW" then
 		Bar.AttachToRow(region, settings.placement == "ABOVE" and above or below, slot, nudge[1], nudge[2])

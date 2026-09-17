@@ -103,7 +103,7 @@ function module:RefreshMarks()
 		for index, text in ipairs(self.thresholds) do
 			local nudge = thresholds[index].nudge
 			local segment = self.segmented:GetSegment(index)
-			local slot = AMT.Mixins.Bar.ResolveSlot(AMT.Profiles.active.timer.justify)
+			local slot = AMT.Profiles.active.timer.justify
 
 			segment:AttachToSlot(text, slot, nudge[1], nudge[2])
 		end

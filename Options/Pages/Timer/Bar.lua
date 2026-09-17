@@ -8,11 +8,6 @@ local function IsSegmented()
 	return Options.Get("timer.bar.mode") == "SEGMENTED"
 end
 
----@return boolean
-local function IsMinimal()
-	return Options.Get("timer.style") == "MINIMAL"
-end
-
 Options.RegisterPage({
 	id = "timer.bar",
 	hidden = Options.IsTimerDisabled,
@@ -112,7 +107,6 @@ Options.RegisterPage({
 			{
 				type = "segmented",
 				label = L["Alignment"],
-				hidden = IsMinimal,
 				path = "timer.clock.slot",
 				values = { { "LEFT", L["Left"] }, { "CENTER", L["Center"] }, { "RIGHT", L["Right"] } },
 			},
