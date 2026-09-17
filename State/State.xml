@@ -1,0 +1,9 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="State.lua" />
+    <Script file="Challenge.lua" />
+    <Script file="Forces.lua" />
+    <Script file="Deaths.lua" />
+    <Script file="Objectives.lua" />
+    <Script file="Pull.lua" />
+    <Script file="Splits.lua" />
+</Ui>

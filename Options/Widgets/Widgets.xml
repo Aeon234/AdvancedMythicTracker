@@ -1,0 +1,15 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Widget.lua" />
+    <Script file="Checkbox.lua" />
+    <Script file="Slider.lua" />
+    <Script file="Dropdown.lua" />
+    <Script file="MediaDropdown.lua" />
+    <Script file="ColorSwatch.lua" />
+    <Script file="TextInput.lua" />
+    <Script file="SegmentedSelector.lua" />
+    <Script file="Button.lua" />
+    <Script file="Note.lua" />
+    <Script file="TextArea.lua" />
+    <Script file="Row.lua" />
+    <Script file="Reorder.lua" />
+</Ui>

@@ -1,0 +1,5 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Providers.lua" />
+    <Script file="Live.lua" />
+    <Script file="Demo.lua" />
+</Ui>

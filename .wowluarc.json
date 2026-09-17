@@ -1,0 +1,28 @@
+{
+  "ignore": ["Libs/"],
+  "flavors": ["retail"],
+
+  "globals": {
+    "read": ["SlashCmdList", "StaticPopupDialogs"],
+    "write": [
+      "AdvancedMythicTracker*",
+      "AdvancedMythicTrackerDB",
+      "AMTAPI",
+      "SlashCmdList",
+      "BINDING_NAME_AMT_DASHBOARD"
+    ]
+  },
+
+  "diagnostics": {
+    "enable": [
+      "need-check-nil",
+      "nil-index",
+      "invalid-op",
+      "redundant-condition",
+      "redundant-and",
+      "redundant-or",
+      "unused-function",
+      "unused-vararg"
+    ]
+  }
+}

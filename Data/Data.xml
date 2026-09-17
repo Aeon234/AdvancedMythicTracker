@@ -1,0 +1,5 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="Teleports.lua" />
+    <Script file="Season.lua" />
+    <Script file="Realms.lua" />
+</Ui>
