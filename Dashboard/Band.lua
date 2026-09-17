@@ -13,6 +13,7 @@ local UNPLAYED = "-"
 local KEYSTONE_ICON_SIZE = 40
 local KEYSTONE_ICON_CORNER = 16
 local KEYSTONE_CENTRE_GAP = 5
+local KEYSTONE_SHIFT_X = 20
 local KEYSTONE_LEVEL_SIZE = 20
 local KEYSTONE_ABBREV_SIZE = 16
 local KEYSTONE_ABBREV_GREY = 0.8
@@ -147,7 +148,7 @@ end
 ---@param section Frame
 function Band:BuildKeystone(section)
 	self.keystoneIcon = Dashboard.NewIcon(section, "Frame", KEYSTONE_ICON_SIZE, KEYSTONE_ICON_CORNER)
-	self.keystoneIcon:SetPoint("RIGHT", section, "CENTER", -KEYSTONE_CENTRE_GAP, 0)
+	self.keystoneIcon:SetPoint("RIGHT", section, "CENTER", KEYSTONE_SHIFT_X - KEYSTONE_CENTRE_GAP, 0)
 
 	self.keystoneIcon:SetMouseMotionEnabled(true)
 	self.keystoneIcon:SetScript("OnEnter", function()
