@@ -126,7 +126,7 @@ function Row.New(parent, previous, withRule)
 	end
 
 	local function OnLeave()
-		if not frame:IsMouseOver() then
+		if not frame:IsVisible() or not frame:IsMouseOver() then
 			GameTooltip_Hide()
 		end
 	end
