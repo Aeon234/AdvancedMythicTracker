@@ -5,6 +5,7 @@ local Dashboard = AMT.Dashboard
 
 local TAB_ID = 4
 local PANEL_WIDTH = 950
+local ICON = 4352494
 
 local BLIZZARD_PANELS = { "GroupFinderFrame", "PVPUIFrame", "ChallengesFrame" }
 
@@ -109,7 +110,7 @@ function Host:Select(silent)
 	PanelTemplates_SetTab(PVEFrame, TAB_ID)
 	PVEFrame:SetWidth(PANEL_WIDTH)
 	PVEFrame_HideLeftInset()
-	PVEFrame.PortraitContainer:Hide() -- Should always hide, don't touch alpha
+	PVEFrame:SetPortraitToAsset(ICON)
 	UpdateUIPanelPositions(PVEFrame)
 	PVEFrame:SetTitle(GetTitle())
 	self.panel:Show()
@@ -120,7 +121,6 @@ end
 ---@param sidePanelName string?
 function Host:OnShowFrame(sidePanelName)
 	self.panel:Hide()
-	PVEFrame.PortraitContainer:Show()
 
 	if sidePanelName then
 		self.lastWasTracker = false
