@@ -1,6 +1,7 @@
 ## Interface: 120100
 ## Title: Advanced Mythic Tracker
 ## Notes: Mythic+ Dashboard and Timer
+## Notes-ruRU: Добавляет вкладку 'Трекер' в поиск групп. Отображает Ваш ключ, рейтинг, сезонные подземелья, также пройденные подземелья на этой неделе, прогресс в Великом Хранилище и ключи Вашей группы
 ## Author: Aeon
 ## Version: @project-version@
 
