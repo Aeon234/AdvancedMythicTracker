@@ -75,8 +75,6 @@ local definitions = {
 	},
 
 	AEON = {
-		elements = { keyInfoAffixes = { enabled = false } },
-		order = { groups = { "keyInfo", "timer", "forces", "objectives" } },
 		affixes = {
 			iconSize = 14,
 			text = {
@@ -85,56 +83,22 @@ local definitions = {
 			},
 		},
 		background = {
-			color = {
-				0.121569,
-				0.094118,
-				0.07451,
-				1,
-			},
+			color = { 0.078431, 0.078431, 0.078431, 0.9 },
 			nineslice = true,
 			padding = 10,
 		},
 		bar = {
-			background = {
-				0.1,
-				0.1,
-				0.12,
-				0.9,
-			},
-			color = {
-				0.2,
-				0.45,
-				0.85,
-				1,
-			},
+			background = { 0.1, 0.1, 0.12, 0.9 },
+			color = { 0.2, 0.45, 0.85, 1 },
 			height = 21,
+			mode = "SEGMENTED",
 			texture = "Solid",
 			tickWidth = 2,
 			tierColors = {
-				{
-					0.34902,
-					0.352941,
-					0.360784,
-					1,
-				},
-				{
-					0.384314,
-					0.768628,
-					1,
-					1,
-				},
-				{
-					0.384314,
-					0.768628,
-					1,
-					1,
-				},
-				{
-					0.25098,
-					0.752941,
-					0.25098,
-					1,
-				},
+				{ 0.34902, 0.352941, 0.360784, 1 },
+				{ 0.384314, 0.768628, 1, 1 },
+				{ 1, 0.709804, 0, 1 },
+				{ 0.25098, 0.752941, 0.25098, 1 },
 			},
 		},
 		clock = {
@@ -146,47 +110,27 @@ local definitions = {
 		},
 		deaths = {
 			text = {
-				color = {
-					1,
-					0.25098,
-					0.25098,
-					1,
-				},
+				color = { 1, 0.25098, 0.25098, 1 },
 				font = "Gilroy Bold",
 				outline = "SLUG, OUTLINE",
 				size = 16,
 			},
 		},
 		decimals = 3,
-		failColor = {
-			0.74902,
-			0.14902,
-			0.14902,
-			1,
+		elements = {
+			keyInfoAffixes = {
+				enabled = false,
+			},
 		},
+		failColor = { 0.74902, 0.14902, 0.14902, 1 },
 		forces = {
 			bar = {
-				background = {
-					0.1,
-					0.1,
-					0.12,
-					0.9,
-				},
-				color = {
-					0.2,
-					0.576471,
-					0.498039,
-					1,
-				},
+				background = { 0.1, 0.1, 0.12, 0.9 },
+				color = { 0.2, 0.576471, 0.498039, 1 },
 				height = 21,
 				texture = "Solid",
 			},
-			completedColor = {
-				1,
-				0.709804,
-				0,
-				1,
-			},
+			completedColor = { 1, 0.709804, 0, 1 },
 			count = {
 				text = {
 					font = "Gilroy Bold",
@@ -195,6 +139,7 @@ local definitions = {
 				},
 			},
 			percent = {
+				nudge = { -3, -1 },
 				slot = "LEFT",
 				text = {
 					font = "Gilroy Bold",
@@ -204,12 +149,7 @@ local definitions = {
 			},
 			title = {
 				text = {
-					color = {
-						0.6,
-						0.6,
-						0.63,
-						1,
-					},
+					color = { 0.6, 0.6, 0.63, 1 },
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
 				},
@@ -219,43 +159,23 @@ local definitions = {
 			height = 14,
 			inline = true,
 			level = {
-				color = {
-					1,
-					0.82,
-					0,
-					1,
-				},
+				color = { 1, 0.82, 0, 1 },
 				font = "Gilroy Bold",
 				outline = "SLUG, OUTLINE",
 				size = 16,
 			},
 			text = {
-				color = {
-					1,
-					0.82,
-					0,
-					1,
-				},
+				color = { 1, 0.82, 0, 1 },
 				font = "Gilroy Bold",
 				outline = "SLUG, OUTLINE",
 				size = 16,
 			},
 		},
 		objectives = {
-			completedColor = {
-				0.34902,
-				0.85098,
-				0.34902,
-				1,
-			},
+			completedColor = { 0.34902, 0.85098, 0.34902, 1 },
 			icon = false,
 			iconSize = 14,
-			pendingColor = {
-				0.6,
-				0.6,
-				0.63,
-				1,
-			},
+			pendingColor = { 0.6, 0.6, 0.63, 1 },
 			rowHeight = 18,
 			spacing = 0,
 			text = {
@@ -269,19 +189,16 @@ local definitions = {
 				size = 14,
 			},
 		},
+		order = {
+			forces = { "forcesBar" },
+			groups = { "keyInfo", "timer", "forces", "objectives" },
+			keyInfo = { "deaths", "keyInfoAffixes", "keyInfoTitle" },
+			objectives = { "objectiveRows" },
+			timer = { "timerBar" },
+		},
 		splits = {
-			aheadColor = {
-				0.34902,
-				0.85098,
-				0.34902,
-				1,
-			},
-			behindColor = {
-				1,
-				0.25098,
-				0.25098,
-				1,
-			},
+			aheadColor = { 0.34902, 0.85098, 0.34902, 1 },
+			behindColor = { 1, 0.25098, 0.25098, 1 },
 			bossSplit = {
 				text = {
 					font = "Gilroy Bold",
@@ -289,12 +206,15 @@ local definitions = {
 				},
 			},
 			forcesSplit = {
+				nudge = { -6, -1 },
+				placement = "BESIDE",
 				text = {
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
 				},
 			},
 			pbCompare = {
+				nudge = { -6, 0 },
 				text = {
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
@@ -303,114 +223,30 @@ local definitions = {
 		},
 		thresholds = {
 			{
-				aheadColor = {
-					0.34902,
-					0.85098,
-					0.34902,
-					1,
-				},
-				behindColor = {
-					1,
-					0.25098,
-					0.25098,
-					1,
-				},
-				enabled = true,
-				marks = "TEXT",
-				nudge = {
-					0,
-					0,
-				},
+				aheadColor = { 0.34902, 0.85098, 0.34902, 1 },
+				behindColor = { 1, 0.25098, 0.25098, 1 },
 				text = {
-					color = {
-						1,
-						1,
-						1,
-						1,
-					},
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
 					size = 14,
-				},
-				tickColor = {
-					1,
-					1,
-					1,
-					0.5,
 				},
 			},
 			{
-				aheadColor = {
-					0.34902,
-					0.85098,
-					0.34902,
-					1,
-				},
-				behindColor = {
-					1,
-					0.25098,
-					0.25098,
-					1,
-				},
-				enabled = true,
-				marks = "BOTH",
-				nudge = {
-					0,
-					0,
-				},
+				aheadColor = { 0.34902, 0.85098, 0.34902, 1 },
+				behindColor = { 1, 0.25098, 0.25098, 1 },
 				text = {
-					color = {
-						1,
-						1,
-						1,
-						1,
-					},
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
 					size = 14,
-				},
-				tickColor = {
-					1,
-					1,
-					1,
-					0.5,
 				},
 			},
 			{
-				aheadColor = {
-					0.34902,
-					0.85098,
-					0.34902,
-					1,
-				},
-				behindColor = {
-					1,
-					0.25098,
-					0.25098,
-					1,
-				},
-				enabled = true,
-				marks = "BOTH",
-				nudge = {
-					0,
-					0,
-				},
+				aheadColor = { 0.34902, 0.85098, 0.34902, 1 },
+				behindColor = { 1, 0.25098, 0.25098, 1 },
 				text = {
-					color = {
-						1,
-						1,
-						1,
-						1,
-					},
 					font = "Gilroy Bold",
 					outline = "SLUG, OUTLINE",
 					size = 14,
-				},
-				tickColor = {
-					1,
-					1,
-					1,
-					0.5,
 				},
 			},
 		},
