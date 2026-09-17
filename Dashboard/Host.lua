@@ -78,7 +78,13 @@ function Host:AnchorTab()
 		local previous = PVEFrame.Tabs[index]
 
 		if previous:IsShown() then
-			tab:SetPoint("TOPLEFT", previous, "TOPRIGHT", anchor.gap, 0)
+			local gap = anchor.gap
+
+			if type(gap) == "function" then
+				gap = gap(tab)
+			end
+
+			tab:SetPoint("TOPLEFT", previous, "TOPRIGHT", gap, 0)
 
 			return
 		end

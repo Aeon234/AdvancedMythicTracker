@@ -5,7 +5,7 @@
 ## Version: @project-version@
 
 ## SavedVariables: AdvancedMythicTrackerDB
-## OptionalDeps: ElvUI, ElvUI_WindTools, Aurora
+## OptionalDeps: ElvUI, ElvUI_WindTools, Aurora, EllesmereUI
 
 ## IconTexture: 4352494
 

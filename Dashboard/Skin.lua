@@ -1,8 +1,10 @@
 local AMT = select(2, ...)
 
 local ELVUI_CALLBACK = "AdvancedMythicTracker_Dashboard"
+local ELLESMEREUI_SKIN_ADDON = "EllesmereUIBlizzardSkin"
+local ELLESMEREUI_TAB_TRIM = 2
 
----@alias AMTDashboardSkinPack "ElvUI"|"Aurora"
+---@alias AMTDashboardSkinPack "ElvUI"|"Aurora"|"EllesmereUI"
 
 ---@alias AMTDashboardSkinRole
 ---| "tab"
@@ -35,16 +37,34 @@ local ROLES = {
 }
 
 ---@class AMTDashboardSkinTabAnchor
----@field gap number x from the previous shown tab's TOPRIGHT
+---@field gap number|fun(tab: Button): number
 ---@field point FramePoint the tab's point on PVEFrame's BOTTOMLEFT when no Blizzard tab is shown
 ---@field x number
 ---@field y number
+
+---@param tab Button
+---@return number
+local function EllesmereUIGap(tab)
+	local pixel = _G.EllesmereUI.PP
+	local scale = tab:GetEffectiveScale()
+
+	if not pixel then
+		return 1
+	end
+
+	if pixel.perfect and scale and scale > 0.1 and scale < 10 then
+		return pixel.perfect / scale
+	end
+
+	return pixel.mult or 1
+end
 
 ---@type table<AMTDashboardSkinPack|"Blizzard", AMTDashboardSkinTabAnchor>
 local TAB_ANCHORS = {
 	Blizzard = { gap = 3, point = "BOTTOMLEFT", x = 19, y = -30 },
 	ElvUI = { gap = -5, point = "BOTTOMLEFT", x = -3, y = -32 },
 	Aurora = { gap = 1, point = "TOPLEFT", x = 20, y = -1 },
+	EllesmereUI = { gap = EllesmereUIGap, point = "BOTTOMLEFT", x = 19, y = -30 },
 }
 
 ---@alias AMTDashboardSkinHandler fun(region: Region)
@@ -83,6 +103,34 @@ local function ElvUIScrollBar(scrollBar)
 	ElvUISkins():HandleTrimScrollBar(scrollBar)
 end
 
+---@return table?
+local function EllesmereUIFacade()
+	return AMT.Dashboard.Skin.facade
+end
+
+---@param tab Region
+local function EllesmereUITab(tab)
+	local facade = EllesmereUIFacade()
+
+	if not facade then
+		return
+	end
+
+	facade.Tab(tab)
+	tab:SetHeight(tab:GetHeight() - ELLESMEREUI_TAB_TRIM)
+end
+
+---@param scrollBar Region
+local function EllesmereUIScrollBar(scrollBar)
+	local facade = EllesmereUIFacade()
+
+	if not facade then
+		return
+	end
+
+	facade.ScrollBar(scrollBar)
+end
+
 ---@type table<AMTDashboardSkinPack, table<AMTDashboardSkinRole, AMTDashboardSkinHandler>>
 local HANDLERS = {
 	ElvUI = {
@@ -93,6 +141,11 @@ local HANDLERS = {
 	Aurora = {
 		tab = AuroraTab,
 		scrollbar = AuroraScrollBar,
+		background = HideRegion,
+	},
+	EllesmereUI = {
+		tab = EllesmereUITab,
+		scrollbar = EllesmereUIScrollBar,
 		background = HideRegion,
 	},
 }
@@ -106,6 +159,7 @@ local HANDLERS = {
 ---@field resolved boolean
 ---@field pack AMTDashboardSkinPack? nil for Blizzard's look
 ---@field shadows boolean WindTools shadows on top of ElvUI
+---@field facade table? EllesmereUI's per-addon skinning facade
 local Skin = {}
 AMT.Dashboard.Skin = Skin
 
@@ -119,6 +173,23 @@ local function ElvUISkinsGroupFinder(E)
 	local blizzard = E.private.skins.blizzard
 
 	return blizzard.enable and blizzard.lfg or false
+end
+
+---@return boolean
+local function EllesmereUISkinsUs()
+	local db = _G.EllesmereUIDB
+
+	if not db then
+		return true
+	end
+
+	if db.thirdPartySkinsOff or db.reskinLFGMenu == false then
+		return false
+	end
+
+	local addons = db.thirdPartySkinAddons
+
+	return not (addons and addons[AMT.name] == false)
 end
 
 ---@return boolean
@@ -166,7 +237,31 @@ function Skin:ResolveElvUI(E)
 	end
 end
 
+---@return boolean claimed
+function Skin:StartEllesmereUI()
+	local ellesmere = _G.EllesmereUI
+
+	if not ellesmere or not ellesmere.RegisterSkin then
+		return false
+	end
+
+	if not C_AddOns.IsAddOnLoaded(ELLESMEREUI_SKIN_ADDON) or not EllesmereUISkinsUs() then
+		return false
+	end
+
+	ellesmere.RegisterSkin(AMT.name, function(facade)
+		self.facade = facade
+		self:Resolve("EllesmereUI", false)
+	end)
+
+	return true
+end
+
 function Skin:Start()
+	if self:StartEllesmereUI() then
+		return
+	end
+
 	local elvui = _G.ElvUI
 
 	if not elvui then
