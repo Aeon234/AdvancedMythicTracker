@@ -203,7 +203,7 @@ function Host:Attach()
 
 	Dashboard.Skin:Start()
 
-	PanelTemplates_SetNumTabs(PVEFrame, TAB_ID)
+	PVEFrame.numTabs = TAB_ID
 
 	PVEFrame:HookScript("OnShow", function()
 		self:UpdateAvailability()

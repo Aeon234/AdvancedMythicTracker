@@ -64,9 +64,30 @@ local function AuroraScrollBar(scrollBar)
 	_G.Aurora.Skin.MinimalScrollBar(scrollBar)
 end
 
+---@return table S ElvUI's Skins module
+local function ElvUISkins()
+	return _G.ElvUI[1]:GetModule("Skins")
+end
+
+---@param tab Region
+local function ElvUITab(tab)
+	ElvUISkins():HandleTab(tab)
+
+	if AMT.Dashboard.Skin.shadows then
+		_G.WindTools[1].Modules.Skins:ReskinTab(tab)
+	end
+end
+
+---@param scrollBar Region
+local function ElvUIScrollBar(scrollBar)
+	ElvUISkins():HandleTrimScrollBar(scrollBar)
+end
+
 ---@type table<AMTDashboardSkinPack, table<AMTDashboardSkinRole, AMTDashboardSkinHandler>>
 local HANDLERS = {
 	ElvUI = {
+		tab = ElvUITab,
+		scrollbar = ElvUIScrollBar,
 		background = HideRegion,
 	},
 	Aurora = {
