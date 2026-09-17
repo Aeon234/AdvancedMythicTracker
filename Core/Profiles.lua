@@ -341,7 +341,7 @@ AMT.Profiles = Profiles
 ---@return string
 local function CharacterKey()
 	local name = UnitName("player") or "Unknown"
-	local realm = GetNormalizedRealmName() or GetRealmName() or "Unknown"
+	local realm = (GetRealmName() or "Unknown"):gsub("[%s'%-]", "")
 
 	return name .. "-" .. realm
 end
