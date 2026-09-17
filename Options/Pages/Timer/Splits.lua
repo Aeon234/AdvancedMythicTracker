@@ -19,6 +19,7 @@ end
 
 Options.RegisterPage({
 	id = "timer.splits",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 70,
 	name = L["Splits"],

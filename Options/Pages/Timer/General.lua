@@ -119,6 +119,14 @@ local function CurrentStyle()
 	return Options.Get("timer.style")
 end
 
+---@param predicate AMTOptionPredicate?
+---@return AMTOptionPredicate
+local function HiddenWithTimer(predicate)
+	return function()
+		return Options.IsTimerDisabled() or (predicate ~= nil and predicate())
+	end
+end
+
 Options.RegisterPage({
 	id = "timer.general",
 	parent = "timer",
@@ -132,8 +140,22 @@ Options.RegisterPage({
 
 		page:AddWidgets({
 			{
+				type = "segmented",
+				label = L["Mythic+ Timer"],
+				values = { { false, L["Disabled"] }, { true, L["Enabled"] } },
+				tooltip = L["Disabled leaves only the Group Finder dashboard. Keys are still recorded for it."],
+				get = AMT.Frames.IsTimerEnabled,
+				set = function(value)
+					AMT.Frames.SetTimerEnabled(value == true)
+					Options.RefreshSidebar()
+					Options.NotifyValueChanged()
+				end,
+			},
+
+			{
 				type = "slider",
 				label = L["Update Interval"],
+				hidden = HiddenWithTimer(),
 				scope = "account",
 				path = "updateInterval",
 				min = 0.1,
@@ -149,6 +171,7 @@ Options.RegisterPage({
 			{
 				type = "row",
 				label = L["Style"],
+				hidden = HiddenWithTimer(),
 				items = {
 					{
 						type = "dropdown",
@@ -179,12 +202,14 @@ Options.RegisterPage({
 			{
 				type = "note",
 				label = "",
+				hidden = HiddenWithTimer(),
 				text = L["Selecting a style resets every Timer customisation. Other features are untouched."],
 			},
 
 			{
 				type = "slider",
 				label = L["Overall Scale"],
+				hidden = HiddenWithTimer(),
 				path = "timer.scale",
 				min = 0.5,
 				max = 2.0,
@@ -195,6 +220,7 @@ Options.RegisterPage({
 			{
 				type = "slider",
 				label = L["Width"],
+				hidden = HiddenWithTimer(),
 				path = "timer.width",
 				min = 200,
 				max = 600,
@@ -205,6 +231,7 @@ Options.RegisterPage({
 			{
 				type = "button",
 				label = L["Fonts"],
+				hidden = HiddenWithTimer(),
 				text = L["Apply Font To All…"],
 				tooltip = L["Change all the texts at same time. Size, outline and colour keep their own values."],
 				set = ShowFontPicker,
@@ -213,6 +240,7 @@ Options.RegisterPage({
 			{
 				type = "button",
 				label = L["Textures"],
+				hidden = HiddenWithTimer(),
 				text = L["Apply Texture To All…"],
 				tooltip = L["Change all the textures at same time."],
 				set = ShowTexturePicker,
@@ -223,9 +251,9 @@ Options.RegisterPage({
 				label = L["Text Alignment"],
 				path = "timer.justify",
 				values = { { "LEFT", L["Left"] }, { "RIGHT", L["Right"] } },
-				hidden = function()
+				hidden = HiddenWithTimer(function()
 					return CurrentStyle() ~= "MINIMAL"
-				end,
+				end),
 			},
 
 			{
@@ -235,9 +263,9 @@ Options.RegisterPage({
 				min = 0,
 				max = 1,
 				step = 0.05,
-				hidden = function()
+				hidden = HiddenWithTimer(function()
 					return CurrentStyle() == "MINIMAL"
-				end,
+				end),
 			},
 
 			{
@@ -245,9 +273,9 @@ Options.RegisterPage({
 				label = L["Background Color"],
 				path = "timer.background.color",
 				hasOpacity = true,
-				hidden = function()
+				hidden = HiddenWithTimer(function()
 					return CurrentStyle() ~= "AEON"
-				end,
+				end),
 			},
 		})
 	end,

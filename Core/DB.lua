@@ -15,6 +15,7 @@ local SCHEMA_VERSION = 1
 ---@field profiles table<string,AMTProfile>
 ---@field profileKeys table<string,string>
 ---@field defaultProfile string
+---@field timerEnabled boolean
 ---@field updateInterval number
 ---@field recordAbandons boolean
 ---@field minimapIcon table
@@ -34,6 +35,7 @@ local defaults = {
 		defaultProfile = "Default",
 		minimapIcon = { hide = false },
 		addonCompartment = true,
+		timerEnabled = true,
 		updateInterval = 0.1,
 		recordAbandons = true,
 		qol = { autoSlotKeystone = true, autoGossip = true },

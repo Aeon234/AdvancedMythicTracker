@@ -69,7 +69,7 @@ end
 function Frames.SetUnlocked(unlocked)
 	Frames.unlocked = unlocked
 	Frames.root:SetUnlocked(unlocked)
-	Frames.root:SetShown(unlocked or Frames.shouldShow == true)
+	Frames.root:SetShown(Frames.IsTimerEnabled() and (unlocked or Frames.shouldShow == true))
 end
 
 ---@return boolean
@@ -80,7 +80,26 @@ end
 ---@param shown boolean
 function Frames.SetShown(shown)
 	Frames.shouldShow = shown
-	Frames.root:SetShown(shown)
 
-	AMT.ObjectiveTracker.SetHidden(shown)
+	local visible = shown and Frames.IsTimerEnabled()
+
+	Frames.root:SetShown(visible)
+	AMT.ObjectiveTracker.SetHidden(visible)
+end
+
+---@return boolean
+function Frames.IsTimerEnabled()
+	return AMT.DB.settings.timerEnabled ~= false
+end
+
+---@param enabled boolean
+function Frames.SetTimerEnabled(enabled)
+	AMT.DB.settings.timerEnabled = enabled
+
+	if not enabled then
+		AMT.Demo.Exit()
+		Frames.SetUnlocked(false)
+	end
+
+	Frames.SetShown(Frames.shouldShow == true)
 end

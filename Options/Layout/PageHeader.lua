@@ -56,6 +56,12 @@ function PageHeader:Refresh()
 	end
 
 	local inKey = AMT.State.current.inChallenge
+	local timerEnabled = AMT.Frames.IsTimerEnabled()
+
+	toggles.unlock:SetShown(timerEnabled)
+	toggles.preview:SetShown(timerEnabled)
+	toggles.animate:SetShown(timerEnabled)
+
 
 	toggles.unlockTick:SetShown(AMT.Frames.IsUnlocked())
 

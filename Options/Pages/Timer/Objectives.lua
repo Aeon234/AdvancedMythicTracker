@@ -5,6 +5,7 @@ local Options = AMT.Options
 
 Options.RegisterPage({
 	id = "timer.objectives",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 60,
 	name = L["Objectives"],

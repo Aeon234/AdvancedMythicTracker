@@ -15,6 +15,7 @@ end
 
 Options.RegisterPage({
 	id = "timer.bar",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 40,
 	name = L["Timer Bar"],

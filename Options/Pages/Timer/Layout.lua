@@ -28,6 +28,7 @@ end
 
 Options.RegisterPage({
 	id = "timer.layout",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 20,
 	name = L["Layout"],

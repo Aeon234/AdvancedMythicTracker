@@ -29,6 +29,7 @@ end
 
 Options.RegisterPage({
 	id = "timer.keyInfo",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 30,
 	name = L["Key Info"],

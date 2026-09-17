@@ -17,6 +17,7 @@ local ORPHAN_ORDER = 9000
 ---@field name string
 ---@field icon string?
 ---@field Build fun(page: AMTOptionsPageView)
+---@field hidden AMTOptionPredicate?
 ---@field frame Frame?
 ---@field built boolean?
 
@@ -148,14 +149,24 @@ function Options.GetPage(id)
 	return pages[id]
 end
 
----The first page of the first category, for the window's initial selection.
+---@param page AMTOptionsPage
+---@return boolean
+function Options.IsPageHidden(page)
+	return page.hidden ~= nil and page.hidden()
+end
+
+---@return boolean
+function Options.IsTimerDisabled()
+	return not AMT.Frames.IsTimerEnabled()
+end
+
 ---@return AMTOptionsPage?
 function Options.GetFirstPage()
 	for _, category in ipairs(Options.GetCategories()) do
-		local list = Options.GetPages(category.id)
-
-		if list[1] then
-			return list[1]
+		for _, page in ipairs(Options.GetPages(category.id)) do
+			if not Options.IsPageHidden(page) then
+				return page
+			end
 		end
 	end
 

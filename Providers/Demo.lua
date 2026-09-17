@@ -231,6 +231,12 @@ function Demo.Enter(animated)
 		return
 	end
 
+	if not AMT.Frames.IsTimerEnabled() then
+		AMT.Util.Warn(L["preview is unavailable while the Mythic+ timer is disabled."])
+
+		return
+	end
+
 	if active then
 		return
 	end

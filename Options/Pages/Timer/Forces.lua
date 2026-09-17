@@ -10,6 +10,7 @@ end
 
 Options.RegisterPage({
 	id = "timer.forces",
+	hidden = Options.IsTimerDisabled,
 	parent = "timer",
 	order = 50,
 	name = L["Enemy Forces"],

@@ -21,6 +21,7 @@ local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 
 ---@class AMTSidebarRow
 ---@field id string page id
+---@field page AMTOptionsPage
 ---@field button Button
 ---@field background Texture
 ---@field icon Texture
@@ -31,6 +32,8 @@ local GOLD_R, GOLD_G, GOLD_B = 1, 0.8235, 0
 ---@field scroll ScrollFrame
 ---@field content Frame
 ---@field rows AMTSidebarRow[]
+---@field rowsByCategory table<string, AMTSidebarRow[]>
+---@field headers table<string, FontString>
 ---@field selectedID string?
 ---@field scrollTo number?
 local Sidebar = {}
@@ -78,14 +81,11 @@ function Sidebar:Select(id)
 end
 
 ---@param page AMTOptionsPage
----@param offsetY number
 ---@return AMTSidebarRow
-function Sidebar:CreateRow(page, offsetY)
+function Sidebar:CreateRow(page)
 	local button = CreateFrame("Button", nil, self.content)
 
 	button:SetHeight(ROW_HEIGHT)
-	button:SetPoint("TOPLEFT", self.content, "TOPLEFT", ROW_INDENT, -offsetY)
-	button:SetPoint("TOPRIGHT", self.content, "TOPRIGHT", 0, -offsetY)
 	button:RegisterForClicks("LeftButtonUp")
 
 	local background = button:CreateTexture(nil, "BACKGROUND")
@@ -114,7 +114,7 @@ function Sidebar:CreateRow(page, offsetY)
 	end
 
 	---@type AMTSidebarRow
-	local row = { id = page.id, button = button, background = background, icon = icon, label = label }
+	local row = { id = page.id, page = page, button = button, background = background, icon = icon, label = label }
 
 	button:SetScript("OnEnter", function()
 		self:UpdateRow(row)
@@ -134,28 +134,84 @@ function Sidebar:CreateRow(page, offsetY)
 end
 
 function Sidebar:Build()
-	local offsetY = 0
-
-	for index, category in ipairs(Options.GetCategories()) do
+	for _, category in ipairs(Options.GetCategories()) do
 		local pages = Options.GetPages(category.id)
 
 		if #pages > 0 then
-			if index > 1 then
-				offsetY = offsetY + SECTION_GAP
-			end
-
 			local header = self.content:CreateFontString(nil, "ARTWORK", CONST.FONT_HEADING)
 
 			header:SetJustifyH("LEFT")
-			header:SetPoint("TOPLEFT", self.content, "TOPLEFT", ICON_GAP, -offsetY - HEADER_DROP)
 			header:SetText(category.name:upper())
 			header:SetTextColor(GOLD_R, GOLD_G, GOLD_B)
 
-			offsetY = offsetY + HEADER_HEIGHT
+			self.headers[category.id] = header
+
+			local rows = {}
 
 			for _, page in ipairs(pages) do
-				self.rows[#self.rows + 1] = self:CreateRow(page, offsetY)
-				offsetY = offsetY + ROW_HEIGHT
+				local row = self:CreateRow(page)
+
+				rows[#rows + 1] = row
+				self.rows[#self.rows + 1] = row
+			end
+
+			self.rowsByCategory[category.id] = rows
+		end
+	end
+
+	self:Layout()
+end
+
+---@param rows AMTSidebarRow[]
+---@return boolean
+local function AnyShown(rows)
+	for _, row in ipairs(rows) do
+		if not Options.IsPageHidden(row.page) then
+			return true
+		end
+	end
+
+	return false
+end
+
+function Sidebar:Layout()
+	local offsetY = 0
+	local placed = false
+
+	for _, category in ipairs(Options.GetCategories()) do
+		local header = self.headers[category.id]
+		local rows = self.rowsByCategory[category.id]
+
+		if header and rows then
+			local shown = AnyShown(rows)
+
+			header:SetShown(shown)
+
+			if shown then
+				if placed then
+					offsetY = offsetY + SECTION_GAP
+				end
+
+				placed = true
+
+				header:ClearAllPoints()
+				header:SetPoint("TOPLEFT", self.content, "TOPLEFT", ICON_GAP, -offsetY - HEADER_DROP)
+
+				offsetY = offsetY + HEADER_HEIGHT
+			end
+
+			for _, row in ipairs(rows) do
+				local hidden = Options.IsPageHidden(row.page)
+
+				row.button:SetShown(not hidden)
+
+				if not hidden then
+					row.button:ClearAllPoints()
+					row.button:SetPoint("TOPLEFT", self.content, "TOPLEFT", ROW_INDENT, -offsetY)
+					row.button:SetPoint("TOPRIGHT", self.content, "TOPRIGHT", 0, -offsetY)
+
+					offsetY = offsetY + ROW_HEIGHT
+				end
 			end
 		end
 	end
@@ -166,7 +222,7 @@ end
 ---@param parent Frame
 ---@return AMTOptionsSidebar
 function Options.NewSidebar(parent)
-	local sidebar = setmetatable({ rows = {} }, Sidebar)
+	local sidebar = setmetatable({ rows = {}, rowsByCategory = {}, headers = {} }, Sidebar)
 
 	sidebar.frame = CreateFrame("Frame", nil, parent)
 	sidebar.frame:SetAllPoints(parent)
@@ -219,6 +275,26 @@ function Options.NewSidebar(parent)
 	sidebar:Build()
 
 	return sidebar
+end
+
+function Options.RefreshSidebar()
+	local sidebar = Options.sidebar
+
+	if not sidebar then
+		return
+	end
+
+	sidebar:Layout()
+
+	local selected = sidebar.selectedID and Options.GetPage(sidebar.selectedID)
+
+	if selected and Options.IsPageHidden(selected) then
+		local first = Options.GetFirstPage()
+
+		if first then
+			sidebar:Select(first.id)
+		end
+	end
 end
 
 ---@param host Frame
