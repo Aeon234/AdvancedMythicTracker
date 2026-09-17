@@ -1,6 +1,6 @@
 ## Interface: 120100
 ## Title: Advanced Mythic Tracker
-## Notes: WIP
+## Notes: Mythic+ Dashboard and Timer
 ## Author: Aeon
 ## Version: @project-version@
 
