@@ -5,8 +5,7 @@ local Dashboard = AMT.Dashboard
 
 local GCD_SECONDS = 2
 local MILLISECONDS_PER_SECOND = 1000
--- The client dates a run to the minute and AMT stamps its own at completion, so the two never line up
--- exactly; nothing else that week will be the same dungeon at the same level this close together.
+local DURATION_MATCH_SECONDS = 1
 local RECORD_MATCH_SECONDS = 900
 
 local PARTY_UNITS = { "player", "party1", "party2", "party3", "party4" }
@@ -231,6 +230,17 @@ local function GetKeystone(affixIDs)
 	}
 end
 
+---@return number seconds to add to a UTC date read by time()
+local function LocalReadOffset()
+	local now = time()
+	local utc = date("!*t", now)
+
+	utc.isdst = nil
+
+	return now - time(utc)
+end
+
+-- Run dates are UTC, not the machine's zone and not realm time.
 ---@param completionDate CalendarTime
 ---@return number epoch seconds
 local function CompletedAt(completionDate)
@@ -240,7 +250,7 @@ local function CompletedAt(completionDate)
 		day = completionDate.monthDay,
 		hour = completionDate.hour,
 		min = completionDate.minute,
-	})
+	}) + LocalReadOffset()
 end
 
 ---@param left AMTDashboardRun
@@ -721,12 +731,18 @@ end
 
 ---@param recorded AMTRecordedRun[]
 ---@param run AMTDashboardRun
+---@param claimed table<AMTRecordedRun, true> records already matched to another run
 ---@return AMTRecordedRun? match nil when AMT did not watch this run
-local function FindRecorded(recorded, run)
+local function FindRecorded(recorded, run, claimed)
 	local match, closest
 
 	for _, candidate in ipairs(recorded) do
-		if candidate.mapID == run.mapID and candidate.level == run.level then
+		if
+			not claimed[candidate]
+			and candidate.mapID == run.mapID
+			and candidate.level == run.level
+			and math.abs(candidate.durationSec - run.seconds) <= DURATION_MATCH_SECONDS
+		then
 			local distance = math.abs(candidate.completedAt - run.completedAt)
 
 			if distance <= RECORD_MATCH_SECONDS and (not closest or distance < closest) then
@@ -765,10 +781,14 @@ local function MergeRecordedRuns(runs)
 		return
 	end
 
+	---@type table<AMTRecordedRun, true>
+	local claimed = {}
+
 	for _, run in ipairs(runs) do
-		local record = run.completed and FindRecorded(recorded, run) or nil
+		local record = run.completed and FindRecorded(recorded, run, claimed) or nil
 
 		if record then
+			claimed[record] = true
 			run.party = record.party
 			run.splits = BuildSplits(record)
 		end

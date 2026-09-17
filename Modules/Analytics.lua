@@ -23,7 +23,7 @@ local L = AMT.L
 ---@field affixIDs integer[]
 ---@field bosses AMTBossSplit[]
 ---@field forcesMS integer?
----@field party AMTRecordedMember[] in party order, the player first
+---@field party AMTRecordedMember[] tanks, healers, then damage
 
 ---@class AMTHistoryEntry
 ---@field runs AMTRunRecord[]
@@ -40,6 +40,7 @@ local COMPLETION_DELAY = 2
 local MILLISECONDS_PER_SECOND = 1000
 local SECONDS_PER_WEEK = 7 * SECONDS_PER_DAY
 local UNIT_ORDER = { player = 1, party1 = 2, party2 = 3, party3 = 4, party4 = 5 }
+local ROLE_ORDER = { TANK = 1, HEALER = 2, DAMAGER = 3 }
 
 ---@param seasonID integer
 ---@param mapID integer
@@ -239,26 +240,60 @@ local function PurgeRecorded(entry)
 	entry.recorded = kept
 end
 
----@param left AMTPartyMember
----@param right AMTPartyMember
+---@class AMTRankedMember
+---@field member AMTPartyMember
+---@field role string?
+
+---@param member AMTPartyMember
+---@return string? role TANK, HEALER or DAMAGER
+local function MemberRole(member)
+	local specID = AMT.Inspect:GetSpecID(member.guid)
+	local role = specID and select(5, GetSpecializationInfoByID(specID))
+
+	if ROLE_ORDER[role] then
+		return role
+	end
+
+	local assigned = UnitGroupRolesAssigned(member.unit)
+
+	if issecretvalue(assigned) or not ROLE_ORDER[assigned] then
+		return nil
+	end
+
+	return assigned
+end
+
+-- Tanks, healers, then damage; unknown roles last, and party order within a role.
+---@param left AMTRankedMember
+---@param right AMTRankedMember
 ---@return boolean
-local function ByUnitOrder(left, right)
-	return (UNIT_ORDER[left.unit] or math.huge) < (UNIT_ORDER[right.unit] or math.huge)
+local function ByRole(left, right)
+	local leftRole = ROLE_ORDER[left.role] or math.huge
+	local rightRole = ROLE_ORDER[right.role] or math.huge
+
+	if leftRole ~= rightRole then
+		return leftRole < rightRole
+	end
+
+	return (UNIT_ORDER[left.member.unit] or math.huge) < (UNIT_ORDER[right.member.unit] or math.huge)
 end
 
 ---@return AMTRecordedMember[]
 local function RecordedParty()
-	local snapshot = {}
+	---@type AMTRankedMember[]
+	local ranked = {}
 
 	for _, member in pairs(AMT.Deaths.GetPartySnapshot()) do
-		snapshot[#snapshot + 1] = member
+		ranked[#ranked + 1] = { member = member, role = MemberRole(member) }
 	end
 
-	table.sort(snapshot, ByUnitOrder)
+	table.sort(ranked, ByRole)
 
 	local party = {}
 
-	for index, member in ipairs(snapshot) do
+	for index, entry in ipairs(ranked) do
+		local member = entry.member
+
 		party[index] = { classFile = member.class, specIcon = AMT.Inspect:GetSpecIcon(member.guid) }
 	end
 

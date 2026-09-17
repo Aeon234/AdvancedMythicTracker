@@ -27,8 +27,8 @@ local MAX_STARS = 3
 local UNEARNED_STAR_ALPHA = 0.5
 
 local PARTY_SIZE = 5
-local CLASS_ICON_SIZE = 14
-local CLASS_ICON_SPACING = 2
+local CLASS_ICON_SIZE = 20
+local CLASS_ICON_SPACING = 4
 local CROP_MIN, CROP_MAX = 0.07, 0.93
 
 local TIMED_COLOR = CreateColor(0.69, 0.69, 0.69)
