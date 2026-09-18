@@ -1,0 +1,12 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+    <Script file="LibStub\LibStub.lua" />
+    <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml" />
+    <Include file="LibSharedMedia-3.0\lib.xml" />
+    <Script file="LibSerialize\LibSerialize.lua" />
+    <Script file="LibDeflate\LibDeflate.lua" />
+    <Include file="AceComm-3.0\AceComm-3.0.xml" />
+    <Script file="LibKeystone\LibKeystone.lua" />
+    <Script file="LibSpecialization\LibSpecialization.lua" />
+    <Script file="LibDataBroker-1.1\LibDataBroker-1.1.lua" />
+    <Script file="LibDBIcon-1.0\LibDBIcon-1.0.lua" />
+</Ui>
