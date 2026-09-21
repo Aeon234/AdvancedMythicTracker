@@ -7,6 +7,7 @@ local Modules = AMT.Modules
 -- Incase I need to force Profile Upgrades
 local PROFILE_VERSION = 1
 local EXPORT_FORMAT = 1
+local EXPORT_PREFIX = "AMT!" .. EXPORT_FORMAT .. "!"
 
 ---@class AMTLayoutElementSettings
 ---@field enabled boolean
@@ -554,28 +555,12 @@ function Profiles.Delete(name)
 	return true
 end
 
----@return table? serializer
----@return table? deflate
-local function ExportLibs()
-	local serializer = LibStub("LibSerialize", true)
-	local deflate = LibStub("LibDeflate", true)
-
-	if not serializer or not deflate then
-		AMT.Util.Warn(L["profile import and export need LibSerialize and LibDeflate."])
-
-		return nil, nil
-	end
-
-	return serializer, deflate
-end
-
 ---@param name string
 ---@return string? encoded
 function Profiles.Export(name)
 	local profile = AMT.DB.settings.profiles[name]
-	local serializer, deflate = ExportLibs()
 
-	if not profile or not serializer or not deflate then
+	if not profile then
 		return nil
 	end
 
@@ -586,38 +571,51 @@ function Profiles.Export(name)
 		profile = profile,
 	}
 
-	local serialized = serializer:Serialize(payload)
-	local compressed = deflate:CompressDeflate(serialized, { level = 9 })
+	local ok, encoded = pcall(function()
+		return C_EncodingUtil.EncodeBase64(C_EncodingUtil.CompressString(C_EncodingUtil.SerializeCBOR(payload)))
+	end)
 
-	return deflate:EncodeForPrint(compressed)
+	if not ok or type(encoded) ~= "string" then
+		return nil
+	end
+
+	return EXPORT_PREFIX .. encoded
 end
 
 ---@param encoded string
 ---@return table? payload
 function Profiles.Decode(encoded)
-	local serializer, deflate = ExportLibs()
+	local text = (encoded or ""):trim()
+	local format = text:match("^AMT!(%d+)!")
 
-	if not serializer or not deflate then
-		return nil
-	end
-
-	local decoded = deflate:DecodeForPrint(encoded)
-
-	if not decoded then
+	if not format then
 		AMT.Util.Warn(L["that does not look like an export string."])
 
 		return nil
 	end
 
-	local decompressed = deflate:DecompressDeflate(decoded)
+	if tonumber(format) ~= EXPORT_FORMAT then
+		AMT.Util.Warn(L["that export string is from an incompatible version."])
 
-	if not decompressed then
+		return nil
+	end
+
+	local ok, decoded = pcall(C_EncodingUtil.DecodeBase64, text:sub(#EXPORT_PREFIX + 1))
+	local decompressed
+
+	if ok and type(decoded) == "string" then
+		ok, decompressed = pcall(C_EncodingUtil.DecompressString, decoded)
+	end
+
+	if not ok or type(decompressed) ~= "string" then
 		AMT.Util.Warn(L["that export string is corrupt or incomplete."])
 
 		return nil
 	end
 
-	local ok, payload = serializer:Deserialize(decompressed)
+	local payload
+
+	ok, payload = pcall(C_EncodingUtil.DeserializeCBOR, decompressed)
 
 	if not ok or type(payload) ~= "table" then
 		AMT.Util.Warn(L["that export string could not be read."])

@@ -2,7 +2,6 @@
     <Script file="LibStub\LibStub.lua" />
     <Include file="CallbackHandler-1.0\CallbackHandler-1.0.xml" />
     <Include file="LibSharedMedia-3.0\lib.xml" />
-    <Script file="LibSerialize\LibSerialize.lua" />
     <Script file="LibDeflate\LibDeflate.lua" />
     <Include file="AceComm-3.0\AceComm-3.0.xml" />
     <Script file="LibKeystone\LibKeystone.lua" />

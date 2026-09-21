@@ -268,7 +268,6 @@ L["another addon already added a fourth Group Finder tab; the Tracker tab was no
 L["finished a key with incomplete identity; personal best was not stored."] = "завершил ключ с неполной идентификацией; личный рекорд не был сохранён."
 L["preview is unavailable during a key."] = "предпросмотр недоступен во время прохождения ключа."
 L["preview is unavailable while the Mythic+ timer is disabled."] = "предпросмотр недоступен, пока отключен таймер М+."
-L["profile import and export need LibSerialize and LibDeflate."] = "для импорта и экспорта профиля требуются LibSerialize и LibDeflate."
 L["runs"] = "прохождения"
 L["settings were saved by a newer version and may not load correctly."] = "настройки были сохранены в более новой версией и могут загружаться некорректно."
 L["style set to %s."] = "стиль установлен на %s."
